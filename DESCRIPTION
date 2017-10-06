@@ -1,0 +1,17 @@
+Package: SIDFEx
+Type: Package
+Title: Tools for the Sea Ice Drift Forecast Experiment (SIDFEx)
+Version: 0.1.0
+Author: Helge Goessling
+Maintainer: Helge Goessling <helge.goessling@awi.de>
+Description:
+    The package includes tools for:
+- Data handling (download / write forecasts and observations)
+- Data searching, viewing, selection, and plotting
+- Data analysis (error evolution, ensemble spread, ...)
+- Data formatting
+- Generating simple benchmark forecasts (drift persistence, ...)
+    For more information on SIDFEx, see http://www.polarprediction.net/yopp-activities/sidfex/ .
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
