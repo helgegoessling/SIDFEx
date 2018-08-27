@@ -7,7 +7,7 @@ sidfex.download.fcst <- function(data.path=NULL,baseurl="https://swiftbrowser.dk
       if (exists("data.path.fcst")) {no.data.path.fcst=FALSE}
     }
     if (no.data.path.fcst) {
-      stop(paste0("With data.path.fcst=NULL , data.path.fcst must be specified in a file ~/.SIDFEx as a line like data.path.fcst=..."))
+      stop(paste0("With data.path=NULL , data.path.fcst must be specified in a file ~/.SIDFEx as a line like data.path.fcst=..."))
     }
   } else {
     data.path.fcst = data.path

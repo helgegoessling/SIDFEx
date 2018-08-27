@@ -14,9 +14,12 @@ Download all SIDFEx forecasts from the DKRZ cloud service.
   \item{baseurl}{
 a character specifying the URL where the SIDFEx data are located remotely. Should not need to be changed from the default value.
 }
-\note{
-It might be convenient to add an argument \code{GroupID} so one does not always need to download all data.
 }
+\note{
+It might be convenient to add an argument \code{GroupID} at some point, so one does not always need to download all data.
+}
+\author{
+Helge Goessling
 }
 \examples{
 sidfex.download.fcst()
