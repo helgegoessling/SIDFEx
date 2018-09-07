@@ -1,7 +1,7 @@
 sidfex.fcst.search.extractFromTable <- 
   function(indexTable.path = NULL, gid=NULL, mid=NULL, tid=NULL, 
            iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL, 
-           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL){
+           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL){
 
     # check if specific directory for indexList is given, otherwise use default 
     if (is.null(indexTable.path)) {
@@ -27,30 +27,115 @@ sidfex.fcst.search.extractFromTable <-
     }
     
     # work on a copy of rTab, not rTab itself (most certainly not necessary, but old habit)
-    dummy.df = rTab
-    
-    # filter rows by criteria on columns, first the easy ones (point queries)
-    if (!is.null(gid)) {dummy.df <- dummy.df[dummy.df$GroupID == gid,]}
-    if (!is.null(tid)) {dummy.df <- dummy.df[dummy.df$TargetID == tid,]}
-    if (!is.null(mid)) {dummy.df <- dummy.df[dummy.df$MethodID == mid,]}
+    df = rTab
+
+    # filter rows by criteria on columns, first the easy ones
+    if (!is.null(gid)) {df <- df[df$GroupID %in% gid,]}
+    if (!is.null(tid)) {df <- df[df$TargetID %in% tid,]}
+    if (!is.null(mid)) {df <- df[df$MethodID %in% mid,]}
     
     # now take care of (possible) range queries
-    if (!is.null(emn)) {dummy.df <- dummy.df[dummy.df$EnsMemNum %in% emn,]}
-    if (!is.null(per)) {dummy.df <- dummy.df[dummy.df$FcstTime %in% per,]}
-    if (!is.null(nt)) {dummy.df <- dummy.df[dummy.df$nTimeSteps %in% nt,]}
-    if (!is.null(del)) {dummy.df <- dummy.df[dummy.df$Delay %in% del,]}
+    if (!is.null(emn)) {df <- df[df$EnsMemNum %in% emn,]}
+    if (!is.null(per)) {df <- df[df$FcstTime %in% per,]}
+    if (!is.null(nt)) {df <- df[df$nTimeSteps %in% nt,]}
+    if (!is.null(del)) {df <- df[df$Delay %in% del,]}
     
-    if (!is.null(idoy)) {dummy.df <- dummy.df[dummy.df$InitDayOfYear %in% idoy,]}
-    if (!is.null(iy)) {dummy.df <- dummy.df[dummy.df$InitYear %in% iy,]}
-    if (!is.null(fdoy)) {dummy.df <- dummy.df[dummy.df$InitDayOfYear %in% fdoy,]}
-    if (!is.null(fy)) {dummy.df <- dummy.df[dummy.df$InitYear %in% fy,]}
-    if (!is.null(ldoy)) {dummy.df <- dummy.df[dummy.df$InitDayOfYear %in% ldoy,]}
-    if (!is.null(ly)) {dummy.df <- dummy.df[dummy.df$InitYear %in% ly,]}
-    if (!is.null(pdoy)) {dummy.df <- dummy.df[dummy.df$InitDayOfYear %in% pdoy,]}
-    if (!is.null(py)) {dummy.df <- dummy.df[dummy.df$InitYear %in% py,]}
-    if (!is.null(sdoy)) {dummy.df <- dummy.df[dummy.df$InitDayOfYear %in% sdoy,]}
-    if (!is.null(sy)) {dummy.df <- dummy.df[dummy.df$InitYear %in% sy,]}
+    # now the ugly stuff (taking care of range queries over different years)
+    # initial time
+    if(!is.null(iy)){
+      if (length(iy)==1 | iy[1]==iy[2]){ # case 1: year and day are only a point query (only one year or iy[1]=iy[2])
+        df <- df[df$InitYear == iy,]
+        if (!is.null(idoy)){
+          df <- df[df$InitDayOfYear %in% seq(min(idoy), max(idoy)),] # this min max thing is an elegant solution for length(idoy)=1 
+        } 
+      } else if (iy[1]!=iy[2]) { # case 2: year and days are range queries (idoy must have length 2!)
+        df <- df[which((df$InitYear==iy[1] & df$InitDayOfYear >= idoy[1])        | 
+                         (df$InitYear>iy[1] & df$InitYear <iy[2])                 | 
+                         (df$InitYear==iy[2] & df$InitDayOfYear <= idoy[2])),]
+      }
+    }
+    
+    # first date of forecast
+    if(!is.null(fy)){
+      if (length(fy)==1 | fy[1]==fy[2]){ 
+        df <- df[df$FirstTimeStepYear == fy,]
+        if (!is.null(fdoy)){
+          df <- df[df$FirstTimeStepDayOfYear %in% seq(min(fdoy), max(fdoy)),] 
+        } 
+      } else if (fy[1]!=fy[2]) { 
+        df <- df[which((df$FirstTimeStepYear==fy[1] & df$FirstTimeStepDayOfYear >= fdoy[1])        | 
+                         (df$FirstTimeStepYear > fy[1] & df$FirstTimeStepYear < fy[2])                 | 
+                         (df$FirstTimeStepYear==fy[2] & df$FirstTimeStepDayOfYear <= fdoy[2])),]
+      }
+    }
+    
+    # last date of forecast
+    if(!is.null(ly)){
+      if (length(ly)==1 | ly[1]==ly[2]){ 
+        df <- df[df$LastTimeStepYear == ly,]
+        if (!is.null(ldoy)){
+          df <- df[df$LastTimeStepDayOfYear %in% seq(min(ldoy), max(ldoy)),] 
+        } 
+      } else if (ly[1]!=ly[2]) { 
+        df <- df[which((df$LastTimeStepYear==ly[1] & df$LastTimeStepDayOfYear >= ldoy[1])        | 
+                         (df$LastTimeStepYear > ly[1] & df$LastTimeStepYear < ly[2])                 | 
+                         (df$LastTimeStepYear==ly[2] & df$LastTimeStepDayOfYear <= ldoy[2])),]
+      }
+    }
+    
+    # year of file processing
+    if(!is.null(py)){
+      if (length(py)==1 | py[1]==py[2]){ 
+        df <- df[df$ProcessedYear == py,]
+        if (!is.null(pdoy)){
+          df <- df[df$ProcessedDayOfYear %in% seq(min(pdoy), max(pdoy)),] 
+        } 
+      } else if (py[1]!=py[2]) { 
+        df <- df[which((df$ProcessedYear==sy[1] & df$ProcessedDayOfYear >= pdoy[1])        | 
+                         (df$ProcessedYear > sy[1] & df$ProcessedYear < py[2])                 | 
+                         (df$ProcessedYear==sy[2] & df$ProcessedDayOfYear <= pdoy[2])),]
+      }
+    }
+    
+    
+    # date of submission
+    if(!is.null(sy)){
+      if (length(sy)==1 | sy[1]==sy[2]){ 
+        df <- df[df$SubmitYear == sy,]
+        if (!is.null(sdoy)){
+          df <- df[df$SubmitDayOfYear %in% seq(min(sdoy), max(sdoy)),] 
+        } 
+      } else if (sy[1]!=sy[2]) { 
+        df <- df[which((df$SubmitYear==sy[1] & df$SubmitDayOfYear >= sdoy[1])        | 
+                         (df$SubmitYear > sy[1] & df$SubmitYear < sy[2])                 | 
+                         (df$SubmitYear==sy[2] & df$SubmitDayOfYear <= sdoy[2])),]
+      }
+    }
+    
+    # range input (important for daterange input from shiny!)
+    if(!is.null(fcstrange)){
+      fact = 400
+      yearmin = as.integer(format(fcstrange[1], "%Y"))
+      yearmax = as.integer(format(fcstrange[2], "%Y"))
+      doymin =  as.integer(format(fcstrange[1], "%j"))
+      doymax =  as.integer(format(fcstrange[2], "%j"))
+      
+      # brute force date comparison, baby, yeah
+      datemin.float = yearmin + doymin/fact
+      datemax.float = yearmax + doymax/fact
+      
+      # either (the forecast starts AND/OR ends in the given range) OR (it starts before AND ends after given range)  
+      df <- df[which(
+                      (df$FirstTimeStepYear + df$FirstTimeStepDayOfYear/fact <= datemax.float & 
+                        df$FirstTimeStepYear + df$FirstTimeStepDayOfYear/fact >= datemin.float) | # case: fcst starts in range
+                      (df$LastTimeStepYear + df$LastTimeStepDayOfYear/fact <= datemax.float & 
+                         df$LastTimeStepYear + df$LastTimeStepDayOfYear/fact >= datemin.float) |  # case: fcst stops in range
+                        (df$FirstTimeStepYear + df$FirstTimeStepDayOfYear/fact < datemin.float & 
+                           df$LastTimeStepYear + df$LastTimeStepDayOfYear/fact > datemax.float)   # case: fcst starts before, stops afterwards
+                    )
+              ,]
+    }
     
     # return list of files
-    return(dummy.df$File)
+    return(df$File)
   }

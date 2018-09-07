@@ -35,7 +35,7 @@
                "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear", 
                "LastTimeStepDayOfYear", "FcstTime")}
   
-  It is strongly suggested not to create the indexFile by hand, use the given functions instead to avoid problems or inconsistencies.
+  It is strongly suggested not to create the index file by hand, use the given functions instead to avoid problems or inconsistencies.
 }
 \author{
 Simon Reifenberg

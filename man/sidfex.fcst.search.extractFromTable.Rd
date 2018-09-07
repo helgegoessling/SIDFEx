@@ -4,10 +4,10 @@
 \usage{
   sidfex.fcst.search.extractFromTable (indexTable.path = NULL, gid=NULL, mid=NULL, tid=NULL, 
            iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL, 
-           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL)
+           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL)
 }
 \description{
-  This function is more or less the core of the upcoming "Shiny App" for SIDFEx. It allows a user to quickly find the filename of forecast datasets based on a useful set of search parameters. These filenames can then be easily used to load the forecast of interest for further processing and/or analysis.
+  This function is more or less the core of the upcoming "Shiny App" for SIDFEx. It allows a user to quickly find the filename of forecast datasets based on a useful set of search parameters. These filenames can then be easily used to load the forecast of interest for further processing and/or analysis. Please note the note about date inputs.
 }
 \arguments{
   \item{indexTable.path}{
@@ -15,56 +15,59 @@
   }
 
   \item{gid}{
-    a character for the GroupID of interest (point query)
+    a character (or list/vector of characters) for the GroupID(s) of interest
   }  
   \item{mid}{
-    a character for the MethodID of interest (point query)
+    a character (or list/vector of characters) for the MethodID(s) of interest 
   }  
   \item{tid}{
-    a character for the TargetID of interest (point query, implementation of range query in progress)
+    a character (or list/vector of characters) TargetID(s) of interest 
   }  
   \item{iy}{
-    a numeric value (or list/vector of such) for the initial year (point query or range query)
+    a numeric value (or list/vector of such) for the initial year 
   }  
   \item{idoy}{
-    a numeric value (or list/vector of such) for the initial day of year (point query or range query)
+    a numeric value (or list/vector of such) for the initial day of year
   }  
   \item{emn}{
-    a integer (or list/vector of inters) for the ensemble member number of interest (point query or range query)
+    a integer (or list/vector of inters) for the ensemble member number of interest
   }  
   \item{sy}{
-    a numeric value (or list/vector of such) for the year that the respective file was submitted in (point query or range query)
+    a numeric value (or list/vector of such) for the year that the respective file was submitted in
   }  
   \item{sdoy}{
-    a numeric value (or list/vector of such) for the day of year that the respective file was submitted (point query or range query)
+    a numeric value (or list/vector of such) for the day of year that the respective file was submitted 
   }  
   \item{py}{
-    a numeric value (or list/vector of such) for the year that the respective file was processed (point query or range query)
+    a numeric value (or list/vector of such) for the year that the respective file was processed 
   }  
   \item{pdoy}{
-    a numeric value (or list/vector of such) for the day of year that the respective file was processed (point query or range query)
+    a numeric value (or list/vector of such) for the day of year that the respective file was processed 
   }  
   \item{del}{
-    a numeric value (or list/vector of such) for the submitting delay (difference of submit time and initial time of forecast), (point query or range query)
+    a numeric value (or list/vector of such) for the submitting delay (difference of submit time and initial time of forecast)
   }  
   \item{nt}{
-    a numeric value (or list/vector of such) for the number of timesteps of the forecast (point query or range query)
+    a numeric value (or list/vector of such) for the number of timesteps of the forecast 
   }  
   \item{fy}{
-    a numeric value (or list/vector of such) for the year of the first timestep (point query or range query)
+    a numeric value (or list/vector of such) for the year of the first timestep 
   }  
   \item{fdoy}{
-    a numeric value (or list/vector of such) for the day of year of the first timestep (point query or range query)
+    a numeric value (or list/vector of such) for the day of year of the first timestep 
   }  
   \item{ly}{
-    a numeric value (or list/vector of such) for the year of the last timestep  (point query or range query)
+    a numeric value (or list/vector of such) for the year of the last timestep  
   }  
   \item{ldoy}{
-    a numeric value (or list/vector of such) for the day of year of the last timestep  (point query or range query)
+    a numeric value (or list/vector of such) for the day of year of the last timestep 
   }  
   \item{per}{
-    a numeric value (or list/vector of such) for the forecast time in days, i.e. the time difference between first and last timestep (point query or range query)
+    a numeric value (or list/vector of such) for the forecast time in days, i.e. the time difference between first and last timestep
   }  
+  \item{fcstrange}{
+    a vector of length 2, containing two date objects spanning a range. If a forecast has at least one timestep in that range, it will be selected.
+  }
 
 }
 \value{
@@ -72,8 +75,11 @@
 }
 \note{ 
   As all search parameters are \code{NULL} by default, currently unimportant parameters can just be omitted, see example below. 
-
-  If you loaded the data frame from the .rda file (will appear as "rTab" in environment) in R, you can use the output list of this function like in the example below to obtain a reduced list (this selection procedure is basically equivalent to horizontal slicing of the index table).
+  
+  If you want to use this function outside the Shiny App, it is advised to look at the code of this function to understand how it works with special respect to date inputs, as strange/unwanted behavior might occur without throwing error messages. As a rule of thumb: Use either point queries here (e.g. iy=2018, idoy=14, sdoy=20, ..) or vectors of length 2 (e.g. iy=c(2017, 2018) 
+  and idoy=c(300, 5)). In that specific case, the function returns all datasets that lie in between 2017, DOY 300 and 2018, DOY 5. 
+  
+    If you loaded the data frame from the .rda file (will appear as "rTab" in environment) in R, you can use the output list of this function like in the example below to obtain a reduced list (this selection procedure is basically equivalent to horizontal slicing of the index table).
   
 }
 \author{
