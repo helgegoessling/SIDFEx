@@ -3,7 +3,7 @@ indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOf
                "LastTimeStepDayOfYear", "FcstTime")
 
 sidfex.fcst.search.createIndexTable <-
-  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.saveAddCSV=TRUE){
+  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.saveAddCSV=TRUE, checkfileformat=TRUE){
     # check if specific directory for the fcst data is given, otherwise use a default
     if (is.null(data.path)) {
       no.data.path.fcst=TRUE
@@ -36,15 +36,15 @@ sidfex.fcst.search.createIndexTable <-
 
     # if do.fromScratch==TRUE, we remove the previous version of the indexFile (permanently)
     if (do.fromScratch){
-      if (file.exists(paste0(indexTable.path.in, "indexTable.rda"))) {
+      if (file.exists(file.path(indexTable.path.in, "indexTable.rda"))) {
         print("Delete existing file and rebuild it from scratch!")
-        file.remove(paste0(indexTable.path.in, "indexTable.rda"))
+        file.remove(file.path(indexTable.path.in, "indexTable.rda"))
       }
     }
 
     # load if file exists, otherwise create a new one
-    if (file.exists(paste0(indexTable.path.in, "indexTable.rda"))) {
-      load(paste0(indexTable.path.in, "indexTable.rda"))
+    if (file.exists(file.path(indexTable.path.in, "indexTable.rda"))) {
+      load(file.path(indexTable.path.in, "indexTable.rda"))
       nRowsOld = nrow(rTab)
       rm.frst = FALSE
       headerlines[2] = paste0("Last update on: ", Sys.time())
@@ -61,7 +61,7 @@ sidfex.fcst.search.createIndexTable <-
     for (gid in gid.dirs) {
       fdir = paste0(data.path.fcst, "/", gid)
       for (item in list.files(fdir)){
-        rTab = sidfex.fcst.search.addTableItem(item, data.path = paste0(fdir, "/"), is.open.rTab = TRUE, rTab.in = rTab)
+        rTab = sidfex.fcst.search.addTableItem(item, data.path = paste0(fdir, "/"), is.open.rTab = TRUE, rTab.in = rTab, checkfileformat = checkfileformat)
       }
     }
 
@@ -72,7 +72,7 @@ sidfex.fcst.search.createIndexTable <-
 
     # save the file-- maybe we should save this more frequently during the process or
     # at least keep an old version of the indexTable until this one is written on disk...?
-    save(rTab, headerlines, file=paste0(indexTable.path.in, "indexTable.rda"))
+    save(rTab, headerlines, file=file.path(indexTable.path.in, "indexTable.rda"))
 
     # and convert file to csv if desired
     if (do.saveAddCSV) {sidfex.fcst.search.rda2csv(rTab.in = rTab, headerlines = headerlines, indexTable.path = indexTable.path.in)}
