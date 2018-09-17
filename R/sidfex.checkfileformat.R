@@ -22,27 +22,27 @@ sidfex.checkfileformat = function (filepathnames) {
 		if (lastchar != "/") {filepathnames = paste0(filepathnames,"/")}
 		filepathnames = paste0(filepathnames,system(paste0("ls ",filepathnames),intern=TRUE))
 	}
-	
+
 	N = length(filepathnames)
 	res.list = list()
-	
+
 	for (i in 1:N) {
-		
+
 		filepathname = filepathnames[[i]]
 		if (!file.exists(filepathname)) {
 			res = "File does not exist."
 			res.list[[filepathname]] = res
 			next
 		}
-		
+
 		res = NULL
-		
+
 		### check file name
-		
+
 		filenameX = strsplit(filepathname,split="/",fixed=TRUE)[[1]]
 		Nstr = length(filenameX)
 		filenameX = filenameX[Nstr]
-		
+
 		filename = strsplit(filenameX,split=".",fixed=TRUE)[[1]]
 		Nstr = length(filename)
 		suffix = filename[Nstr]
@@ -54,7 +54,7 @@ sidfex.checkfileformat = function (filepathnames) {
 		if (Nstr > 1) {
 			filename = paste(filename[1:(Nstr-1)],collapse=".")
 		}
-		
+
 		filename.flds = strsplit(filename,split="_",fixed=TRUE)[[1]]
 		Nstr = length(filename.flds)
 		if (Nstr != 5) {
@@ -87,9 +87,9 @@ sidfex.checkfileformat = function (filepathnames) {
 		if (is.na(EnsMemNum.int) || EnsMemNum.int != as.numeric(EnsMemNum) || nchar(EnsMemNum) != 3) {
 			res = c(res,paste0("EnsMemNum provided as '",EnsMemNum,"' in file name must be a 3-digit integer (with leading zeros if needed)."))
 		}
-		
+
 		### check file header
-		
+
 		filecont = scan(filepathname,sep="\n",what="character")
 		Nr = length(filecont)
 		if (Nr < 1) {
@@ -97,7 +97,7 @@ sidfex.checkfileformat = function (filepathnames) {
 			res.list[[filepathname]] = res
 			next
 		}
-		
+
 		nrGroupID = 0
 		GroupIDfound = FALSE
 		while (nrGroupID < Nr && !GroupIDfound) {
@@ -108,11 +108,49 @@ sidfex.checkfileformat = function (filepathnames) {
 				break
 			}
 		}
+
 		if (!GroupIDfound) {
 			res = c(res,"No row starting with 'GroupID' found in file.  Not checking further.")
 			res.list[[filepathname]] = res
 			next
 		}
+
+		if (nrGroupID != 1) {
+
+		  if (nrGroupID != 6) {
+		    res = c(res,"'GroupID' is neither in row 1 (incoming format) nor in row 6 (processed format).  Not checking further.")
+		    res.list[[filepathname]] = res
+		    next
+		  }
+
+		  ### check auto file header (processed format)
+
+		  row.strs = c("SubmitYear","SubmitDayOfYear","ProcessedYear","ProcessedDayOfYear")
+		  for (nr in 1:length(row.strs)) {
+		    rowcont = filecont[nr]
+		    row.str = row.strs[nr]
+		    row.flds = strsplit(rowcont,split=" ",fixed=TRUE)[[1]]
+		    row.flds = row.flds[row.flds != ""]
+		    if (row.flds[1] != paste0(row.str,":")) {
+		      res = c(res,paste0("Row number ",nr," of processed file must start with '",row.str,":' (followed by one or more space characters) instead of '",row.flds[1],"'."))
+		    }
+		    if (length(row.flds) != 2) {
+		      res = c(res,paste0("Row number ",nr," of processed file, provided as '",filecont[nr],"', must contain exactly two strings, separated by one or more space characters."))
+		      next
+		    }
+		    if (is.na(as.numeric(row.flds[2]))) {
+		      res = c(res,paste0(row.str," specified within the file ('",row.flds[2],"') is not numeric."))
+		    }
+		  }
+
+		  if(filecont[5] != "### end of auto header") {
+		    res = c(res,"Row number 5 must be '### end of auto header' for processed files. Not checking further.")
+		    res.list[[filepathname]] = res
+		    next
+		  }
+
+		}
+
 		if ((Nr - nrGroupID) < 10) {
 			res = c(res,paste0("File must have at least 10 rows after 'GroupID' but has only ",Nr-nrGroupID,". Not checking further."))
 			res.list[[filepathname]] = res
@@ -181,9 +219,9 @@ sidfex.checkfileformat = function (filepathnames) {
 			res.list[[filepathname]] = res
 			next
 		}
-		
+
 		### check file data table
-		
+
 		tab.names = unlist(strsplit(unlist(strsplit(filecont[nr+1],split="\t",fixed=TRUE)),split=" ",fixed=TRUE))
 		tab.names = tab.names[tab.names != ""]
 		if (length(tab.names) != 4) {
@@ -237,21 +275,21 @@ sidfex.checkfileformat = function (filepathnames) {
 		if (Lon.nonnum) {
 			res = c(res,paste0("Lon column contains at least one non-numeric value that is not 'NaN'."))
 		}
-		
+
 		###
-		
+
 		if (length(res) == 0) {
 			res.list[[filepathname]] = "No file format violations found."
 		} else {
 			res.list[[filepathname]] = res
 		}
-		
+
 	}
-	
+
 	if (length(res.list) == 1) {
 		return(res.list[[1]])
 	} else {
 		return(res.list)
 	}
-	
+
 }

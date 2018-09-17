@@ -16,7 +16,7 @@ a character or character vector specifying the file(s) path(s) and name(s) to ch
 In case of a single file, either the character 'No file format violations found.' or one or more characters expressing what type of violations are found.
 }
 \details{
-This function can be used to check forecast files before submitting them to SIDFEx (see details on submission procedure at \link{http://www.polarprediction.net/yopp-activities/sidfex/}). The same function is used automatically by the SIDFEx system to check any incoming files.
+This function can be used to check forecast files before submitting them to SIDFEx (see details on submission procedure at \link{http://www.polarprediction.net/yopp-activities/sidfex/}). The same function is used automatically by the SIDFEx system to check any incoming files. Works both for incoming (raw) files and processed files.
 }
 \author{
 Helge Goessling
