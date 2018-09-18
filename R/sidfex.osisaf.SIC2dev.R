@@ -13,7 +13,3 @@ sidfex.osisaf.SIC2dev<-function(sic.sic, sic.lonlati, projection="polar", polar.
   sl.plot.lonlatgrid(pir,lon.distance=lon.distance,lat.distance=lat.distance,pole.hole=pole.hole,labels=grid.labels,labels.cex=grid.labels.cex)
   sl.plot.end(pir)
 }
-
-
-load("/home/csys/sreifenb/Documents/Rstuff/SIDFEX/SIDFEx_goes_shiny/data/current_SIC.rda")
-sidfex.osisaf.SIC2dev(sic.sic=dat[[1]], sic.lonlati = dat[[2]], polar.latbound = 72, filename = "/home/csys/sreifenb/Documents/Rstuff/SIDFEX/SIDFEx_goes_shiny/www/sic.jpeg")

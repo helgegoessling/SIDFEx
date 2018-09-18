@@ -9,7 +9,3 @@ sidfex.osisaf.nc2rda <- function(filename){
   out = list(sic, lonlati)
   return(out)
 }
-
-#dat = sidfex.osisaf.nc2rda("/home/csys/sreifenb/Documents/Rstuff/SIDFEX/SIDFEx_goes_shiny/data/ice_conc_nh_polstere-100_multi_201809161200.nc"
-                                          #)
-
