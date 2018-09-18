@@ -1,20 +1,11 @@
-# this is a script that will download the most recent SIC data from osisaf, process it and save it as .rda file as well as jpeg
-# for later use
-
-library(RCurl)
-require(spheRlab)
-require(ncdf4)
-require(stringi)
-require(tictoc)
-
-# the following variables will probably input parameters for upcoming function :)
-do.del.nc <- T                           # delete existing sea ice .nc if exists 
-do.calc.lonlati <- !T                      # do we want to use tis sl.lonlat2D.c2i() function or did we already? T/F
-url <- "ftp://osisaf.met.no/prod/ice/conc/"   # ftp server with data
-outdir <- "/home/csys/sreifenb/Documents/Rstuff/SIDFEX/SIDFEx_goes_shiny/data/"
-
-sidfex.osisaf.download.latestNhSIC <- function(url = "ftp://osisaf.met.no/prod/ice/conc/", outdir="/home/csys/sreifenb/Documents/Rstuff/SIDFEX/SIDFEx_goes_shiny/data/", do.calc.lonlati = T, do.del.nc = T)
+sidfex.osisaf.download.latestNhSIC <- function(url = "ftp://osisaf.met.no/prod/ice/conc/", outdir="", do.calc.lonlati = T, do.del.nc = T)
 {
+  require(RCurl)
+  require(spheRlab)
+  require(ncdf4)
+  require(stringi)
+  require(tictoc)
+  
   if (do.del.nc & !do.calc.lonlati) {
     print("You're about to download a file and delete it without processing. You hereby have been warned.")
   }
@@ -58,5 +49,3 @@ if (do.calc.lonlati){
   
   return(TRUE)
 }
-
-sidfex.osisaf.download.latestNhSIC()
