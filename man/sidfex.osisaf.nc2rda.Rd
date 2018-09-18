@@ -25,5 +25,5 @@ Simon Reifenberg, Helge Goessling
 }
 
 \seealso{
-\code{\link{sidfex.osisaf.SIC2dev}}, \code{\link{sidfex.osisaf.download.latestNhSIC}}}, \code{\link{sl.lonlat2D.c2i}}
+\code{\link{sidfex.osisaf.SIC2dev}}, \code{\link{sidfex.osisaf.download.latestNhSIC}}, \code{\link{sl.lonlat2D.c2i}}
 }

@@ -5,7 +5,7 @@
   sidfex.osisaf.download.latestNhSIC(url = "ftp://osisaf.met.no/prod/ice/conc/", outdir="", do.calc.lonlati = T, do.del.nc = T))
   }
 \description{
-  This function will download the most recent Arctic sea-ice concentration data from the OSI-SAF ftp server and process it using \code{\link{sidfex.osisaf.SIC2dev}} and  \code{\link{sidfex.osisaf.nc2rda}}}. 
+  This function will download the most recent Arctic sea-ice concentration data from the OSI-SAF ftp server and process it using \code{\link{sidfex.osisaf.SIC2dev}} and  \code{\link{sidfex.osisaf.nc2rda}}. 
 }
 \arguments{
   \item{url}{
@@ -35,5 +35,5 @@ Simon Reifenberg
 }
 
 \seealso{
-\code{\link{sidfex.osisaf.SIC2dev}}, \code{\link{sidfex.osisaf.nc2rda}}}, \code{\link{sl.lonlat2D.c2i}}
+\code{\link{sidfex.osisaf.SIC2dev}}, \code{\link{sidfex.osisaf.nc2rda}}, \code{\link{sl.lonlat2D.c2i}}
 }

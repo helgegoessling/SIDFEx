@@ -73,12 +73,11 @@
 Simon Reifenberg, Helge Goessling
 }
 
-\example{
+\examples{
   # if output of sidfex.osisaf.nc2rda exists (will be a variable called "dat"):
   sidfex.osisaf.SIC2dev(sic.sic=dat[[1]], sic.lonlati = dat[[2]], polar.latbound = 72)
 }
 
 \seealso{
-\code{
-  \link{sidfex.osisaf.nc2rda}}, \code{\link{sidfex.osisaf.download.latestNhSIC}}}, \code{\link{sl.lonlat2D.c2i}}
+  \code{\link{sidfex.osisaf.nc2rda}}, \code{\link{sidfex.osisaf.download.latestNhSIC}}, \code{\link{sl.lonlat2D.c2i}}
 }
