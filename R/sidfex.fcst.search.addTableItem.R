@@ -1,9 +1,8 @@
-indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
-               "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
-               "LastTimeStepDayOfYear", "FcstTime")
-
 sidfex.fcst.search.addTableItem <-
   function (filename, data.path=NULL, indexTable.path=NULL, is.open.rTab=FALSE, rTab.in=NULL, checkfileformat=TRUE) {
+    indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
+                   "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
+                   "LastTimeStepDayOfYear", "FcstTime")
     # check if specific directory for forecasts is given, otherwise use default
     if (is.null(data.path)) {
       no.data.path.fcst=TRUE

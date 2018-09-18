@@ -1,9 +1,8 @@
-indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
-               "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
-               "LastTimeStepDayOfYear", "FcstTime")
-
 sidfex.fcst.search.createIndexTable <-
   function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.saveAddCSV=TRUE, checkfileformat=TRUE){
+    indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
+                   "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
+                   "LastTimeStepDayOfYear", "FcstTime")
     # check if specific directory for the fcst data is given, otherwise use a default
     if (is.null(data.path)) {
       no.data.path.fcst=TRUE
