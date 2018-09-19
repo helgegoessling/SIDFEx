@@ -5,6 +5,7 @@ sidfex.osisaf.download.latestNhSIC <- function(url = "ftp://osisaf.met.no/prod/i
   require(ncdf4)
   require(stringi)
   require(tictoc)
+  if(any(grepl("package:SVGAnnotation", search()))) detach("package:SVGAnnotation") 
   
   if (do.del.nc & !do.calc.lonlati) {
     print("You're about to download a file and delete it without processing. You hereby have been warned.")
@@ -22,7 +23,6 @@ sidfex.osisaf.download.latestNhSIC <- function(url = "ftp://osisaf.met.no/prod/i
   
   # from nc to processed .rda
 if (do.calc.lonlati){
-    source("/home/csys/sreifenb/Documents/Rstuff/SIDFEX/SIDFEx_goes_shiny/sidfex.osisaf.nc2rda.R")
     dat = sidfex.osisaf.nc2rda(paste0(outdir, file))
     save(dat, file=paste0(outdir, "current_SIC.rda"))
     toc()
