@@ -2,17 +2,17 @@
 \alias{sidfex.read.fcst}
 \title{Read SIDFEx Forecasts}
 \usage{
-sidfex.read.fcst(filepathnames, ens.merge = TRUE, checkfileformat = TRUE)
+sidfex.read.fcst(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE)
 }
 \description{
 Read one or more SIDFEx forecasts.
 }
 \arguments{
-  \item{filepathnames}{
-a character or character vector specifying the file(s) path(s) and name(s) to read. If a directory is provided, all files in that directory are read.
+  \item{files}{
+a character, character vector, or index data frame specifying the SIDFEx forecast file(s) to be read. If a directory is provided, all files in that directory are read.
 }
   \item{ens.merge}{
-a logical value specifying whether or not to merge ensemble members from individual lists (corresponding to individual files) into merged lists with shared meta data.
+a logical value specifying whether or not to merge ensemble members from individual lists (corresponding to individual files) into merged lists with shared meta data. NOT YET IMPLEMENTED!
 }
   \item{checkfileformat}{
 a logical value specifying whether or not to check if the file format complies with the SIDFEx conventions, using \code{\link{sidfex.checkfileformat}}.
@@ -20,7 +20,7 @@ a logical value specifying whether or not to check if the file format complies w
 }
 \value{
 If \code{ens.merge = FALSE}, a list with the two elements \code{ens.merge} (set \code{FALSE}) and \code{res.list}. The latter contains one list for each file that has been read, including separate lists for each ensemble member in case the files contain such.
-If \code{ens.merge = TRUE}, a list with the two elements \code{ens.merge} (set \code{TRUE}) and \code{res.list}. The latter contains one list for each ensemble that has been read. That is, if the files contain ensemble members, those are merged into lists with shared meta data.
+If \code{ens.merge = TRUE} (NOT YET IMPLEMENTED!), a list with the two elements \code{ens.merge} (set \code{TRUE}) and \code{res.list}. The latter contains one list for each ensemble that has been read. That is, if the files contain ensemble members, those are merged into lists with shared meta data.
 }
 \note{
 The 'Value' section in this documentation should be extended to explain what the elements of \code{res.list} are (with and without \code{ens.merge})

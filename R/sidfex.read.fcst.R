@@ -1,18 +1,19 @@
-sidfex.read.fcst <- function(filepathnames=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE) {
+sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE) {
 
-  if (is.null(filepathnames)) {
-    if (is.null(data.path)) {
-      no.data.path.fcst=TRUE
-      if (file.exists(file.path("~",".SIDFEx"))) {
-        source(file.path("~",".SIDFEx"))
-        if (exists("data.path.fcst")) {no.data.path.fcst=FALSE}
-      }
-      if (no.data.path.fcst) {
-        stop(paste0("With data.path=NULL , data.path.fcst must be specified in a file ~/.SIDFEx as a line like data.path.fcst=..."))
-      }
-    } else {
-      data.path.fcst = data.path
+  if (is.null(data.path)) {
+    no.data.path.fcst=TRUE
+    if (file.exists(file.path("~",".SIDFEx"))) {
+      source(file.path("~",".SIDFEx"))
+      if (exists("data.path.fcst")) {no.data.path.fcst=FALSE}
     }
+    if (no.data.path.fcst) {
+      warning(paste0("Depending on whether or not the type of input given in 'files' needs an additional forecast data path, with data.path=NULL , data.path.fcst might need to be specified in a file ~/.SIDFEx as a line like data.path.fcst=..."))
+    }
+  } else {
+    data.path.fcst = data.path
+  }
+
+  if (is.null(files)) {
     if (is.null(GroupID)) {GroupID = "*"}
     if (is.null(MethodID)) {MethodID = "*"}
     if (is.null(TargetID)) {TargetID = "*"}
@@ -26,7 +27,7 @@ sidfex.read.fcst <- function(filepathnames=NULL,data.path=NULL,GroupID=NULL,Meth
             for (idoy in InitDayOfYear) {
               for (emn in EnsMemNum) {
                 filestr = paste0(paste0(gid,"_",mid,"_",tid,"_",iy,"-",idoy,"_",emn),".txt")
-                filepathnames = c(filepathnames,system(paste0("find ",file.path(data.path.fcst,GroupID)," -name ",filestr),intern=TRUE))
+                files = c(files,system(paste0("find ",file.path(data.path.fcst,GroupID)," -name ",filestr),intern=TRUE))
               }
             }
           }
@@ -34,14 +35,27 @@ sidfex.read.fcst <- function(filepathnames=NULL,data.path=NULL,GroupID=NULL,Meth
       }
     }
   } else {
-    if (length(filepathnames) == 1 && dir.exists(filepathnames)) {
-      lastchar = substr(filepathnames,nchar(filepathnames),nchar(filepathnames))
-      if (lastchar != "/") {filepathnames = paste0(filepathnames,"/")}
-      filepathnames = paste0(filepathnames,system(paste0("ls ",filepathnames),intern=TRUE))
+    if (is.character(files)) {
+      if (length(files) == 1 && dir.exists(files)) {
+        lastchar = substr(files,nchar(files),nchar(files))
+        if (lastchar != "/") {files = paste0(files,"/")}
+        files = paste0(files,system(paste0("ls ",files),intern=TRUE))
+      } else {
+        fl1 = files[1]
+        if (nchar(fl1) < 4) {stop("The strings in 'files' are too short!")}
+        sbstr = substr(fl1,start=nchar(fl1)-3,stop=nchar(fl1))
+        if (sbstr != ".txt") {
+          gids = strsplit(files,split="_")
+          gids = as.character(as.data.frame(gids,stringsAsFactors=FALSE)[1,])
+          files = file.path(data.path.fcst,gids,paste0(files,".txt"))
+        }
+      }
+    } else {
+      files = file.path(data.path.fcst,files$GroupID,paste0(files$File,".txt"))
     }
   }
 
-  N = length(filepathnames)
+  N = length(files)
   if (N == 0) {
     warning("No files found.")
     return(NULL)
@@ -50,18 +64,18 @@ sidfex.read.fcst <- function(filepathnames=NULL,data.path=NULL,GroupID=NULL,Meth
 
   for (i in 1:N) {
 
-    filepathname = filepathnames[[i]]
+    fl = files[[i]]
     res = list()
-    res$filepathname = filepathname
+    res$fl = fl
 
-    if (!file.exists(filepathname)) {
+    if (!file.exists(fl)) {
       res[[2]] = "File does not exist."
       res.list[[i]] = res
       next
     }
 
     if (checkfileformat) {
-      checkres = sidfex.checkfileformat(filepathnames=filepathname)
+      checkres = sidfex.checkfileformat(filepathnames=fl)
       res$checkfileformat.result = checkres
       if (checkres != "No file format violations found.") {
         res.list[[i]] = checkres
@@ -69,7 +83,7 @@ sidfex.read.fcst <- function(filepathnames=NULL,data.path=NULL,GroupID=NULL,Meth
       }
     }
 
-    filecont = scan(filepathname,sep="\n",what="character")
+    filecont = scan(fl,sep="\n",what="character")
     Nr = length(filecont)
 
     nrGroupID = 0
@@ -116,7 +130,7 @@ sidfex.read.fcst <- function(filepathnames=NULL,data.path=NULL,GroupID=NULL,Meth
     row.flds = strsplit(filecont[nrGroupID+7],split=" ",fixed=TRUE)[[1]]
     res$EnsMemNum = as.integer(row.flds[row.flds != ""][2])
 
-    dat = read.table(filepathname,header=TRUE,skip=nrGroupID+8)
+    dat = read.table(fl,header=TRUE,skip=nrGroupID+8)
     Nt = nrow(dat)
     res$Ntimesteps = Nt
     res$FirstYear = dat[1,1]

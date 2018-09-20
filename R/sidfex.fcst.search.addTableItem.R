@@ -33,7 +33,7 @@ sidfex.fcst.search.addTableItem <-
     }
 
     # read forecast data
-    fcst = sidfex.read.fcst(filepathnames = paste0(data.path.fcst, filename), checkfileformat = checkfileformat)
+    fcst = sidfex.read.fcst(files = paste0(data.path.fcst, filename), checkfileformat = checkfileformat)
     dat = fcst$res.list[[1]]
     if (is.character(dat) && dat[1] != "No file format violations found.") {
       print(paste0("File format violation in ",paste0(data.path.fcst, filename)," :"))

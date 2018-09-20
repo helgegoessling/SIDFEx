@@ -1,4 +1,7 @@
-sidfex.download.fcst <- function(data.path=NULL,baseurl="https://swiftbrowser.dkrz.de/public/dkrz_0262ea1f00e34439850f3f1d71817205/SIDFEx_processed/") {
+sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=NULL, indexTable.path=NULL, baseurl="https://swiftbrowser.dkrz.de/public/dkrz_0262ea1f00e34439850f3f1d71817205/") {
+
+  dataurl = paste0(baseurl,"SIDFEx_processed/")
+  indexurl = paste0(baseurl,"SIDFEx_index/")
 
   if (is.null(data.path)) {
     no.data.path.fcst=TRUE
@@ -13,19 +16,113 @@ sidfex.download.fcst <- function(data.path=NULL,baseurl="https://swiftbrowser.dk
     data.path.fcst = data.path
   }
 
-  if (!dir.exists(data.path.fcst)) {
+  if (is.null(indexTable.path)) {
+    no.indexTable.path=TRUE
+    if (file.exists(file.path("~",".SIDFEx"))) {
+      data.path.fcst.x = data.path.fcst
+      source(file.path("~",".SIDFEx"))
+      data.path.fcst = data.path.fcst.x
+      rm(data.path.fcst.x)
+      if (exists("indexTable.path.in")) {no.indexTable.path=FALSE}
+    }
+    if (no.indexTable.path) {
+      stop(paste0("With indexTable.path=NULL , indexTable.path.in must be specified in a file ~/.SIDFEx as a line like indexTable.path.in=..."))
+    }
+  } else {
+    indexTable.path.in = indexTable.path
+  }
+
+  if (from.scratch && dir.exists(data.path.fcst)) {
+    if (test.mode) {
+      print(paste0("Be aware that all previous data in ",data.path.fcst," is removed if you set test.mode=FALSE with from.scratch=TRUE ."))
+    } else {
+      res = system(paste0("rm -rf ",data.path.fcst))
+    }
+  }
+  if (!test.mode && !dir.exists(data.path.fcst)) {
     print(paste0("Creating directory ",data.path.fcst))
-    system(paste0("mkdir -p ",data.path.fcst))
+    res = system(paste0("mkdir -p ",data.path.fcst))
   }
 
   wd = getwd()
-  setwd(data.path.fcst)
-  print("Starting download ...")
-  system(paste0("wget -r -H -N --cut-dirs=3 --include-directories=\"/v1/\" \"",baseurl,"?show_all\""))
-  print("Download done.")
-  system("rm -rf swiftbrowser.dkrz.de")
-  system("mv swift.dkrz.de/* .")
-  system("rm -rf swift.dkrz.de")
+
+  setwd(indexTable.path.in)
+  print("Index download ...")
+  res = system(paste0("wget -r -H -N --cut-dirs=3 --include-directories=\"/v1/\" \"",indexurl,"indexTable.rda\""),intern=TRUE)
+  print("Index download done.")
+  res = system("rm -rf swiftbrowser.dkrz.de")
+  res = system("mv swift.dkrz.de/indexTable.rda ./indexTable_remote.rda")
+  res = system("rm -rf swift.dkrz.de")
+
+  if (!from.scratch) {
+
+    if (!file.exists("indexTable.rda")) {
+      stop(paste0("No local index ",file.path(indexTable.path.in,"indexTable.rda"),
+                   " exists. Rerun with from.scratch=TRUE or, if data exists,",
+                   " generate index with sidfex.fcst.search.createIndexTable."))
+    }
+
+    index.diff = sidfex.fcst.search.compareIndexTables("indexTable.rda","indexTable_remote.rda")
+    print(paste0("Entries only in local index = obsolete files to be deleted: ",nrow(index.diff$only.1)))
+    print(paste0("Entries only in remote index = new files to be downloaded: ",nrow(index.diff$only.2)))
+    print(paste0("Identical entries = local files already up-to-date: ",nrow(index.diff$both.ident)))
+    print(paste0("Entries for same files with differences = files to be downloaded and to replace local ones: ",nrow(index.diff$both.diff.2)))
+
+    index.download = rbind(index.diff$only.2,index.diff$both.diff.2)
+
+    if (test.mode) {print("To execute these downloads and other changes (if present as indicated above), resubmit command with test.mode=FALSE .")}
+
+  } else {
+
+    df.env = new.env()
+    load(file.path(indexTable.path.in,"indexTable_remote.rda"),envir=df.env)
+    index.download = df.env$rTab
+
+  }
+
+  if (!test.mode) {
+
+    setwd(data.path.fcst)
+
+    print("Data download ...")
+    for (fi in 1:nrow(index.download)) {
+      gid = index.download$GroupID[fi]
+      fl = index.download$File[fi]
+      res = system(paste0("wget -r -H -N --cut-dirs=3 --include-directories=\"/v1/\" \"",dataurl,"/",gid,"/",fl,"\""))
+      if (!dir.exists(gid)) {dir.create(gid)}
+      res = system(paste0("mv ",file.path("swift.dkrz.de",gid,fl),".txt ",file.path(gid,fl),".txt"))
+    }
+    print("Data download done.")
+    system("rm -rf swiftbrowser.dkrz.de")
+    system("rm -rf swift.dkrz.de")
+
+    if (!from.scratch && nrow(index.diff$only.1) > 0) {
+      print("Removing obsolete data present only locally ...")
+      for (fi in 1:nrow(index.diff$only.1)) {
+        gid = index.diff$only.1$GroupID[fi]
+        fl = index.diff$only.1$File[fi]
+        system(paste0("rm -f ",file.path(gid,fl),".txt"))
+      }
+      print("Removing obsolete data done.")
+    }
+
+    res = system(paste0("mv ",file.path(indexTable.path.in,"indexTable_remote.rda")," ",file.path(indexTable.path.in,"indexTable.rda")),intern=TRUE)
+
+    print("Returning index of files that have been downloaded, and (if not from.scratch) the more detailed result of sidfex.fcst.search.compareIndexTables")
+
+  } else {
+
+    print("Returning index of files that would be downloaded with test.mode=FALSE, and (if not from.scratch) the more detailed result of sidfex.fcst.search.compareIndexTables")
+
+  }
+
   setwd(wd)
+
+  if (!from.scratch) {
+    warning("Note that, with from.scratch=FALSE, it can not be excluded that the local data differs from the remote data in aspects that are not captured by the index. But that's very unlikely.")
+    return(list(index.download=index.download,index.diff=index.diff))
+  } else {
+    return(list(index.download=index.download))
+  }
 
 }
