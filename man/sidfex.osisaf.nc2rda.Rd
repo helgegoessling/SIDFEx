@@ -2,7 +2,7 @@
 \alias{sidfex.osisaf.nc2rda}
 \title{Load OSI-SAF data from NetCDF file and process sea-ice concentration and underlying grid}
 \usage{
-  sidfex.osisaf.nc2rda(filename)
+  sidfex.osisaf.nc2rda(filename, do.noSIC2NA = T)
 }
 \description{
   This function reads the grid information and sea-ice concentration from the frequently downloaded NetCDF file. It then applies \code{sl.lonlat2D.c2i} from spheRlab and returns the sea-ice contration together with the ouput of the spheRlab routine.
@@ -11,6 +11,10 @@
   \item{filename}{
     the path and filename of the OSI-SAF datafile (must be the same or comparable to the available .nc files on OSI-SAF ftp server: "ftp://osisaf.met.no/prod/ice/conc/").
   }
+  \item{do.noSIC2NA}{
+    a boolean value (default: \code{TRUE}); if \code{TRUE}, all points with no sea ice are set to \code{NA} to yield a white (better: colorless) ocean.
+  }
+  
 }
 \value{
   Returns sea-ice concentration and processed grid data, also sets all datapoints without sea ice to \code{NA}.
