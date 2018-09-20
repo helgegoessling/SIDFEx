@@ -5,7 +5,6 @@ sidfex.osisaf.SIC2dev<-function(sic.sic, sic.lonlati, projection="polar", polar.
 {
   require(spheRlab)  
   if(any(grepl("package:SVGAnnotation", search()))) detach("package:SVGAnnotation") 
-  sic.sic[sic.sic==0] = NA
   pir = sl.plot.init(projection=projection,polar.latbound=polar.latbound,device=device ,width=width, file.name = filename)
   cbar = sl.colbar(cols = sic.cols, N=col.N)
   cb = sl.plot.fld.curvilin(pir,vals=sic.sic,lon.i=sic.lonlati$lon.i,lat.i=sic.lonlati$lat.i,colbar=cbar,colbar.breaks=seq(1,col.N-1))
