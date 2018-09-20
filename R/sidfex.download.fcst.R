@@ -1,4 +1,4 @@
-sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=NULL, indexTable.path=NULL, baseurl="https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/") {
+sidfex.download.fcst <- function(comparison.mode=FALSE, from.scratch=TRUE, data.path=NULL, indexTable.path=NULL, baseurl="https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/") {
 
   dataurl = paste0(baseurl,"SIDFEx_processed/")
   indexurl = paste0(baseurl,"SIDFEx_index/")
@@ -33,13 +33,13 @@ sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=N
   }
 
   if (from.scratch && dir.exists(data.path.fcst)) {
-    if (test.mode) {
-      print(paste0("Be aware that all previous data in ",data.path.fcst," is removed if you set test.mode=FALSE with from.scratch=TRUE ."))
+    if (comparison.mode) {
+      print(paste0("Be aware that all previous data in ",data.path.fcst," is removed if you set comparison.mode=FALSE with from.scratch=TRUE ."))
     } else {
       res = system(paste0("rm -rf ",data.path.fcst))
     }
   }
-  if (!test.mode && !dir.exists(data.path.fcst)) {
+  if (!comparison.mode && !dir.exists(data.path.fcst)) {
     print(paste0("Creating directory ",data.path.fcst))
     res = system(paste0("mkdir -p ",data.path.fcst))
   }
@@ -67,7 +67,7 @@ sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=N
 
     index.download = rbind(index.diff$only.2,index.diff$both.diff.2)
 
-    if (test.mode) {print("To execute these downloads and other changes (if present as indicated above), resubmit command with test.mode=FALSE .")}
+    if (comparison.mode) {print("To execute these downloads and other changes (if present as indicated above), resubmit command with comparison.mode=FALSE .")}
 
   } else {
 
@@ -77,16 +77,24 @@ sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=N
 
   }
 
-  if (!test.mode) {
+  if (!comparison.mode) {
 
     setwd(data.path.fcst)
 
     print("Data download ...")
-    for (fi in 1:nrow(index.download)) {
-      gid = index.download$GroupID[fi]
-      fl = index.download$File[fi]
-      if (!dir.exists(gid)) {dir.create(gid)}
-      res = download.file(url=paste0(dataurl,gid,"/",fl,".txt"),destfile=paste0(file.path(gid,fl),".txt"))
+    if (from.scratch) {
+      res = download.file(url=paste0(indexurl,"data.tar.gz"),destfile=file.path(data.path.fcst,"data.tar.gz"))
+      res = system(paste0("tar -zxvf ",file.path(data.path.fcst,"data.tar.gz")))
+      res = system(paste0("mv ",file.path(data.path.fcst,"data/*")," ",data.path.fcst))
+      res = system(paste0("rm -rf ",file.path(data.path.fcst,"data")))
+      res = system(paste0("rm -rf ",file.path(data.path.fcst,"data.tar.gz")))
+    } else {
+      for (fi in 1:nrow(index.download)) {
+        gid = index.download$GroupID[fi]
+        fl = index.download$File[fi]
+        if (!dir.exists(gid)) {dir.create(gid)}
+        res = download.file(url=paste0(dataurl,gid,"/",fl,".txt"),destfile=paste0(file.path(gid,fl),".txt"))
+      }
     }
     print("Data download done.")
 
@@ -106,7 +114,7 @@ sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=N
 
   } else {
 
-    print("Returning index of files that would be downloaded with test.mode=FALSE, and (if not from.scratch) the more detailed result of sidfex.fcst.search.compareIndexTables")
+    print("Returning index of files that would be downloaded with comparison.mode=FALSE, and (if not from.scratch) the more detailed result of sidfex.fcst.search.compareIndexTables")
 
   }
 
