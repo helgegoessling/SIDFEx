@@ -59,7 +59,7 @@ sidfex.fcst.search.createIndexTable <-
     gid.dirs = list.files(data.path.fcst)
     for (gid in gid.dirs) {
       fdir = paste0(data.path.fcst, "/", gid)
-      for (item in list.files(fdir)){
+      for (item in list.files(fdir, pattern=".txt")){
         rTab = sidfex.fcst.search.addTableItem(item, data.path = paste0(fdir, "/"), is.open.rTab = TRUE, rTab.in = rTab, checkfileformat = checkfileformat)
       }
     }
