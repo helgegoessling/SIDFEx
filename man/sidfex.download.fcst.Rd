@@ -2,10 +2,10 @@
 \alias{sidfex.download.fcst}
 \title{Download SIDFEx Forecasts}
 \usage{
-sidfex.download.fcst(test.mode=TRUE, from.scratch=FALSE, data.path=NULL, indexTable.path=NULL, baseurl="https://swiftbrowser.dkrz.de/public/dkrz_0262ea1f00e34439850f3f1d71817205/")
+sidfex.download.fcst(test.mode=TRUE, from.scratch=FALSE, data.path=NULL, indexTable.path=NULL, baseurl="https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/")
 }
 \description{
-Download SIDFEx forecasts from the DKRZ cloud service, either incrementally or from scratch. A test mode allows to diagnose differences between the local and the remote data index first.
+Download SIDFEx forecasts from the DKRZ cloud service, either incrementally or from scratch. A test mode allows to diagnose differences between the local and the remote data index first. Unfortunately, the download is quite slow if many files are downloaded as each file is loaded separately which takes about 0.2 seconds each.
 }
 \arguments{
 \item{test.mode}{
@@ -30,6 +30,8 @@ If \code{from.scratch=FALSE}, a list with two elements, one named 'index.downloa
 }
 \note{
 With \code{from.scratch=FALSE} it can not be excluded that the local data differs from the remote data in aspects that are not captured by the index. However, that's highly unlikely, in particular because the data submission and processing times are documented in the index.
+
+Unfortunately, the download is quite slow if many files are downloaded as each file is loaded separately which takes about 0.2 seconds each.
 }
 \author{
 Helge Goessling

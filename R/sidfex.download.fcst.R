@@ -1,4 +1,4 @@
-sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=NULL, indexTable.path=NULL, baseurl="https://swiftbrowser.dkrz.de/public/dkrz_0262ea1f00e34439850f3f1d71817205/") {
+sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=NULL, indexTable.path=NULL, baseurl="https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/") {
 
   dataurl = paste0(baseurl,"SIDFEx_processed/")
   indexurl = paste0(baseurl,"SIDFEx_index/")
@@ -48,11 +48,8 @@ sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=N
 
   setwd(indexTable.path.in)
   print("Index download ...")
-  res = system(paste0("wget -r -H -N --cut-dirs=3 --include-directories=\"/v1/\" \"",indexurl,"indexTable.rda\""),intern=TRUE)
+  res = download.file(url=paste0(indexurl,"indexTable.rda"),destfile="indexTable_remote.rda")
   print("Index download done.")
-  res = system("rm -rf swiftbrowser.dkrz.de")
-  res = system("mv swift.dkrz.de/indexTable.rda ./indexTable_remote.rda")
-  res = system("rm -rf swift.dkrz.de")
 
   if (!from.scratch) {
 
@@ -88,13 +85,10 @@ sidfex.download.fcst <- function(test.mode=TRUE, from.scratch=FALSE, data.path=N
     for (fi in 1:nrow(index.download)) {
       gid = index.download$GroupID[fi]
       fl = index.download$File[fi]
-      res = system(paste0("wget -r -H -N --cut-dirs=3 --include-directories=\"/v1/\" \"",dataurl,"/",gid,"/",fl,"\""))
       if (!dir.exists(gid)) {dir.create(gid)}
-      res = system(paste0("mv ",file.path("swift.dkrz.de",gid,fl),".txt ",file.path(gid,fl),".txt"))
+      res = download.file(url=paste0(dataurl,gid,"/",fl,".txt"),destfile=paste0(file.path(gid,fl),".txt"))
     }
     print("Data download done.")
-    system("rm -rf swiftbrowser.dkrz.de")
-    system("rm -rf swift.dkrz.de")
 
     if (!from.scratch && nrow(index.diff$only.1) > 0) {
       print("Removing obsolete data present only locally ...")
