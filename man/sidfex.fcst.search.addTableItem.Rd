@@ -2,7 +2,7 @@
 \alias{sidfex.fcst.search.addTableItem}
 \title{Add single row to search index file}
 \usage{
-  sidfex.fcst.search.addTableItem (filename, data.path=NULL, indexTable.path=NULL, is.open.rTab=FALSE, rTab.in=NULL, checkfileformat=TRUE)
+  sidfex.fcst.search.addTableItem (filename, data.path=NULL, indexTable.path=NULL, is.open.rTab=FALSE, rTab.in=NULL, checkfileformat=TRUE, do.print.less=TRUE)
 }
 \description{
   Read one or SIDFEx forecast and add some key quantities and information to the (previously existing or not) index file "indexTable.rda". If the           specified index file does not exist, a now one is created. The data will be stored in .rda-format.
@@ -27,6 +27,9 @@
   }
   \item{checkfileformat}{
 a logical value specifying whether or not to check if the file format complies with the SIDFEx conventions, using \code{\link{sidfex.checkfileformat}}.
+}
+  \item{do.print.less}{
+a logical value specifying whether or not to print a statement for every dataset while adding it to the index file (to keep console output down).
 }
 }
 \value{

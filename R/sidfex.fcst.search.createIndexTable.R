@@ -1,5 +1,5 @@
 sidfex.fcst.search.createIndexTable <-
-  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.saveAddCSV=TRUE, checkfileformat=TRUE){
+  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE){
     indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
                    "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
                    "LastTimeStepDayOfYear", "FcstTime")
@@ -60,7 +60,11 @@ sidfex.fcst.search.createIndexTable <-
     for (gid in gid.dirs) {
       fdir = paste0(data.path.fcst, "/", gid)
       for (item in list.files(fdir, pattern=".txt")){
-        rTab = sidfex.fcst.search.addTableItem(item, data.path = paste0(fdir, "/"), is.open.rTab = TRUE, rTab.in = rTab, checkfileformat = checkfileformat)
+        rTab = sidfex.fcst.search.addTableItem(item, data.path = paste0(fdir, "/"), is.open.rTab = TRUE, rTab.in = rTab, 
+                                               checkfileformat = checkfileformat, do.print.less=do.print.less)
+      }
+      if (do.print.less) {
+        print(paste0("... now done with group ", gid, " ..."))
       }
     }
 
