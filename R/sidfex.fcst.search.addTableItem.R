@@ -1,5 +1,5 @@
 sidfex.fcst.search.addTableItem <-
-  function (filename, data.path=NULL, indexTable.path=NULL, is.open.rTab=FALSE, rTab.in=NULL, checkfileformat=TRUE) {
+  function (filename, data.path=NULL, indexTable.path=NULL, is.open.rTab=FALSE, rTab.in=NULL, checkfileformat=TRUE, do.print.less=T) {
     indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
                    "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
                    "LastTimeStepDayOfYear", "FcstTime")
@@ -80,10 +80,11 @@ sidfex.fcst.search.addTableItem <-
       if (!is.open.rTab) {load(file.path(indexTable.path.in, "indexTable.rda"))} else {rTab = rTab.in}
 
       if (fid %in% rTab$File) {
-        print(paste0("Entry for ", filename, " already exists in indexFile, aborted procedure."))
+        if (!do.print.less) {print(paste0("Entry for ", filename, " already exists in indexFile, aborted procedure."))}
+       
       } else {
         rTab = rbind(rTab, outvec)
-        print(paste0("Appended data of file ", filename, " to indexFile."))
+        if (!do.print.less) {print(paste0("Appended data of file ", filename, " to indexFile."))}
         if (!is.open.rTab) {
           headerlines[2] = paste0("Last update on: ", Sys.time())
           save(rTab, headerlines, file=filenameInd)
@@ -99,7 +100,7 @@ sidfex.fcst.search.addTableItem <-
 
       colnames(rTab) <- indexNames
       rTab[1,] = outvec
-      print(paste0("Appended data of file ", filename, " to indexFile."))
+      if (!do.print.less) {print(paste0("Appended data of file ", filename, " to indexFile."))}
 
       save(rTab, headerlines, file=filenameInd)
     }

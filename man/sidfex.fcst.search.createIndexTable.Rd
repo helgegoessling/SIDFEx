@@ -2,7 +2,7 @@
 \alias{sidfex.fcst.search.createIndexTable}
 \title{Create search index table for whole forecast directory}
 \usage{
-  sidfex.fcst.search.createIndexTable (indexTable.path = NULL, data.path = NULL, do.fromScratch = FALSE, do.saveAddCSV = TRUE, checkfileformat = TRUE)
+  sidfex.fcst.search.createIndexTable (indexTable.path = NULL, data.path = NULL, do.fromScratch = FALSE, do.saveAddCSV = TRUE, checkfileformat = TRUE, do.print.less = TRUE)
 }
 \description{
   Loop through the downloaded SIDFEx forecasts and add some predefined key quantities and information to the (previously existing or not) index file "indexTable.rda". If the specified index file does not exist, a new one is created. The data will be stored in .rda-format.
@@ -25,6 +25,9 @@
   }
   \item{checkfileformat}{
 a logical value specifying whether or not to check if the file format complies with the SIDFEx conventions, using \code{\link{sidfex.checkfileformat}}.
+}
+  \item{do.print.less}{
+a logical value specifying whether or not to print a statement for every dataset while adding it to the index file (to keep console output down). Will be also passed on to \code{sidfex.fcst.search.addTableItem}. 
 }
 }
 \value{
