@@ -1,4 +1,4 @@
-sidfex.read.obs <- function(data.path=NULL,TargetType="IABP",TargetID) {
+sidfex.read.obs <- function(index=NULL,TargetID=NULL,data.path=NULL) {
 
   if (is.null(data.path)) {
     no.data.path.obs=TRUE
@@ -12,15 +12,41 @@ sidfex.read.obs <- function(data.path=NULL,TargetType="IABP",TargetID) {
   } else {
     data.path.obs = data.path
   }
-  ifile = file.path(data.path.obs,paste0(TargetID,".txt"))
 
-  if (TargetType == "IABP") {
-    res = read.table(file=ifile,header=TRUE)
-    res = res[,2:ncol(res)]
-  } else {
-    stop("No TargetType other than 'IABP' implemented so far.")
+  from.index = FALSE
+  if (is.null(TargetID)) {
+    if (is.null(index)) {stop("Either 'index' or 'TargetID' must be specified")}
+    from.index = TRUE
+    TargetID = unique(index$TargetID)
   }
 
-  return(list(filename=ifile,TargetType=TargetType,TargetID=TargetID,data=res))
+  res.list = list()
+  i = 0
+  for (tid in TargetID) {
+    i = i + 1
+
+    ifile = file.path(data.path.obs,paste0(tid,".txt"))
+
+    res = read.table(file=ifile,header=TRUE)
+    res = res[,2:ncol(res)]
+
+    res.list[[i]] = list(filename=ifile,TargetID=tid,data=res)
+
+  }
+
+  if (length(TargetID) > 1) {
+    names(res.list) = TargetID
+    if (from.index) {
+      index.map = rep(NA,nrow(index))
+      for (i in 1:length(TargetID)) {
+        index.map[index$TargetID == TargetID[i]] = i
+      }
+      return(list(res.list=res.list,index.map=index.map))
+    } else {
+      return(res.list)
+    }
+  } else {
+    return(list(filename=res.list[[1]]$filename,TargetID=res.list[[1]]$TargetID,data=res.list[[1]]$data))
+  }
 
 }
