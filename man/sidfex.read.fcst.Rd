@@ -11,6 +11,9 @@ Read one or more SIDFEx forecasts.
   \item{files}{
 a character, character vector, or index data frame specifying the SIDFEx forecast file(s) to be read. If a directory is provided, all files in that directory are read.
 }
+  \item{data.path}{
+\code{NULL} or a character specifying the directory of the forecast data. If \code{NULL}, it is attempted to source a file named \code{.SIDFEx} in the home directory where a character variable \code{data.path.fcst} needs to be defined.
+}
   \item{ens.merge}{
 a logical value specifying whether or not to merge ensemble members from individual lists (corresponding to individual files) into merged lists with shared meta data. NOT YET IMPLEMENTED!
 }
