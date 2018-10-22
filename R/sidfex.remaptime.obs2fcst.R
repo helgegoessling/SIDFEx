@@ -1,21 +1,46 @@
-sidfex.remaptime.obs2fcst <- function (obs,fcst,method="linear",extrapolate=FALSE,return.remapinfo=FALSE) {
+sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate=FALSE,return.remapinfo=FALSE,data.path=NULL) {
+
+  require(spheRlab)
 
   if (method != "nearestneighbour" && method != "linear") {
     stop("'method' must be one of 'nearestneighbour' and 'linear'.")
   }
 
-  obs.yrs = obs$data$Year
-  obs.N = length(obs.yrs)
-  obs.DaysSinceStart = obs$data$POS_DOY - obs$data$POS_DOY[1]
-  if (obs.yrs[obs.N] > obs.yrs[1]) {
-    for (yr in obs.yrs[1]:(obs.yrs[obs.N]-1)) {
-      obs.DaysSinceStart[obs.yrs > yr] = obs.DaysSinceStart[obs.yrs > yr] + 365 + as.integer(((yr %% 4 == 0) & (yr %% 100 != 0)) | (yr %% 400 == 0))
-    }
-  }
-
   rl = list()
 
+  if (is.null(obs)) {
+    obs = sidfex.read.obs(TargetID = unique(sapply(fcst$res.list,"[[","TargetID")),data.path=data.path)
+  }
+
+  if ("TargetID" %in% names(obs)) {
+    obsX = list(obs)
+    names(obsX) = obs$TargetID
+  } else {
+    obsX = obs
+  }
+
   for (irl in 1:length(fcst$res.list)) {
+
+    if (! fcst$res.list[[irl]]$TargetID %in% names(obsX)) {
+      stop(paste0("No observations provided for TargetID ",fcst$res.list$TargetID))
+    } else {
+      iobs = match(fcst$res.list[[irl]]$TargetID,names(obsX))
+      if (! "obs.yrs" %in% names(obsX[[iobs]])) {
+        obsX[[iobs]]$obs.yrs = obsX[[iobs]]$data$Year
+        obsX[[iobs]]$obs.N = length(obsX[[iobs]]$obs.yrs)
+        obsX[[iobs]]$obs.DaysSinceStart = obsX[[iobs]]$data$POS_DOY - obsX[[iobs]]$data$POS_DOY[1]
+        if (obsX[[iobs]]$obs.yrs[obsX[[iobs]]$obs.N] > obsX[[iobs]]$obs.yrs[1]) {
+          for (yr in obsX[[iobs]]$obs.yrs[1]:(obsX[[iobs]]$obs.yrs[obsX[[iobs]]$obs.N]-1)) {
+            obsX[[iobs]]$obs.DaysSinceStart[obsX[[iobs]]$obs.yrs > yr] = (obsX[[iobs]]$obs.DaysSinceStart[obsX[[iobs]]$obs.yrs > yr]
+            + 365 + as.integer(((yr %% 4 == 0) & (yr %% 100 != 0)) | (yr %% 400 == 0)))
+          }
+        }
+      }
+      obs = obsX[[iobs]]
+      obs.yrs = obs$obs.yrs
+      obs.N = obs$obs.N
+      obs.DaysSinceStart = obs$obs.DaysSinceStart
+    }
 
     fcst.N = fcst$res.list[[irl]]$Ntimesteps
     fcst.InitDaysOffset = fcst$res.list[[irl]]$InitDayOfYear - obs$data$POS_DOY[1]
@@ -125,7 +150,6 @@ sidfex.remaptime.obs2fcst <- function (obs,fcst,method="linear",extrapolate=FALS
     if (return.remapinfo) {
       rl[[irl]]$data$weights.left.ind = weights.left.ind
       rl[[irl]]$data$weights.left = weights.left
-      rl[[irl]]$data$weights.left
       rl[[irl]]$obs.DaysLeadTime = obs.DaysLeadTime
     }
   }
