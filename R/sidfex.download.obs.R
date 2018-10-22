@@ -1,4 +1,4 @@
-sidfex.download.obs <- function(data.path=NULL,TargetType="IABP",TargetID) {
+sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL) {
 
   if (is.null(data.path)) {
     no.data.path.obs=TRUE
@@ -13,6 +13,13 @@ sidfex.download.obs <- function(data.path=NULL,TargetType="IABP",TargetID) {
     data.path.obs = data.path
   }
 
+  from.index = FALSE
+  if (is.null(TargetID)) {
+    if (is.null(index)) {stop("Either 'index' or 'TargetID' must be specified")}
+    from.index = TRUE
+    TargetID = unique(index$TargetID)
+  }
+
   if (!dir.exists(data.path.obs)) {
     print(paste0("Creating directory ",data.path.obs))
     system(paste0("mkdir -p ",data.path.obs))
@@ -21,14 +28,12 @@ sidfex.download.obs <- function(data.path=NULL,TargetType="IABP",TargetID) {
   wd = getwd()
   setwd(data.path.obs)
   print("Starting download ...")
-  if (TargetType == "IABP") {
-    for (tid in TargetID) {
-      download.file(url=paste0("http://iabp.apl.washington.edu/WebData/",tid,".dat"),destfile=paste0(tid,".txt"))
-    }
-  } else {
-    print("Only TargetType='IABP' implemented so far.")
+  for (tid in TargetID) {
+    download.file(url=paste0("http://iabp.apl.washington.edu/WebData/",tid,".dat"),destfile=paste0(tid,".txt"))
   }
   print("Download done.")
   setwd(wd)
+
+  return(TargetID)
 
 }
