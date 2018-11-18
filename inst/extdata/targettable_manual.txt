@@ -1,0 +1,37 @@
+SIDFEx TargetID Table
+Last Manual Update (Year-DayOfYear): 2018-321
+Last Automatic Update (Year-DayOfYear): <autofill>
+########## Table Column Description
+TargetID: SIDFEx TargetID.
+Current_Target: TRUE or FALSE depending on whether or not the target is considered a current SIDFEx target.
+Latest_Position_Year: Year of most recent position (auto update).
+Latest_Position_DayOfYear: DayOfYear of most recent position (auto update).
+Latest_Position_Lat: Latitude of most recent position (auto update).
+Latest_Position_Lon: Longitude of most recent position (auto update).
+Total_First_Year: Year of first valid position.
+Total_First_DayOfYear: DayOfYear of first valid position.
+SIDFEx_First_Year: Year of first time when considered as SIDFEx target.
+SIDFEx_First_DayOfYear: DayOfYear of first time when considered as SIDFEx target.
+SIDFEx_Last_Year: Year of last time when considered as SIDFEx target. NaN if still active.
+SIDFEx_Last_DayOfYear: DayOfYear of last time when considered as SIDFEx target. NaN if still active.
+Total_Last_Year: Year of last valid position. NaN if still active.
+Total_Last_DayOfYear: DayOfYear of last valid position. NaN if still active.
+########## Table Data
+TargetID Current_Target Latest_Position_Year Latest_Position_DayOfYear Latest_Position_Lat Latest_Position_Lon Total_First_Year Total_First_DayOfYea SIDFEx_First_Year SIDFEx_First_DayOfYear SIDFEx_Last_Year SIDFEx_Last_DayOfYear Total_Last_Year Total_Last_DayOfYear
+127317 FALSE <autofill> <autofill> <autofill> <autofill> 2015 198.542 2017 1.000 2017 227.625 2017 227.625
+300234060436000 FALSE <autofill> <autofill> <autofill> <autofill> 2015 320.750 2017 1.000 2017 331.250 2017 331.250
+300234063991680 TRUE <autofill> <autofill> <autofill> <autofill> 2016 249.854 2017 1.000 NaN NaN NaN NaN
+139939 FALSE <autofill> <autofill> <autofill> <autofill> 2016 194.792 2017 1.000 2018 219.542 NaN NaN
+300234063803010 TRUE <autofill> <autofill> <autofill> <autofill> 2017 169.000 2017 169.000 NaN NaN NaN NaN
+300234060834110 FALSE <autofill> <autofill> <autofill> <autofill> 2016 300.792 2017 1.083 2018 173.539 NaN NaN
+300234060434550 FALSE <autofill> <autofill> <autofill> <autofill> 2015 272.750 2017 1.000 2018 110.875 2018 110.875
+300234062738010 FALSE <autofill> <autofill> <autofill> <autofill> 2016 300.792 2017 1.000 2018 4.500 2018 219.875
+300234060430010 FALSE <autofill> <autofill> <autofill> <autofill> 2015 272.750 2017 1.875 2018 43.125 2018 43.125
+300234066711310 FALSE <autofill> <autofill> <autofill> <autofill> 2018 88.854 2018 88.854 2018 227.438 2018 227.438
+300234066713470 FALSE <autofill> <autofill> <autofill> <autofill> 2018 89.793 2018 89.793 2018 227.272 2018 227.272
+300234065495020 TRUE <autofill> <autofill> <autofill> <autofill> 2018 153.958 2018 153.958 NaN NaN NaN NaN
+300234066036110 TRUE <autofill> <autofill> <autofill> <autofill> 2018 167.250 2018 167.250 NaN NaN NaN NaN
+300234066030330 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
+300234066030190 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
+300234066031190 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
+300234066830700 TRUE <autofill> <autofill> <autofill> <autofill> 2018 112.167 2018 112.167 NaN NaN NaN NaN
