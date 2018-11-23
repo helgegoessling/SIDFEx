@@ -41,3 +41,14 @@ Helge Goessling
 \seealso{
 \code{\link{sidfex.download.obs}}, \code{\link{sidfex.read.fcst}}
 }
+\examples{
+# Download observations corresponding to an IABP buoy with IMEI 300234063991680
+res = sidfex.download.obs(TargetID="300234063991680")
+# Read the data
+dat = sidfex.read.obs(TargetID="300234063991680")
+# Show the data header
+head(dat$data)
+# Make a line plot for the latitude against the relative time axis
+plot(dat$data$RelTimeDay,dat$data$Lat,type="l")
+# Note that for this buoy, the plot reveals spurious data points at the beginning where the buoy hadn't been deployed yet
+}

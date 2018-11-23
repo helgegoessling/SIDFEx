@@ -5,7 +5,7 @@
 sidfex.download.obs(index=NULL,TargetID=NULL,data.path=NULL)
 }
 \description{
-Read observations corresponding to one or more SIDFEx targets.
+Download observations corresponding to one or more SIDFEx target(s), or from other IABP buoys.
 }
 \arguments{
   \item{index}{
@@ -28,4 +28,23 @@ Helge Goessling
 }
 \seealso{
 \code{\link{sidfex.read.obs}}, \code{\link{sidfex.download.fcst}}
+}
+\examples{
+# Download observations corresponding to an IABP buoy with IMEI 300234063991680
+res = sidfex.download.obs(TargetID="300234063991680")
+# Read the data
+dat = sidfex.read.obs(TargetID="300234063991680")
+# Show the data header
+head(dat$data)
+# Make a line plot for the latitude against the relative time axis
+plot(dat$data$RelTimeDay,dat$data$Lat,type="l")
+# Note that for this buoy, the plot reveals spurious data points at the beginning where the buoy hadn't been deployed yet
+
+# To download forecasts corresponding to an index which in turn corresponds to SIDFEx forecast data, you need to download the forecast data first using sidfex.download.fcst(). Otherwise the subsequent line will fail. Note that the second line downloads data for all buoys for which any forecast data have been downloaded (which is documented in the index).
+# First load the index that refelcts the currently downloaded forecast data.
+index = sidfex.load.index()
+# Show for which TargetIDs forecast data exist
+unique(index$TargetID)
+res = sidfex.download.obs(index=index)
+# (the same can be achieved with sidfex.download.obs(TargetID=unique(index$TargetID)) )
 }

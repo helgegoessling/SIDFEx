@@ -37,9 +37,29 @@ The download of individual files is quite slow if many files are downloaded, so 
 Helge Goessling
 }
 \examples{
-res = sidfex.download.fcst(comparison.mode=FALSE, from.scratch=TRUE)
-# Downloads all SIDFEx forecast data to the directory specified in \code{~/.SIDFEx}. If present, any previous data is removed first.
+# You can specify 'data.path' explicitly, but that's not recommended. Rather, make sure you have a file '~/.SIDFEx' with for example the following three rows (without the comment signs of course):
+# data.path.fcst = "~/SIDFEx/data/forecasts"
+# data.path.obs = "~/SIDFEx/data/observations"
+# indexTable.path.in = "~/SIDFEx/index"
+# In this example, the directory 'SIDFEx' in your home would need to exist
 
+# Download all SIDFEx forecasts to be sure everything is up to date
+res = sidfex.download.fcst()
+# Load the forecast data index
+index = sidfex.load.index()
+# Show the first rows of the index to see which variables can be used to subselect the index
+head(index)
+
+# Make an index subset for one specific forecast ensemble
+subind = sidfex.fcst.search.extractFromTable(gid = "awi001" , tid = "300234063991680", iy = 2018, idoy = 30, return.dataframe = TRUE)
+# Read the forecasts
+fcst = sidfex.read.fcst(index=subind)
+# Now plot latitude against forecast lead time for the whole ensemble
+plot(fcst$res.list[[1]]$data$DaysLeadTime,fcst$res.list[[1]]$data$Lat,type="l",ylim=c(74,80),xlim=c(0,600))
+for (i in 2:length(fcst$res.list)) {lines(fcst$res.list[[i]]$data$DaysLeadTime,fcst$res.list[[i]]$data$Lat)}
+# If you are surprised that the ensemble members have different length, that's because the climatological method applied to generate these forecasts discards trajectories when the sea-ice concentration in the corresponding years dropped below some threshold.
+
+# Another example:
 res = sidfex.download.fcst(comparison.mode=TRUE, from.scratch=FALSE)
-# Compares the local index of SIDFEx forecast data with the most recent remote one and reports which new files would be downloaded, which files would be be downloaded to replace altered existing ones, and which obsolete local files would be deleted. Details are provided in the return value (here 'res').
+# Compares the local index of SIDFEx forecast data with the most recent remote one and reports which new files exist. Details are provided in the return value (here 'res').
 }
