@@ -32,6 +32,10 @@ sidfex.targettable.update <- function(targettable.manual=NULL, targettable.out=N
     write.table(tt_out, file = targettable.out, append = TRUE, quote = FALSE, col.names = TRUE, row.names = FALSE)
   }
 
+  tt_out[,2] = as.logical(tt_out[,2])
+  for (i in 3:ncol(tt_out)) {
+    tt_out[,i] = as.numeric(tt_out[,i])
+  }
   return(tt_out)
 
 }
