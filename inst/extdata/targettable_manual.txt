@@ -35,3 +35,7 @@ TargetID Current_Target Latest_Position_Year Latest_Position_DayOfYear Latest_Po
 300234066030190 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
 300234066031190 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
 300234066830700 TRUE <autofill> <autofill> <autofill> <autofill> 2018 112.167 2018 112.167 NaN NaN NaN NaN
+300234062880820 TRUE <autofill> <autofill> <autofill> <autofill> 2018 317.875 2018 317.875 NaN NaN NaN NaN
+300234065801030 TRUE <autofill> <autofill> <autofill> <autofill> 2018 290.000 2018 290.000 NaN NaN NaN NaN
+300234065802030 TRUE <autofill> <autofill> <autofill> <autofill> 2018 290.000 2018 290.000 NaN NaN NaN NaN
+300234061872720 TRUE <autofill> <autofill> <autofill> <autofill> 2018 290.000 2018 290.000 NaN NaN NaN NaN
