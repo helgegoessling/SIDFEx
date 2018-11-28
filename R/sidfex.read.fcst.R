@@ -141,14 +141,8 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
     res$LastDayOfYear = dat[Nt,2]
     res$LastLat = dat[Nt,3]
     res$LastLon = dat[Nt,4]
-    DaysLeadTime = dat$DayOfYear - res$InitDayOfYear
-    if (res$LastYear > res$InitYear) {
-      for (yr in res$InitYear:(res$LastYear-1)) {
-        DaysLeadTime[dat$Year > yr] = DaysLeadTime[dat$Year > yr] + 365 + as.integer(((yr %% 4 == 0) & (yr %% 100 != 0)) | (yr %% 400 == 0))
-      }
-    }
-    res$DaysForecastLength = DaysLeadTime[Nt]
-    dat$DaysLeadTime = DaysLeadTime
+    dat$DaysLeadTime = sidfex.ydoy2reltime(dat$Year,dat$DayOfYear,res$InitYear,res$InitDayOfYear)
+    res$DaysForecastLength = dat$DaysLeadTime[Nt]
     res$data = dat
 
     res.list[[i]] = res

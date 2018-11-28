@@ -34,3 +34,18 @@ Helge Goessling
 \seealso{
 \code{\link{sidfex.download.fcst}}, \code{\link{sidfex.write.fcst}}, \code{\link{sidfex.fcst.ensmerge}}, \code{\link{sidfex.checkfileformat}}
 }
+\examples{
+# Load the forecast data index
+index = sidfex.load.index()
+# Show the first rows of the index to see which variables can be used to subselect the index
+head(index)
+
+# Make an index subset for one specific forecast ensemble
+subind = sidfex.fcst.search.extractFromTable(gid = "awi001" , tid = "300234063991680", iy = 2018, idoy = 30, return.dataframe = TRUE)
+# Read the forecasts
+fcst = sidfex.read.fcst(index=subind)
+# Now plot latitude against forecast lead time for the whole ensemble
+plot(fcst$res.list[[1]]$data$DaysLeadTime,fcst$res.list[[1]]$data$Lat,type="l",ylim=c(74,80),xlim=c(0,600))
+for (i in 2:length(fcst$res.list)) {lines(fcst$res.list[[i]]$data$DaysLeadTime,fcst$res.list[[i]]$data$Lat)}
+# If you are surprised that the ensemble members have different length, that's because the climatological method applied to generate these forecasts discards trajectories when the sea-ice concentration in the corresponding years dropped below some threshold.
+}
