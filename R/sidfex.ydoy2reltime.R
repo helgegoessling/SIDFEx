@@ -12,7 +12,10 @@ sidfex.ydoy2reltime <- function(Year,DayOfYear,RefYear=2017,RefDayOfYear=1.0) {
   if (length(Year) == 1 && length(DayOfYear) > 1) {Year = rep(Year,length(DayOfYear))}
   if (length(Year) != length(DayOfYear)) {stop("'Year' and 'DayOfYear' must have the same length, or 'Year' must have length 1")}
 
-  DaysSinceRef = DayOfYear - RefDayOfYear
+  DaysSinceRefX = DayOfYear - RefDayOfYear
+  notna = !is.na(DaysSinceRefX)
+  DaysSinceRef = DaysSinceRefX[notna]
+  Year = Year[notna]
 
   maxy = max(Year,na.rm=TRUE)
   miny = min(Year,na.rm=TRUE)
@@ -28,6 +31,7 @@ sidfex.ydoy2reltime <- function(Year,DayOfYear,RefYear=2017,RefDayOfYear=1.0) {
     }
   }
 
-  return(DaysSinceRef)
+  DaysSinceRefX[notna] = DaysSinceRef
+  return(DaysSinceRefX)
 
 }
