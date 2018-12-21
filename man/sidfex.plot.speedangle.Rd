@@ -2,10 +2,10 @@
 \alias{sidfex.plot.speedangle}
 \title{Plot Speed-vs-Angle Errors for SIDFEx Data}
 \usage{
-sidfex.plot.speedangle(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL,col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",device="pdf",file=paste0("~/sidfex.plot.speedangle.",device),width=NULL,do.init.device=TRUE,do.close.device=TRUE,labels=TRUE,labels.cex=1,bg.lines.lwd=labels.cex,...)
+sidfex.plot.speedangle(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL, plot.empty = F, col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",device="pdf",file=paste0("~/sidfex.plot.speedangle.",device),width=NULL,do.init.device=TRUE,do.close.device=TRUE,labels=TRUE,labels.cex=1,bg.lines.lwd=labels.cex,...)
 }
 \description{
-Generate a so-called speed-angle-plot for SIDFEx forecast data. Speed and angle errors are always based on the integrated displacement of the target (e.g., buoy) from its initial position.  If only a (sub-)index of the forecasts is provided, all relevant forecast and observational data are read, remapped to a common time axis, analysed, and subsequently plotted; if intermediate results (that must be consistent with the index) are provided, the corresponding steps are skipped.
+Generate a so-called speed-angle-plot for SIDFEx forecast data. Speed and angle errors are always based on the integrated displacement of the target (e.g., buoy) from its initial position.  If only a (sub-)index of the forecasts is provided, all relevant forecast and observational data are read, remapped to a common time axis, analysed, and subsequently plotted; if intermediate results (that must be consistent with the index) are provided, the corresponding steps are skipped. Also, an empty plot can be generated, e.g. for later use as a template (with \code{rasterImage()} for instance). 
 }
 \arguments{
   \item{index}{
@@ -19,6 +19,9 @@ a list with SIDFEx observations as returned by \code{\link{sidfex.read.obs}}, or
 }
   \item{remap.res}{
 a list with remapped SIDFEx observations as returned by \code{\link{sidfex.remaptime.obs2fcst}}, or \code{NULL} (default). In the latter case, \code{\link{sidfex.remaptime.obs2fcst}} is used to remap observations temporally to times at which the forecasts are valid. Providing this argument can save time.
+}
+  \item{plot.empty}{
+a logical value (default: \code{FALSE}) determining if an 'empty plot', i.e. the target-shaped axes and background, will be generated. If set to \code{TRUE}, all inputs but the plot specific parameters will be ignored and the desired plot template will be generated and saved. Also, if both \code{index} and \code{read.fcst.res} are not provided (or set to \code{NULL} manually), \code{plot.empty} will automatically be set to \code{TRUE}.
 }
   \item{col.by}{
 a character specifiying by what property data points shall be coloured. Can be either any column of \code{index} (except \code{File}): \code{File}, \code{GroupID}, \code{MethodID}, \code{TargetID}, \code{InitYear}, \code{InitDayOfYear}, \code{EnsMemNum}, \code{SubmitYear}, \code{SubmitDayOfYear}, \code{ProcessedYear}, \code{ProcessedDayOfYear}, \code{Delay}, \code{nTimeSteps}, \code{FirstTimeStepYear}, \code{FirstTimeStepDayOfYear}, \code{LastTimeStepYear}, \code{LastTimeStepDayOfYear}, and \code{FcstTime}. Or, it can be a column of the forecast data table: \code{Year}, \code{DayOfYear}, \code{Lat}, \code{Lon}, and \code{DaysLeadTime}. Some of these are interpreted in a categorical way (e.g., \code{GroupID}, \code{EnsMemNum}, and \code{Year}), and some as continuous numerical values (e.g., \code{Delay}, \code{Lat}, and \code{DaysLeadTime}, which is the default).
@@ -58,7 +61,7 @@ a character specifiying by what property data points shall be coloured. Can be e
 }
 }
 \value{
-A list with the elements \code{col.by}, \code{colbar}, \code{categorical}, \code{breaks}, and \code{labels}, which can be used to plot the corresponding colourbar with \code{\link{sl.plot.colbar}}.
+A list with the elements \code{col.by}, \code{colbar}, \code{categorical}, \code{breaks}, and \code{labels}, which can be used to plot the corresponding colourbar with \code{\link{sl.plot.colbar}}. When used for generating a plot template with the option \code{plot.empty}, the output will be a list containing the axes limits \code{ylim} and \code{xlim} as vectors of length 2.
 }
 %\note{
 %
