@@ -71,9 +71,13 @@ sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NU
       print(quantile(col.vals))
       colbar.breaks = sl.num2colbarbreaks(num=col.vals, breaks.log=colbar.breaks.log, colbar=colbar)
     }
-  } else if (!is.continuous) {
-    warning("'colbar.breaks' are ignored when colours are defined from a categorical variable")
-    colbar.breaks = NULL
+  } else {
+    if (!is.continuous) {
+      warning("'colbar.breaks' are ignored when colours are defined from a categorical variable")
+      colbar.breaks = NULL
+    } else if (length(colbar) != length(colbar.breaks)+1) {
+      colbar = sl.colbar(cols = colbar, N = length(colbar.breaks)+1)
+    }
   }
 
   if (!is.null(device)) {
