@@ -10,7 +10,7 @@ sidfex.plot.speedangle.template <- function(device="pdf", file=paste0("~/sidfex.
     dev.fun(file=file, width=width, height=width)
   }
   
-  par(mar=rep(-0,4), oma=c(0,0,0,0))
+  par(mar=rep(-0,4),  xaxs = "i", yaxs = "i")
   
   plot(NA,xlim=c(-2,2),ylim=c(-2,2),xaxt="n",yaxt="n",bty="n")
   unitcircle.x = sin(seq(0,2*pi,2*pi/360))
