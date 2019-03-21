@@ -1,7 +1,7 @@
 sidfex.plot.speedangle.on.template <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL,
                                    col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,
                                    colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",out.device="pdf", in.device="png",
-                                   file=paste0("~/sidfex.plot.speedangle.",out.device),width=NULL,
+                                   file=paste0("~/sidfex.plot.speedangle.",out.device),width=NULL, outer.plot=F,
                                    templatefile = NULL,...) {
   require(jpeg)
   
@@ -28,9 +28,13 @@ sidfex.plot.speedangle.on.template <- function(index=NULL,read.fcst.res=NULL,rea
   xlim = c(-2, 2)
   ylim = c(-2, 2)
   
-  par(mar = rep(0,4), oma = rep(0,4))
-  plot(x = NULL, xlim = xlim, ylim = ylim, xlab = "", 
-       ylab = "", main = "")
+  if (!outer.plot){
+    par(mar = rep(0,4), oma = rep(0,4))
+    plot(x = NULL, xlim = xlim, ylim = ylim, xlab = "", 
+         ylab = "", main = "")
+    }
+  
+
 
   if(in.device=="jpeg"){
     img = readJPEG(templatefile)

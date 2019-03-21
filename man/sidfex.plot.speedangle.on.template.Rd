@@ -5,7 +5,7 @@
 sidfex.plot.speedangle.on.template(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL,
                                    col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,
                                    colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",out.device="pdf", in.device="png",
-                                   file=paste0("~/sidfex.plot.speedangle.",out.device),width=NULL,
+                                   file=paste0("~/sidfex.plot.speedangle.",out.device),width=NULL,outer.plot=F
                                    templatefile = NULL,...) 
 }
 \description{
@@ -51,6 +51,9 @@ a character specifiying by what property data points shall be coloured. Can be e
   \item{width}{
   a scalar specifying the width of the resulting output figure. The height will be equal. If \code{NULL} (default), a (hopefully) useful value depending on \code{device} is used.
 }
+  \item{outer.plot}{
+  a boolean (default \code{FALSE}) specifying whether there is already a new plot created (e.g. calling \code{par)()} and \code{plot()}) outside this function or not. If \code{TRUE}, the calls of \code{par()} and \code{plot()} inside the function will be suppressed, which basically avoids plotting unnecessary axes and keeps the aspect ratio correctly. The default should be sufficient for almost all cases.  
+  }
   \item{templatefile}{
   the image on which the data will be plotted. For best results use a png-file created by \code{\link{sidfex.plot.speedangle.template}}. 
 }
