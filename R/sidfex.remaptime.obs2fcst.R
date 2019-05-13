@@ -42,7 +42,7 @@ sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate
       obs.DaysSinceStart = obs$obs.DaysSinceStart
     }
 
-    fcst.N = fcst$res.list[[irl]]$Ntimesteps
+    fcst.N = nrow(fcst$res.list[[irl]]$data)
     fcst.InitDaysOffset = fcst$res.list[[irl]]$InitDayOfYear - obs$data$POS_DOY[1]
     fcst.InitYear = fcst$res.list[[irl]]$InitYear
     if (fcst.InitYear > obs.yrs[1]) {
