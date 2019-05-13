@@ -1,11 +1,15 @@
-\name{sidfex.plot.speedangle}
-\alias{sidfex.plot.speedangle}
-\title{Plot Speed-vs-Angle Errors for SIDFEx Data}
+\name{sidfex.plot.speedangle.on.template}
+\alias{sidfex.plot.speedangle.on.template}
+\title{Plot Speed-vs-Angle data on existing template}
 \usage{
-sidfex.plot.speedangle(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL,col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",device="pdf",file=paste0("~/sidfex.plot.speedangle.",device),width=NULL,do.init.device=TRUE,do.close.device=TRUE,labels=TRUE,labels.cex=1,bg.lines.lwd=labels.cex,...)
+sidfex.plot.speedangle.on.template(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL,
+                                   col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,
+                                   colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",out.device="pdf", in.device="png",
+                                   file=paste0("~/sidfex.plot.speedangle.",out.device),width=NULL,outer.plot=F
+                                   templatefile = NULL,...) 
 }
 \description{
-Generate a so-called speed-angle-plot for SIDFEx forecast data. Speed and angle errors are always based on the integrated displacement of the target (e.g., buoy) from its initial position.  If only a (sub-)index of the forecasts is provided, all relevant forecast and observational data are read, remapped to a common time axis, analysed, and subsequently plotted; if intermediate results (that must be consistent with the index) are provided, the corresponding steps are skipped.
+Does mainly the same thing as \code{\link{sidfex.plot.speedangle}} but uses an input file for the background axis and labels.
 }
 \arguments{
   \item{index}{
@@ -35,23 +39,23 @@ a character specifiying by what property data points shall be coloured. Can be e
   \item{points.type}{
   a character specifying whether only points ('p'), only lines ('l'), or both ('b') shall be plotted.
 }
-  \item{device}{
+  \item{in.device}{
+  a character specifying the graphics device of the template (\code{templatefile}), or \code{NULL} for the default device. Default is \code{device='png'}.
+}
+  \item{out.device}{
   a character specifying which graphics device to use, or \code{NULL} for the default device. Default is \code{device='pdf'}.
 }
   \item{file}{
-  a character specifying the output file (if \code{device!=NULL}). Default is \code{file=paste0("~/sidfex.plot.speedangle.",device)}.
+  a character specifying the output file (if \code{device!=NULL}). Default is \code{file=paste0("~/sidfex.plot.speedangle.",out.device)}.
 }
   \item{width}{
-  a scalar specifying the width of the resulting figure. The height will be equal. If \code{NULL} (default), a (hopefully) useful value depending on \code{device} is used.
+  a scalar specifying the width of the resulting output figure. The height will be equal. If \code{NULL} (default), a (hopefully) useful value depending on \code{device} is used.
 }
-  \item{labels}{
-  a logical value specifying whether or not labels shall be plotted. Default is \code{TRUE}.
-}
-  \item{labels.cex}{
-  a numerical value specifying the amount by which labels shall be magnified relative to the default.
-}
-  \item{bg.lines.lwd}{
-  a numerical value specifying the width of the background lines (marking the 'coordinate system').
+  \item{outer.plot}{
+  a boolean (default \code{FALSE}) specifying whether there is already a new plot created (e.g. calling \code{par)()} and \code{plot()}) outside this function or not. If \code{TRUE}, the calls of \code{par()} and \code{plot()} inside the function will be suppressed, which basically avoids plotting unnecessary axes and keeps the aspect ratio correctly. The default should be sufficient for almost all cases.  
+  }
+  \item{templatefile}{
+  the image on which the data will be plotted. For best results use a png-file created by \code{\link{sidfex.plot.speedangle.template}}. 
 }
   \item{...}{
   Further graphical parameters to be forwarded to \code{\link{points}} (see documentation of \code{\link{points}} for details).
@@ -60,31 +64,36 @@ a character specifiying by what property data points shall be coloured. Can be e
 \value{
 A list with the elements \code{col.by}, \code{colbar}, \code{categorical}, \code{breaks}, and \code{labels}, which can be used to plot the corresponding colourbar with \code{\link{sl.plot.colbar}}.
 }
-%\note{
-%
-%}
+\note{
+So far (and very certainly it will stay like this) only 'png' and 'jpeg' are intended and implemented as template types (\code{in.device}). We recommend the usage of 'png', as 'jpeg' could lead to data points covering the labels, which can be solved by using transparend templates - a feature, that 'png' easily can provide. Aside from this limitation, the output files can be any supported graphics device.
+
+As this function is almost identical with \code{\link{sidfex.plot.speedangle}} now, the authors will soon discuss the necessity of keeping both.
+}
 \author{
-Helge Goessling
+Simon Reifenberg, Helge Goessling
 }
 \seealso{
-\code{\link{sidfex.read.fcst}}, \code{\link{sidfex.read.obs}}, \code{\link{sidfex.remap.obs2fcst}}
+\code{\link{sidfex.plot.speedangle.template}}, \code{\link{sidfex.plot.speedangle}}
 }
 \examples{
+
 # load whole SIDFEx forecast index
 index = sidfex.load.index()
-
+ 
 # extract subindex with all forecasts that match some filters
 subindex = index[ index$TargetID == "300234063991680" &
-                  index$GroupID \%in\% c("metno001","esrl001","ukmo001","eccc001") &
-                  index$InitYear == 2018 &
-                  index$InitDayOfYear > 210 &
-                  index$InitDayOfYear < 215, ]
+                   index$GroupID %in% c("metno001","esrl001","ukmo001","eccc001") &
+                   index$InitYear == 2018 &
+                   index$InitDayOfYear > 210 &
+                   index$InitDayOfYear < 215, ]
+                   
+# create the template
+fn_template = "~/speedangle.template.png"
+sidfex.plot.speedangle.template(device = "png", file = fn_template, width = 700)
 
-# Generate a speed-angle-plot for all forecast data corresponding to the subindex, with colours according to the GroupID, as well as the corresponding colourbar
-colbar = sidfex.plot.speedangle(subindex,col.by="GroupID",points.type="l",colbar=sl.colbar(cols = c("violet","blue","green","yellow","orange","red"),N=256),device="pdf",file="~/speedangle_example_1.pdf")
-sl.plot.colbar(colbar,file.name="~/speedangle_example_1_colbar.pdf")
+# generate a speed-angle-plot for all forecast data corresponding to the subindex, with colours according to the GroupID
+cb = sidfex.plot.speedangle.on.template(subindex,col.by="GroupID",points.type="p",colbar=sl.colbar(cols = c("violet","blue","green","yellow","orange","red"),N=256),
+                                   out.device="png",file="~/speedangle_example_plot2template.png", 
+                                   templatefile = fn_template, width = 800)
 
-# Generate another speed-angle-plot for the same data, but with colours according to DaysLeadTime
-colbar = sidfex.plot.speedangle(subindex,col.by="DaysLeadTime",points.type="l",colbar=sl.colbar(cols = c("violet","blue","green","yellow","orange","red"),N=256),device="pdf",file="~/speedangle_example_2.pdf")
-sl.plot.colbar(colbar,file.name="~/speedangle_example_2_colbar.pdf")
 }

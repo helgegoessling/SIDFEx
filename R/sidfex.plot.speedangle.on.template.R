@@ -1,13 +1,52 @@
-sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL,
+sidfex.plot.speedangle.on.template <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NULL,remap.res=NULL,
                                    col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,
-                                   colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",device="pdf",
-                                   file=paste0("~/sidfex.plot.speedangle.",device),width=NULL,
-                                   labels=TRUE,labels.cex=1,bg.lines.lwd=labels.cex,...) {
-
+                                   colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",out.device="pdf", in.device="png",
+                                   file=paste0("~/sidfex.plot.speedangle.",out.device),width=NULL, outer.plot=F,
+                                   templatefile = NULL,...) {
+  require(jpeg)
+  
+  if (is.null(templatefile)){
+    print("No source for template specified, calling basic 'sidfex.plot.speedangle' instead.")
+    sidfex.plot.speedangle(index=index,read.fcst.res=read.fcst.res,read.obs.res=read.obs.res,remap.res=remap.res,
+                           col.by=col.by,colbar=colbar, colbar.breaks=colbar.breaks,colbar.breaks.log=colbar.breaks.log,
+                           points.type=points.type,device=out.device, file=file,width=width, labels=TRUE,labels.cex=1,
+                           bg.lines.lwd=1,...)
+  }
+  
+  device = out.device
   if (is.null(width) && !is.null(device)) {
     if (device == "pdf") {width = 8} else {width = 600}
   }
+  if (!is.null(device)) {
+    dev.fun = match.fun(device,descend=FALSE)
+    dev.fun(file=file, width=width, height=width)
+  }
+  
+  ### begin newstuff
 
+  
+  xlim = c(-2, 2)
+  ylim = c(-2, 2)
+  
+  if (!outer.plot){
+    par(mar = rep(0,4), oma = rep(0,4))
+    plot(x = NULL, xlim = xlim, ylim = ylim, xlab = "", 
+         ylab = "", main = "")
+    }
+  
+
+
+  if(in.device=="jpeg"){
+    img = readJPEG(templatefile)
+    pir = list()
+    pir$xlim = xlim*1.08
+    pir$ylim = ylim*1.08
+    rasterImage(img, xleft=pir$xlim[1],xright=pir$xlim[2],ybottom = pir$ylim[1], ytop = pir$ylim[2])
+  }
+  
+  ### end newstuff
+
+  
   if (is.null(read.fcst.res)) {
     if (is.null(index)) {stop("At least one of 'index' and 'read.fcst.res' must be specified.")}
     read.fcst.res = sidfex.read.fcst(index)
@@ -24,12 +63,12 @@ sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NU
       flx = sapply(strsplit(sapply(strsplit(sapply(read.fcst.res$res.list,"[[","fl"),split="/"),tail,n=1),split=".txt",fixed=TRUE),head,n=1)
     }
   }
-
+  
   # remap observations temporally to forecast times
   if (is.null(remap.res)) {
     remap.res = sidfex.remaptime.obs2fcst(obs=read.obs.res,fcst=read.fcst.res)
   }
-
+  
   is.continuous = TRUE
   categs=NULL
   col.from.index = FALSE
@@ -53,7 +92,7 @@ sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NU
     stop(paste0("'cols.by' must be one of '",paste(names(index)[names(index)!="File"],collapse="', '"),"', '",
                 paste(c("Year","DayOfYear","Lat","Lon","DaysLeadTime"),collapse="', '"),"'"))
   }
-
+  
   if (!is.continuous) {
     if (length(colbar) < Ncategs) {
       stop(paste0("'length(colbar)' (",length(colbar),") must be >= the number of categories (",Ncategs,")"))
@@ -63,7 +102,7 @@ sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NU
       else {colbar = colbar[1]}
     }
   }
-
+  
   if (is.null(colbar.breaks)) {
     require(spheRlab)
     if (is.continuous) {
@@ -79,22 +118,6 @@ sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NU
       colbar = sl.colbar(cols = colbar, N = length(colbar.breaks)+1)
     }
   }
-
-  if (!is.null(device)) {
-    dev.fun = match.fun(device,descend=FALSE)
-    dev.fun(file=file, width=width, height=width)
-  }
-  par(mar=rep(0,4))
-
-  plot(NA,xlim=c(-2,2),ylim=c(-2,2),xaxt="n",yaxt="n",bty="n")
-  unitcircle.x = sin(seq(0,2*pi,2*pi/360))
-  unitcircle.y = cos(seq(0,2*pi,2*pi/360))
-  lines(x=c(-2,2),y=c(0,0),col="grey",lwd=bg.lines.lwd)
-  lines(x=c(0,0),y=c(0,-2),col="grey",lwd=bg.lines.lwd)
-  lines(x=c(0,0),y=c(0,2),col="grey",lwd=bg.lines.lwd)
-  lines(x=c(-sqrt(2),sqrt(2)),y=c(-sqrt(2),sqrt(2)),col="grey",lwd=bg.lines.lwd)
-  lines(x=c(-sqrt(2),sqrt(2)),y=c(sqrt(2),-sqrt(2)),col="grey",lwd=bg.lines.lwd)
-  lines(unitcircle.x,unitcircle.y,col="grey",lwd=bg.lines.lwd)
 
   for (i in 1:length(read.fcst.res$res.list)) {
     Nfcst = read.fcst.res$res.list[[i]]$Ntimesteps
@@ -128,6 +151,7 @@ sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NU
     col = unlist(colbar)[col.ind]
     x = -sin(2*pi*ang/360)*relspeed
     y = cos(2*pi*ang/360)*relspeed
+    
     if (!col.from.index && points.type %in% c("l","b")) {
       for (ip in 1:(length(ang)-1)) {
         points(x=x[ip:(ip+1)],y=y[ip:(ip+1)],col=col[ip],...,type="l")
@@ -141,30 +165,19 @@ sidfex.plot.speedangle <- function(index=NULL,read.fcst.res=NULL,read.obs.res=NU
       points(x=x,y=y,col=col,...,type=points.type)
     }
   }
-
-  lines(2*unitcircle.x,2*unitcircle.y,lwd=bg.lines.lwd)
-  if (labels) {
-    axis(side=1,at=c(0,.25,.5,.75,1,1.25,1.5,1.75,2),labels=c(as.character(c(0,0.25,0.5,0.75,1,1.33,2,4)),"Inf      "),pos=0,lwd=bg.lines.lwd,cex.axis=labels.cex)
-    text("relative drift distance (fcst/obs)",x=1,y=-0.3,cex=labels.cex)
-    lines.x = sin(seq(pi/4,2*pi,pi/4))
-    lines.y = cos(seq(pi/4,2*pi,pi/4))
-    lines.y[2] = 0.03
-    labs = c("45R","90R","135R","180","135L","90L","45L","0")
-    for (ilab in 1:length(labs)) {
-      text(labs[ilab],x=lines.x[ilab]*1.9,y=lines.y[ilab]*1.9,cex=labels.cex)
-    }
-    text("relative",x=0.25,y=1.88,srt=-7,cex=labels.cex)
-    text("drift",x=0.51,y=1.825,srt=-17,cex=labels.cex)
-    text("angle",x=0.73,y=1.74,srt=-23,cex=labels.cex)
-    text("(fcst-obs)",x=1.03,y=1.58,srt=-33,cex=labels.cex)
-  } else {
-    axis(side=1,at=c(0,.25,.5,.75,1,1.25,1.5,1.75,2),labels="",pos=0)
+  
+  # ### begin newstuff
+  if(in.device=="png"){
+    require(png)
+    img = readPNG(templatefile)
+    pir = list()
+    pir$xlim = xlim*1.08
+    pir$ylim = ylim*1.08
+    rasterImage(img, xleft=pir$xlim[1],xright=pir$xlim[2],ybottom = pir$ylim[1], ytop = pir$ylim[2])
   }
-  lines(x=c(0,0),y=c(0.95,1.05),lwd=bg.lines.lwd*3)
-  lines(x=c(-0.05,0.05),y=c(1,1),lwd=bg.lines.lwd*3)
-
+  # ### end newstuff
+  
   if (!is.null(device)) {dev.off()}
-
+  
   return(list(col.by=col.by,colbar=colbar,categorical=!is.continuous,breaks=colbar.breaks,labels=categs))
-
 }
