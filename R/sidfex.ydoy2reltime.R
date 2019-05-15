@@ -14,6 +14,9 @@ sidfex.ydoy2reltime <- function(Year,DayOfYear,RefYear=2017,RefDayOfYear=1.0) {
 
   DaysSinceRefX = DayOfYear - RefDayOfYear
   notna = !is.na(DaysSinceRefX)
+  #if (sum(notna) == 0) {
+  #  return(DaysSinceRefX)
+  #}
   DaysSinceRef = DaysSinceRefX[notna]
   Year = Year[notna]
 
