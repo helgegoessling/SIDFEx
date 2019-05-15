@@ -55,5 +55,5 @@ res = sidfex.download.fcst(test.mode=TRUE, from.scratch=FALSE)
 # Compares the local index of SIDFEx forecast data with the most recent remote one and reports which new files would be downloaded, which files would be be downloaded to replace altered existing ones, and which obsolete local files would be deleted. Details are provided in the return value (here 'res').
 }
 \seealso{
-\code{\link{sidfex.download.fcst}}, \code{\link{sidfex.fcst.search.createIndexTable}}, \code{\link{sidfex.fcst.search.addTableItem}}, \code{\link{sidfex.fcst.search.rda2csv}}
+\code{\link{sidfex.download.fcst}}, \code{\link{sidfex.fcst.search.createIndex}}, \code{\link{sidfex.fcst.search.rda2csv}}
 }

@@ -4,7 +4,8 @@
 \usage{
   sidfex.fcst.search.extractFromTable (indexTable.path = NULL, return.dataframe=FALSE, gid=NULL, mid=NULL, tid=NULL,
            iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL,
-           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL)
+           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL,
+           es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE)
 }
 \description{
   This function is more or less the core of the upcoming "Shiny App" for SIDFEx. It allows a user to quickly find the filename of forecast datasets based on a useful set of search parameters. These filenames can then be easily used to load the forecast of interest for further processing and/or analysis. Please note the note about date inputs.
@@ -32,7 +33,7 @@
     a numeric value (or list/vector of such) for the initial day of year
   }
   \item{emn}{
-    a integer (or list/vector of inters) for the ensemble member number of interest
+    an integer (or list/vector of inters) for the ensemble member number of interest
   }
   \item{sy}{
     a numeric value (or list/vector of such) for the year that the respective file was submitted in
@@ -70,7 +71,15 @@
   \item{fcstrange}{
     a vector of length 2, containing two date objects spanning a range. If a forecast has at least one timestep in that range, it will be selected.
   }
-
+  \item{es}{
+    an integer (or list/vector of inters) for the ensemble size
+  }
+  \item{EnsParentOnly}{
+    a logical value specifying whether only ensemble parents (typically ensemble member 1) shall be returned. Default is \code{FALSE}
+  }
+  \item{InheritFromParent}{
+    a logical value specifying whether ensemble members inherit all properties except \code{File} and \code{EnsMemNum} from their parents (typically ensemble member 1) before the other criteria are applied. Default is \code{FALSE}
+  }
 }
 \value{
   If \code{return.dataframe=FALSE}, returns a list of filenames (without extension) or NULL, if no files fit to search parameters. Otherwise, the whole corresponding data frame is returned.
@@ -85,7 +94,7 @@
 
 }
 \author{
-Simon Reifenberg
+Simon Reifenberg, updated by Helge Goessling
 }
 
 \examples{

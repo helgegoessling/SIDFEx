@@ -1,7 +1,7 @@
 sidfex.fcst.search.extractFromTable <-
   function(indexTable.path = NULL, return.dataframe=FALSE, gid=NULL, mid=NULL, tid=NULL,
            iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL,
-           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL){
+           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE){
 
     # check if specific directory for indexList is given, otherwise use default
     if (is.null(indexTable.path)) {
@@ -26,8 +26,18 @@ sidfex.fcst.search.extractFromTable <-
       return(NULL)
     }
 
-    # work on a copy of rTab, not rTab itself (most certainly not necessary, but old habit)
     df = rTab
+
+    if (EnsParentOnly) {
+      df = df[df$File==df$EnsParentFile,]
+    } else if (InheritFromParent) {
+      parents = which(df$File==df$EnsParentFile & df$EnsSize>1)
+      for (ip in parents) {
+        children = which(df$EnsParentFile==df$File[ip] & df$File!=df$File[ip])
+        #df[children,c(2:6,8:ncol(df))] = rep(df[ip,c(2:6,8:ncol(df))],each=length(children))
+        df[children,c(2:6,8:ncol(df))] = df[ip,c(2:6,8:ncol(df))]
+      }
+    }
 
     # filter rows by criteria on columns, first the easy ones
     if (!is.null(gid)) {df <- df[df$GroupID %in% gid,]}
@@ -39,6 +49,7 @@ sidfex.fcst.search.extractFromTable <-
     if (!is.null(per)) {df <- df[df$FcstTime %in% per,]}
     if (!is.null(nt)) {df <- df[df$nTimeSteps %in% nt,]}
     if (!is.null(del)) {df <- df[df$Delay %in% del,]}
+    if (!is.null(es)) {df <- df[df$EnsSize %in% es,]}
 
     # now the ugly stuff (taking care of range queries over different years)
     # initial time
