@@ -23,6 +23,9 @@ a logical value specifying whether or not to update the local data from scratch.
   \item{baseurl}{
 a character specifying the URL where the SIDFEx data and index are located remotely. Should not need to be changed from the default value.
 }
+  \item{verbose}{
+a logical value specifying whether print output of the 'tar' command will be displayed or not.
+}
 }
 \value{
 If \code{from.scratch=TRUE}, a list with just one element named 'index.download' which is the index of all data that would be or have been downloaded.
