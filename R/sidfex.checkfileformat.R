@@ -1,20 +1,3 @@
-# R function to check whether a file meets the SIDFEx format conventions
-# Author: Helge Goessling, June 2017
-#
-# To use this function, do the following:
-#
-# 1) Launch R
-# 2) Enter 'source <scriptpth>/sidfex.checkfileformat.R' (without quotes)
-#    where <scriptpth> is the path to this file
-# 3) Enter 'sidfex.checkfileformat("<yourfileordirectory>")' (without the single quotes)
-#    where <yourfileordirectory> can be a single file or a directory; in the latter case all files
-#    in the directory are checked.
-#
-# The result will be printed to the screen. If the outcome(s) is/are not 'No file format violations found.',
-# modify the file(s) as indicated and retry.
-#
-# Should you encounter bugs or other difficulties, please contact sidfex<AT>polarprediction<DOT>net .
-
 sidfex.checkfileformat = function (filepathnames) {
 
 	if (length(filepathnames) == 1 && dir.exists(filepathnames)) {
@@ -90,7 +73,7 @@ sidfex.checkfileformat = function (filepathnames) {
 
 		### check file header
 
-		filecont = scan(filepathname,sep="\n",what="character")
+		filecont = scan(filepathname,sep="\n",what="character",quiet=TRUE)
 		Nr = length(filecont)
 		if (Nr < 1) {
 			res = c(res,paste0("File empty."))
