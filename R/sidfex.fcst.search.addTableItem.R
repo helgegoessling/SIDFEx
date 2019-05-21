@@ -1,5 +1,8 @@
 sidfex.fcst.search.addTableItem <-
   function (filename, data.path=NULL, indexTable.path=NULL, is.open.rTab=FALSE, rTab.in=NULL, checkfileformat=TRUE, do.print.less=T) {
+
+    warning("Function sidfex.fcst.search.addTableItem is deprecated; use sidfex.fcst.search.createIndex instead")
+
     indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
                    "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
                    "LastTimeStepDayOfYear", "FcstTime")
@@ -81,7 +84,7 @@ sidfex.fcst.search.addTableItem <-
 
       if (fid %in% rTab$File) {
         if (!do.print.less) {print(paste0("Entry for ", filename, " already exists in indexFile, aborted procedure."))}
-       
+
       } else {
         rTab = rbind(rTab, outvec)
         if (!do.print.less) {print(paste0("Appended data of file ", filename, " to indexFile."))}

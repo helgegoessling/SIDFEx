@@ -1,11 +1,11 @@
 \name{sidfex.fcst.search.addTableItem}
 \alias{sidfex.fcst.search.addTableItem}
-\title{Add single row to search index file}
+\title{DEPRECATED - Add single row to search index file}
 \usage{
   sidfex.fcst.search.addTableItem (filename, data.path=NULL, indexTable.path=NULL, is.open.rTab=FALSE, rTab.in=NULL, checkfileformat=TRUE, do.print.less=TRUE)
 }
 \description{
-  Read one or SIDFEx forecast and add some key quantities and information to the (previously existing or not) index file "indexTable.rda". If the           specified index file does not exist, a now one is created. The data will be stored in .rda-format.
+  DEPRECATED (included in sidfex.fcst.search.createIndex) - Read one or SIDFEx forecast and add some key quantities and information to the (previously existing or not) index file "indexTable.rda". If the specified index file does not exist, a now one is created. The data will be stored in .rda-format.
 }
 \arguments{
   \item{filename}{
