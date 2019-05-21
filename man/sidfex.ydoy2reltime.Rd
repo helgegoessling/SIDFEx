@@ -17,7 +17,7 @@ a numeric scalar or vector specifying the day of the year. Can also be character
 \item{RefYear}{
 an integer scalar specifying the reference year. Can also be character which will be coerced with \code{\link{as.integer}}.
 }
-\item{RefYear}{
+\item{RefDayOfYear}{
 a numeric scalar specifying the reference day of year. Can also be character which will be coerced with \code{\link{as.numeric}}.
 }
 }
@@ -26,6 +26,8 @@ a numeric vector of the same length as \code{DayOfYear}.
 }
 \note{
 If \code{Year} has length 1 and \code{DayOfYear} has length >1, the same \code{Year} will be used for all values.
+
+The convention for the day of the year is that January 1st begins with \code{DayOfYear=1.0}, that is, \code{DayOfYear=1.5} corresponds to January 1st 12:00.
 }
 \author{
 Helge Goessling
