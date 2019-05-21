@@ -8,8 +8,10 @@ sidfex.fcst.search.createIndex <-
       no.data.path.fcst=TRUE
       if (file.exists(file.path("~",".SIDFEx"))) {
         source(file.path("~",".SIDFEx"))
-        if (exists("data.path.fcst")) {no.data.path.fcst=FALSE
-        print(indexTable.path)}
+        if (exists("data.path.fcst")) {
+          no.data.path.fcst=FALSE
+          #print(indexTable.path)
+          }
       }
       if (no.data.path.fcst) {
         stop(paste0("With data.path=NULL , data.path.fcst must be specified in a file ~/.SIDFEx as a line like data.path.fcst=..."))
@@ -73,7 +75,7 @@ sidfex.fcst.search.createIndex <-
           }
         }
 
-        dat = sidfex.read.fcst(files = file.path(fdir, item), checkfileformat = checkfileformat)$res.list[[1]]
+        dat = sidfex.read.fcst(files = file.path(fdir, item), checkfileformat = checkfileformat, ens.merge=FALSE)$res.list[[1]]
         if (is.character(dat) && dat[1] != "No file format violations found.") {
           print(paste0("File format violation in ",file.path(fdir, item)," :"))
           print(dat)
