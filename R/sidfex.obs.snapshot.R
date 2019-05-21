@@ -1,5 +1,7 @@
 sidfex.obs.snapshot <- function (obs,Year,DayOfYear,method="nearestneighbour") {
 
+  warning("This function is deprecated and should be deleted or replaced by one that makes use of new functions for time conversion and trajectory remapping")
+
   if (method != "nearestneighbour") {
     stop("Only method='nearestneighbour' implemented so far.")
   }
