@@ -13,6 +13,8 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
     data.path.fcst = data.path
   }
 
+  indexBased = FALSE
+  index = NULL
   if (is.null(files)) {
     if (is.null(GroupID)) {GroupID = "*"}
     if (is.null(MethodID)) {MethodID = "*"}
@@ -51,8 +53,14 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
         }
       }
     } else {
-      files = file.path(data.path.fcst,files$GroupID,paste0(files$File,".txt"))
+      indexBased = TRUE
+      index = files
+      files = file.path(data.path.fcst,files$GroupID,paste0(index$File,".txt"))
     }
+  }
+
+  if (ens.merge && !indexBased) {
+    stop("'ens.merge=TRUE' works only if 'files' is a SIDFEx forecast (sub-)index.")
   }
 
   N = length(files)
@@ -83,7 +91,7 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
       }
     }
 
-    filecont = scan(fl,sep="\n",what="character")
+    filecont = scan(fl,sep="\n",what="character",quiet=TRUE)
     Nr = length(filecont)
 
     nrGroupID = 0
@@ -150,10 +158,128 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
   }
 
   if (ens.merge) {
-    #res.list = sidfex.ensmerge(res.list)
-    warning("ens.merge not yet implemented. Returning forecast objects without merging.")
-    ens.merge=FALSE
+
+    require(spheRlab)
+
+    index.merged = index[index$File==index$EnsParentFile,]
+    nMerged = nrow(index.merged)
+    if (length(unique(index$EnsParentFile)) != length(unique(index.merged$EnsParentFile)) ||
+        any(unique(index$EnsParentFile) != unique(index.merged$EnsParentFile))) {
+      warning("One or more ensembles do not contain their parent; defining new parent based on lastest initial time, then largest number of time steps, then lowest EnsMemNum")
+      for (parentX in unique(index$EnsParentFile)) {
+        inds = which(index$EnsParentFile == parentX)
+        index$EnsParentFile[inds] = index$File[inds][order(-1*index$InitYear[inds],-1*index$InitDayOfYear[inds],-1*index$nTimeSteps[inds])[1]]
+      }
+      index.merged = index[index$File==index$EnsParentFile,]
+    }
+
+    index.merged$MergedEnsSize = as.integer(rep(NA,nMerged))
+    index.merged$MergedEnsMemNum = as.character(rep(NA,nMerged))
+
+    rl.merged = res.list[index$File==index$EnsParentFile]
+
+    warn.remaptime = FALSE
+    for (i in 1:nMerged) {
+
+      inds = which(index$EnsParentFile==index.merged$EnsParentFile[i])
+      es = length(inds)
+      index.merged$MergedEnsSize[i] = es
+      index.merged$MergedEnsMemNum[i] = paste(index$EnsMemNum[inds],collapse=",")
+
+      if (es <= 1) {next}
+
+      rl.merged[[i]]$fl = unlist(lapply(res.list[inds], function(x) x$fl))
+      if (checkfileformat) {
+        rl.merged[[i]]$checkfileformat.result = unlist(lapply(res.list[inds], function(x) x$checkfileformat.result))
+      }
+      rl.merged[[i]]$EnsMemNum = unlist(lapply(res.list[inds], function(x) x$EnsMemNum))
+
+      dat = matrix(nrow=nrow(rl.merged[[i]]$data), ncol=2*es)
+      dat.colnames = as.character(rep(NA,2*es))
+
+      for (ie in 1:es) {
+
+        Nts.min = min(rl.merged[[i]]$Ntimesteps, res.list[[inds[ie]]]$Ntimesteps)
+        child.init.Year = res.list[[inds[ie]]]$InitYear
+        child.init.DayOfYear = res.list[[inds[ie]]]$InitDayOfYear
+        parent.init.Year = rl.merged[[i]]$InitYear
+        parent.init.DayOfYear = rl.merged[[i]]$InitDayOfYear
+        if (any(res.list[[inds[ie]]]$data$Year[1:Nts.min] != rl.merged[[i]]$data$Year[1:Nts.min] ||
+                res.list[[inds[ie]]]$data$DayOfYear[1:Nts.min] != rl.merged[[i]]$data$DayOfYear[1:Nts.min]) ||
+            child.init.Year != parent.init.Year || child.init.DayOfYear != parent.init.DayOfYear) {
+          warn.remaptime = TRUE
+          child.init.rt = sidfex.ydoy2reltime(child.init.Year,child.init.DayOfYear,
+                                              parent.init.Year,parent.init.DayOfYear)
+          child.rt = sidfex.ydoy2reltime(res.list[[inds[ie]]]$data$Year,res.list[[inds[ie]]]$data$DayOfYear,
+                                              parent.init.Year,parent.init.DayOfYear)
+          child.lat = res.list[[inds[ie]]]$data$Lat
+          child.lon = res.list[[inds[ie]]]$data$Lon
+          if (child.rt[1] > child.init.rt) {
+            child.rt = c(child.init.rt,child.rt)
+            child.lat = c(res.list[[inds[ie]]]$InitLat,child.lat)
+            child.lon = c(res.list[[inds[ie]]]$InitLon,child.lon)
+          } else if (child.rt[1] < child.init.rt) {
+            stop(paste0("First time of data in ",res.list[[inds[ie]]]$fl," earlier than corresponding initial time."))
+          }
+          parent.rt = sidfex.ydoy2reltime(rl.merged[[i]]$data$Year,rl.merged[[i]]$data$DayOfYear,
+                                          parent.init.Year,parent.init.DayOfYear)
+          remap.res = sl.trajectory.remaptime(child.rt,child.lat,child.lon,parent.rt)
+          dat[,2*ie-1] = remap.res$Lat
+          dat[,2*ie] = remap.res$Lon
+          remap.init.res = sl.trajectory.remaptime(child.rt,child.lat,child.lon,0)
+          rl.merged[[i]]$MergedInitLat[ie+1] = remap.init.res$Lat
+          rl.merged[[i]]$MergedInitLon[ie+1] = remap.init.res$Lon
+        } else {
+          dat[1:Nts.min,2*ie-1] = res.list[[inds[ie]]]$data$Lat[1:Nts.min]
+          dat[1:Nts.min,2*ie] = res.list[[inds[ie]]]$data$Lon[1:Nts.min]
+          rl.merged[[i]]$MergedInitLat[ie+1] = res.list[[inds[ie]]]$InitLat
+          rl.merged[[i]]$MergedInitLon[ie+1] = res.list[[inds[ie]]]$InitLon
+        }
+        dat.colnames[(2*ie-1):(2*ie)] = paste0(c("Lat","Lon"),res.list[[inds[ie]]]$EnsMemNum)
+
+      }
+
+      ensmeans.lat = rep(NA,nrow(dat))
+      ensmeans.lon = rep(NA,nrow(dat))
+      notna = which(rowSums(!is.na(dat)) > 0)
+      for (j in notna) {
+        em = sl.barycenter(lon = dat[j,seq(2,2*es,2)], lat = dat[j,seq(1,2*es,2)])
+        ensmeans.lat[j] = em$lat
+        ensmeans.lon[j] = em$lon
+      }
+
+      datX = as.data.frame(matrix(ncol=2*es+5, nrow=nrow(dat)))
+      colnames(datX) = c(colnames(rl.merged[[i]]$data),dat.colnames)
+      datX[,c(1,2,5)] = rl.merged[[i]]$data[,c(1,2,5)]
+      datX[,3] = ensmeans.lat
+      datX[,4] = ensmeans.lon
+      datX[,5+(1:(2*es))] = dat
+
+      rl.merged[[i]]$data = datX
+
+      rl.merged[[i]]$FirstLat = ensmeans.lat[1]
+      rl.merged[[i]]$FirstLon = ensmeans.lon[1]
+      rl.merged[[i]]$LastYear = rl.merged[[i]]$data$Year[tail(notna,1)]
+      rl.merged[[i]]$LastDayOfYear = rl.merged[[i]]$data$DayOfYear[tail(notna,1)]
+      rl.merged[[i]]$LastLat = rl.merged[[i]]$data$Lat[tail(notna,1)]
+      rl.merged[[i]]$LastLon = rl.merged[[i]]$data$Lon[tail(notna,1)]
+
+      em.init = sl.barycenter(lon=rl.merged[[i]]$MergedInitLon[2:(es+1)],
+                              lat=rl.merged[[i]]$MergedInitLat[2:(es+1)])
+      rl.merged[[i]]$MergedInitLat[1] = em.init$lat
+      rl.merged[[i]]$MergedInitLon[1] = em.init$lon
+
+    }
+
+    if (warn.remaptime) {
+      warning("Some forecast ensemble members have been remapped temporally to match the parent forecast time axis")
+    }
+
+    res.list = rl.merged
+    index = index.merged
+
   }
-  return(list(ens.merge=ens.merge,res.list=res.list))
+
+  return(list(ens.merge=ens.merge,res.list=res.list,index=index))
 
 }
