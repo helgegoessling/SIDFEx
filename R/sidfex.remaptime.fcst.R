@@ -1,4 +1,4 @@
-sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.HourOfDay=NULL,newtime.DayOfYear=NULL,newtime.Year=NULL,method="linear",extrapolate=FALSE,return.remapinfo=FALSE,data.path=NULL) {
+sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.FractionOfDay=NULL,newtime.YearDayOfYear=NULL,method="linear",extrapolate=FALSE,return.remapinfo=FALSE) {
 
   require(spheRlab)
 
@@ -7,34 +7,53 @@ sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.HourOf
   }
 
   if (!is.null(newtime.DaysLeadTime)) {
-    if (!(is.null(newtime.HourOfDay) && is.null(newtime.DayOfYear) && is.null(newtime.Year))) {
+    if (!(is.null(newtime.FractionOfDay) && is.null(newtime.YearDayOfYear))) {
       warning("Using argument 'newtime.DaysLeadTime'. Other arguments starting 'newtime.' are ignored.")
     }
     newtime = newtime.DaysLeadTime
   } else {
-    stop("arguments for new time axis other than 'newtime.DaysLeadTime' not yet implemented")
-    if (!is.null(newtime.HourOfDay)) {
-      if (!(is.null(newtime.DayOfYear) && is.null(newtime.Year))) {
-        warning("Using argument 'newtime.HourOfDay'. Other arguments starting 'newtime.' are ignored.")
-      }
-    } else {
-      if (!is.null(newtime.Year)) {
-        if (is.null(newtime.DayOfYear)) {
-          stop("With 'newtime.Year' specified, 'newtime.DayOfYear' must be specified, too.")
-        }
-      } else {
-        if (is.null(newtime.DayOfYear)) {
-          stop("At least one of the arguments starting 'newtime.' must be specified.")
-        }
-      }
-    }
+    if (is.null(newtime.FractionOfDay)) {stop("Either 'newtime.DaysLeadTime' or 'newtime.FractionOfDay' must be defined.")}
+    if (newtime.FractionOfDay < 0 || newtime.FractionOfDay >= 1) {stop("'newtime.FractionOfDay' must be within [0,1)")}
   }
 
-  rl = fcst$res.list
+  if ("res.list" %in% names(fcst)) {
+    rl = fcst$res.list
+    single.element = FALSE
+  } else if ("data" %in% names(fcst)) {
+    rl = list(fcst)
+    single.element = TRUE
+  } else {
+    stop("format of 'fcst' not recognised.")
+  }
 
   for (irl in 1:length(rl)) {
 
-    if (newtime[1] < 0) {stop("First time of new time axis before the forecast initial time")}
+    if (is.null(newtime.DaysLeadTime)) {
+      fulldayrange = sidfex.ydoy2reltime(Year=c(rl[[irl]]$InitYear,rl[[irl]]$LastYear),
+                                         DayOfYear=c(floor(rl[[irl]]$InitDayOfYear),floor(rl[[irl]]$LastDayOfYear)),
+                                         RefYear=rl[[irl]]$InitYear,RefDayOfYear=rl[[irl]]$InitDayOfYear)
+      newtime = seq(fulldayrange[1],fulldayrange[2])
+      if (!is.null(newtime.YearDayOfYear)) {
+        newtime.keep = sidfex.ydoy2reltime(Year=newtime.YearDayOfYear[,1],DayOfYear=newtime.YearDayOfYear[,2],
+                                             RefYear=rl[[irl]]$InitYear,RefDayOfYear=rl[[irl]]$InitDayOfYear)
+        newtime = newtime[newtime %in% newtime.keep]
+      }
+      newtime = rep(newtime,each=length(newtime.FractionOfDay)) + rep(newtime.FractionOfDay,length(newtime))
+      lastleadtime = sidfex.ydoy2reltime(Year=rl[[irl]]$LastYear,DayOfYear=rl[[irl]]$LastDayOfYear,
+                                         RefYear=rl[[irl]]$InitYear,RefDayOfYear=rl[[irl]]$InitDayOfYear)
+      newtime = newtime[newtime >= 0 & newtime <= lastleadtime]
+      if (length(newtime) < 1) {
+        warning("None of the times specified is within the original lead time range, remapping not possible")
+        rl[[irl]] = "Time remapping failed: no times within lead time range"
+        next
+      }
+    }
+
+    if (newtime[1] < 0) {
+      warning("First time of new time axis before the forecast initial time, remapping not possible")
+      rl[[irl]] = "Time remapping failed"
+      next
+    }
 
     nms = names(fcst$res.list[[irl]]$data)
     LatCols = which(substr(nms, start = 1, stop = 3) == "Lat")
@@ -83,6 +102,10 @@ sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.HourOf
 
   }
 
-  return(list(ens.merge=fcst$ens.merge, remaptime.fcst=list(method=method,extrapolate=extrapolate), res.list=rl))
+  if (single.element) {
+    return(rl[[1]])
+  } else {
+    return(list(ens.merge=fcst$ens.merge, remaptime.fcst=list(method=method,extrapolate=extrapolate), res.list=rl))
+  }
 
 }
