@@ -39,8 +39,8 @@ sidfex.fcst.search.extractFromTable <-
     if (!is.null(mid)) {df <- df[df$MethodID %in% mid,]}
     if (!is.null(emn)) {df <- df[df$EnsMemNum %in% emn,]}
     
-    # now take care of (possible) range queries
-    if (!is.null(per)) {df <- df[ which((df$FcstTime <= max(per)) & (df$FcstTime > min(per))),]}
+    # now take care of (possible) range queries, this min/max thing is an elegant solution for length(<parameter>)=1
+    if (!is.null(per)) {df <- df[ which((df$FcstTime <= max(per)) & (df$FcstTime >= min(per))),]}
     if (!is.null(nt)) {df <- df[which((df$nTimeSteps <= max(nt)) & (df$nTimeSteps >= min(nt))),]}
     if (!is.null(del)) {df <- df[which((df$Delay <= max(del)) & (df$Delay >= min(del))),]}
 
@@ -50,7 +50,7 @@ sidfex.fcst.search.extractFromTable <-
       if (length(iy)==1 | iy[1]==iy[2]){ # case 1: year and day are only a point query (only one year or iy[1]=iy[2])
         df <- df[df$InitYear == iy,]
         if (!is.null(idoy)){
-          df <- df[df$InitDayOfYear %in% seq(min(idoy), max(idoy)),] # this min max thing is an elegant solution for length(idoy)=1
+          df <- df[df$InitDayOfYear %in% seq(min(idoy), max(idoy)),] 
         }
       } else if (iy[1]!=iy[2]) { # case 2: year and days are range queries (idoy must have length 2!)
         df <- df[which((df$InitYear==iy[1] & df$InitDayOfYear >= idoy[1])        |
