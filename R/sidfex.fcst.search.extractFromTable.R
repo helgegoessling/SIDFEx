@@ -1,7 +1,8 @@
 sidfex.fcst.search.extractFromTable <-
   function(indexTable.path = NULL, return.dataframe=FALSE, gid=NULL, mid=NULL, tid=NULL,
            iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL,
-           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE){
+           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL,
+           fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE){
 
     # check if specific directory for indexList is given, otherwise use default
     if (is.null(indexTable.path)) {
