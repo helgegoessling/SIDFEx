@@ -17,6 +17,10 @@ sidfex.fcst.search.extractFromTable <-
       indexTable.path.in = indexTable.path
     }
 
+    if (length(per)>2) {per = NULL; warning("length(per) > 2, parameter 'per' will be ignored")}
+    if (length(del)>2) {del = NULL; warning("length(del) > 2, parameter 'del' will be ignored")}
+    if (length( nt)>2) {nt  = NULL; warning("length(nt) > 2, parameter 'nt' will be ignored")}
+    
     # open table
     if(file.exists(file.path(indexTable.path.in, "indexTable.rda"))) {
       load(file.path(indexTable.path.in, "indexTable.rda"))
@@ -33,12 +37,12 @@ sidfex.fcst.search.extractFromTable <-
     if (!is.null(gid)) {df <- df[df$GroupID %in% gid,]}
     if (!is.null(tid)) {df <- df[df$TargetID %in% tid,]}
     if (!is.null(mid)) {df <- df[df$MethodID %in% mid,]}
-
-    # now take care of (possible) range queries
     if (!is.null(emn)) {df <- df[df$EnsMemNum %in% emn,]}
-    if (!is.null(per)) {df <- df[df$FcstTime %in% per,]}
-    if (!is.null(nt)) {df <- df[df$nTimeSteps %in% nt,]}
-    if (!is.null(del)) {df <- df[df$Delay %in% del,]}
+    
+    # now take care of (possible) range queries
+    if (!is.null(per)) {df <- df[ which((df$FcstTime <= max(per)) & (df$FcstTime > min(per))),]}
+    if (!is.null(nt)) {df <- df[which((df$nTimeSteps <= max(nt)) & (df$nTimeSteps >= min(nt))),]}
+    if (!is.null(del)) {df <- df[which((df$Delay <= max(del)) & (df$Delay >= min(del))),]}
 
     # now the ugly stuff (taking care of range queries over different years)
     # initial time
