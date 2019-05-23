@@ -15,7 +15,7 @@ sidfex.reltime2ydoy <- function(reltime,RefYear=2017,RefDayOfYear=1.0) {
   DayOfYear = as.numeric(rep(NA,N))
 
   yearBreak.before = 1 - RefDayOfYear
-  yearBreak.after = 366 - RefDayOfYear + as.integer(((yr %% 4 == 0) & (yr %% 100 != 0)) | (yr %% 400 == 0))
+  yearBreak.after = 366 - RefDayOfYear + as.integer(((RefYear %% 4 == 0) & (RefYear %% 100 != 0)) | (RefYear %% 400 == 0))
   inds = which(reltime >= yearBreak.before & reltime < yearBreak.after)
   if (!is.null(inds)) {
     Year[inds] = RefYear
