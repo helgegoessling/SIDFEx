@@ -19,6 +19,15 @@ sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate
     obsX = obs
   }
 
+  if ("res.list" %in% names(fcst)) {
+    single.element = FALSE
+  } else if ("data" %in% names(fcst)) {
+    fcst = list(res.list=list(fcst))
+    single.element = TRUE
+  } else {
+    stop("format of 'fcst' not recognised.")
+  }
+
   for (irl in 1:length(fcst$res.list)) {
 
     if (! fcst$res.list[[irl]]$TargetID %in% names(obsX)) {
@@ -154,6 +163,10 @@ sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate
     }
   }
 
-  return(list(remaptime.obs2fcst=list(method=method,extrapolate=extrapolate),res.list=rl))
+  if (single.element) {
+    return(rl[[1]])
+  } else {
+    return(list(remaptime.obs2fcst=list(method=method,extrapolate=extrapolate),res.list=rl))
+  }
 
 }
