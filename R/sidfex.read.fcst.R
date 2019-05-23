@@ -162,7 +162,6 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
     require(spheRlab)
 
     index.merged = index[index$File==index$EnsParentFile,]
-    nMerged = nrow(index.merged)
     if (length(unique(index$EnsParentFile)) != length(unique(index.merged$EnsParentFile)) ||
         any(unique(index$EnsParentFile) != unique(index.merged$EnsParentFile))) {
       warning("One or more ensembles do not contain their parent; defining new parent based on lastest initial time, then largest number of time steps, then lowest EnsMemNum")
@@ -173,6 +172,7 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
       index.merged = index[index$File==index$EnsParentFile,]
     }
 
+    nMerged = nrow(index.merged)
     index.merged$MergedEnsSize = as.integer(rep(NA,nMerged))
     index.merged$MergedEnsMemNum = as.character(rep(NA,nMerged))
 
