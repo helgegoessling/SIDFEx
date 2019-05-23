@@ -12,7 +12,7 @@
     URL of OSI-SAF ftp server
   }
   \item{outdir}{
-    character for output directory (current working directory as default); downloaded .nc file, processed .rda file and small log file will be written in this directory.
+    character for output directory (current working directory as default); downloaded .nc file and processed .rda file will be written in this directory.
   }  
   \item{do.calc.lonlati}{
     boolean value, if \code{TRUE} (default), the function applies \code{\link{sl.lonlat2D.c2i}} on grid, otherwise (set to \code{FALSE}) only the .nc file is downloaded
@@ -23,11 +23,11 @@
 }
 
 \value{
-  Returns \code{TRUE} if the whole procedure came to an end and \code{FALSE} if there is already the currently available NetCDF file in the specified output directory. 
+  Returns \code{TRUE} if the whole procedure came to an end or \code{FALSE} if there is already the currently available NetCDF file in the specified output directory. 
 }
 
 \note{
-  This function is intended for automated updates of the daily sea-ice concentration and writes a small log file in output directory to keep track of the current state, as the processed files ("current_SIC.rda") will be overwritten in every use of this function. 
+  This function is intended for automated updates of daily sea-ice concentration observations.
 }
 
 \author{

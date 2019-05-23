@@ -18,6 +18,10 @@ sidfex.fcst.search.extractFromTable <-
       indexTable.path.in = indexTable.path
     }
 
+    if (length(per)>2) {per = NULL; warning("length(per) > 2, parameter 'per' will be ignored")}
+    if (length(del)>2) {del = NULL; warning("length(del) > 2, parameter 'del' will be ignored")}
+    if (length( nt)>2) {nt  = NULL; warning("length(nt) > 2, parameter 'nt' will be ignored")}
+
     # open table
     if(file.exists(file.path(indexTable.path.in, "indexTable.rda"))) {
       load(file.path(indexTable.path.in, "indexTable.rda"))
@@ -44,13 +48,13 @@ sidfex.fcst.search.extractFromTable <-
     if (!is.null(gid)) {df <- df[df$GroupID %in% gid,]}
     if (!is.null(tid)) {df <- df[df$TargetID %in% tid,]}
     if (!is.null(mid)) {df <- df[df$MethodID %in% mid,]}
-
-    # now take care of (possible) range queries
     if (!is.null(emn)) {df <- df[df$EnsMemNum %in% emn,]}
-    if (!is.null(per)) {df <- df[df$FcstTime %in% per,]}
-    if (!is.null(nt)) {df <- df[df$nTimeSteps %in% nt,]}
-    if (!is.null(del)) {df <- df[df$Delay %in% del,]}
-    if (!is.null(es)) {df <- df[df$EnsSize %in% es,]}
+
+    # now take care of (possible) range queries, this min/max thing is an elegant solution for length(<parameter>)=1
+    if (!is.null(per)) {df <- df[ which((df$FcstTime <= max(per)) & (df$FcstTime >= min(per))),]}
+    if (!is.null(nt)) {df <- df[which((df$nTimeSteps <= max(nt)) & (df$nTimeSteps >= min(nt))),]}
+    if (!is.null(del)) {df <- df[which((df$Delay <= max(del)) & (df$Delay >= min(del))),]}
+    if (!is.null(es)) {df <- df[which((df$EnsSize <= max(es)) & (df$EnsSize >= min(es))),]}
 
     # now the ugly stuff (taking care of range queries over different years)
     # initial time
@@ -58,7 +62,7 @@ sidfex.fcst.search.extractFromTable <-
       if (length(iy)==1 | iy[1]==iy[2]){ # case 1: year and day are only a point query (only one year or iy[1]=iy[2])
         df <- df[df$InitYear == iy,]
         if (!is.null(idoy)){
-          df <- df[df$InitDayOfYear %in% seq(min(idoy), max(idoy)),] # this min max thing is an elegant solution for length(idoy)=1
+          df <- df[df$InitDayOfYear %in% seq(min(idoy), max(idoy)),]
         }
       } else if (iy[1]!=iy[2]) { # case 2: year and days are range queries (idoy must have length 2!)
         df <- df[which((df$InitYear==iy[1] & df$InitDayOfYear >= idoy[1])        |

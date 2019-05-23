@@ -4,7 +4,6 @@ sidfex.osisaf.download.latestNhSIC <- function(url = "ftp://osisaf.met.no/prod/i
   require(spheRlab)
   require(ncdf4)
   require(stringi)
-  require(tictoc)
   if(any(grepl("package:SVGAnnotation", search()))) detach("package:SVGAnnotation") 
   
   if (do.del.nc & !do.calc.lonlati) {
@@ -25,27 +24,12 @@ sidfex.osisaf.download.latestNhSIC <- function(url = "ftp://osisaf.met.no/prod/i
 if (do.calc.lonlati){
     dat = sidfex.osisaf.nc2rda(paste0(outdir, file))
     save(dat, file=paste0(outdir, "current_SIC.rda"))
-    toc()
   }
-  
-  # save a short text file with information on current data (for automatic headers in shiny?)
-  if (!file.exists(paste0(outdir, "SICdwnld_log.txt"))) {
-    fileConn<-file(paste0(outdir, "SICdwnld_log.txt"))
-    writeLines(c("This is a very basic log file to keep track of the latest SIC download",
-                 paste0(file, " was downloaded: ", Sys.time())), fileConn)
-    close(fileConn)
-  } else {
-    write(paste0(file, " was downloaded: ", Sys.time()),file=paste0(outdir, "SICdwnld_log.txt"),append=TRUE)
-  }
-  
-  write(paste0(file, " was also processed? ", do.calc.lonlati),file=paste0(outdir, "SICdwnld_log.txt"),append=TRUE)
-  
+
   # optionally delete nc file to save space (default: do deletion)
   if(do.del.nc) {
     system(paste0("rm ", outdir, file))
   }
-  
-  write(paste0(file, " was deleted by download function? ", do.del.nc),file=paste0(outdir, "SICdwnld_log.txt"),append=TRUE)
-  
+
   return(TRUE)
 }

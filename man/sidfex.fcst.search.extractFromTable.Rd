@@ -48,10 +48,10 @@
     a numeric value (or list/vector of such) for the day of year that the respective file was processed
   }
   \item{del}{
-    a numeric value (or list/vector of such) for the submitting delay (difference of submit time and initial time of forecast)
+    a numeric value (or a length-2 list/vector) for the submitting delay (difference of submit time and initial time of forecast). If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. 
   }
   \item{nt}{
-    a numeric value (or list/vector of such) for the number of timesteps of the forecast
+    a numeric value (or a length-2 list/vector) for the number of timesteps of the forecast. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. 
   }
   \item{fy}{
     a numeric value (or list/vector of such) for the year of the first timestep
@@ -66,7 +66,7 @@
     a numeric value (or list/vector of such) for the day of year of the last timestep
   }
   \item{per}{
-    a numeric value (or list/vector of such) for the forecast time in days, i.e. the time difference between first and last timestep
+    a numeric value (or a length-2 list/vector) for the forecast period in days, i.e. the time difference between first and last timestep. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. 
   }
   \item{fcstrange}{
     a vector of length 2, containing two date objects spanning a range. If a forecast has at least one timestep in that range, it will be selected.
