@@ -1,4 +1,4 @@
-sidfex.download.fcst <- function(comparison.mode=FALSE, from.scratch=TRUE, data.path=NULL, indexTable.path=NULL, baseurl="https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/", verbose = T) {
+sidfex.download.fcst <- function(comparison.mode=FALSE, from.scratch=TRUE, data.path=NULL, indexTable.path=NULL, baseurl="https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/", verbose = FALSE) {
 
   dataurl = paste0(baseurl,"SIDFEx_processed/")
   indexurl = paste0(baseurl,"SIDFEx_index/")
@@ -84,8 +84,8 @@ sidfex.download.fcst <- function(comparison.mode=FALSE, from.scratch=TRUE, data.
     print("Data download ...")
     if (from.scratch) {
       res = download.file(url=paste0(indexurl,"data.tar.gz"),destfile=file.path(data.path.fcst,"data.tar.gz"))
-      if (verbose)  
-        {res = system(paste0("tar -zxvf ",file.path(data.path.fcst,"data.tar.gz")))} else 
+      if (verbose)
+        {res = system(paste0("tar -zxvf ",file.path(data.path.fcst,"data.tar.gz")))} else
         {res = system(paste0("tar -zxf ",file.path(data.path.fcst,"data.tar.gz")))}
       res = system(paste0("mv ",file.path(data.path.fcst,"data/*")," ",data.path.fcst))
       res = system(paste0("rm -rf ",file.path(data.path.fcst,"data")))
