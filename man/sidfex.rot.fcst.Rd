@@ -25,7 +25,7 @@ an integer specifying the year of the time to use to adjust the forecast traject
 a numeric scalar specifying the day of year of the time to use to adjust the forecast trajectories based on the corresponding observed position. Used only in combination with \code{obsref.Year}.
 }
   \item{lonlat.orig}{
-a 2-element (longitude-latitude) vector specifying the original position of a reference point. Used only in combination with \code{lonlat.new}, which is the new position of the reference point after the rotation. The latter is performed such that \item{lonlat.orig} and \item{lonlat.new} are located on the equator of the rotation. Default is \code{NULL}, in which case these points are determined based on deviations from observed positions, using either \code{obsref.DaysLeadTime} or \code{obsref.Year} and \code{obsref.DayOfYear}.
+a 2-element (longitude-latitude) vector specifying the original position of a reference point. Used only in combination with \code{lonlat.new}, which is the new position of the reference point after the rotation. The latter is performed such that \code{lonlat.orig} and \code{lonlat.new} are located on the equator of the rotation. Default is \code{NULL}, in which case these points are determined based on deviations from observed positions, using either \code{obsref.DaysLeadTime} or \code{obsref.Year} and \code{obsref.DayOfYear}.
 }
   \item{lonlat.new}{
 a 2-element (longitude-latitude) vector specifying the new position of a reference point after the rotation. Used only in combination with \code{lonlat.orig}.
