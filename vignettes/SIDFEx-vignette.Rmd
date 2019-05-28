@@ -1,0 +1,99 @@
+---
+title: "SIDFEx R-package user guide"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{SIDFEx R-package user guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## What is SIDFEx?
+
+This package provides tools to analyse data of the Sea Ice Drift Forecast Experiment, which is *a community effort to collect and analyse Arctic sea-ice drift forecasts at lead times from days to a year. Forecasts are made with various methods for drifting sea-ice buoys and, ultimately, the trans-Arctic MOSAiC drift campaign*. General information about SIDFEx can be found at <https://www.polarprediction.net/yopp-activities/sidfex/>. This site also provides a *Background and guidelines* document which describes the plain-text format of the original forecasts submitted to SIDFEx in detail.
+
+SIDFEx comprises forecasts of how certain assets ("targets") drift with the Arctic sea ice. Many of the forecasts are available in (near-)real-time and, depending on the forecast system they stem from, forecasts consist of single trajectories or ensembles of trajectories. Forecasts also vary regarding their length (the forecast lead time), their time resolution, the set of available initial times and targets, and so forth. All this makes the analysis of the data a non-trivial task which is meant to be facilitated by this package.
+
+The package allows you to download SIDFEx forecasts and corresponding observations, to explore which forecasts are available, and to analyse the forecasts and assess their quality. Among other things, functions are provided to remap (interpolate) the time axes of forecasts and observations and to rotate forecast trajectories - for example to correct their initial location (if required) or to derive real-time forecast from slightly outdated forecasts by adjusting the trajectories such that the latest observed location is accounted for.
+
+## Requirements and setting up the SIDFEx package
+
+The package has been developed on and for UNIX (Mac/Linux) systems and will likely fail on Windows. In case you are eager to analyse SIDFEx data but are restricted to Windows systems (which we expect to be an unlikely combination), please contact us and we can consider taking better care of platform independence.
+
+Given that the drift trajectories are defined on a sphere, operations such as finding the centroid of a point cloud or adjusting (*rotating*) trajectories necessitate somewhat complex computations. For such tasks, `SIDFEx` makes use of another R-package `spheRlab`, which is not on CRAN but can be obtained from GitHub (just like `SIDFEx`). You can download the package from <https://github.com/FESOM/spheRlab> and build and install it manually; general explanations for how to do that can be found easily online. Alternatively, you can use the `devtools` package, which is available from CRAN and can thus in turn be installed directly by running `install.packages("devtools")`. Then, to install `spheRlab` with `devtools`, run
+```{r, eval = FALSE}
+library(devtools)
+devtools::install_github("FESOM/spheRlab")
+```
+`spheRlab` can also be used for plotting maps, examples of which are provided below.
+
+The most convenient way to work with the SIDFEx package is to setup a file named `.SIDFEx` in your home directory. This file will be read to determine where the SIDFEx forecasts and observations and the forecast data index are located on your hard drive. For example, you can create a directory `SIDFEx` in your home directory and three subdirectories named `obs`, `fcst`, and `index` therein. The corresponding `.SIDFEx` file should contain the following three lines:
+```
+data.path.fcst = "~/SIDFEx/fcst"
+data.path.obs = "~/SIDFEx/obs"
+indexTable.path.in = "~/SIDFEx/index"
+```
+Alternatively, the functions that use these variables to find the respective data, for example `sidfex.read.fcst()` and `sidfex.read.obs()`, have function arguments `data.path` and/or `indexTable.path` to specify these manually, but that can be inconvenient and error-prone and is thus not recommended. In the following it is assumed that the paths are specified in a `.SIDFEx` file in the home directory.
+
+Now that we've installed (and setup) `spheRlab` and `SIDFEx`, we can load the packages:
+```{r setup}
+library(spheRlab)
+library(SIDFEx)
+```
+
+## Downloading forecast and observational data
+
+Each SIDFEx forecast, once submitted by one of the contributing forecast centres, is automatically processed and made publicly available in real-time (<1h delay) at the Cloud Service of the German Climate Computing Centre (DKRZ). Individual forecast files in plain-text format, ordered by contributor GroupIDs, can be accessed individually at <https://swiftbrowser.dkrz.de/public/dkrz_0262ea1f00e34439850f3f1d71817205/SIDFEx_processed/>. However, if more than a few forecasts are of interest, it is much more convenient and faster to download a corresponding `.tar.gz` file that holds all the forecast data. To retrieve it through this package, run
+```{r, eval = FALSE}
+res = sidfex.download.fcst()
+```
+After successful retrieval, you will find the plain-text forecast files in the specified data directory (see above) in subdirectories named by the `GroupID`s of the forecast centres.
+
+In fact, this function retrieves not only the forecast data, but also an index of the data (which you will now also find in the corresponding directory). The index facilitates exploring and working with the data considerably. Once a local copy of the data and a corresponding index exist, the index also allows one to compare the local data with the remote data to see what new data is available. To compare, run
+```{r}
+res = sidfex.download.fcst(comparison.mode = TRUE, from.scratch = FALSE)
+```
+If not too many new forecasts are available and if you want to save download volume, you can rerun the function with `comparison.mode = FALSE` and `from.scratch = FALSE` to retrieve only individual new files. However, `from.scratch = TRUE` will be faster most of the time.
+
+It can be convenient to have the index of the (local) forecast data available in a local variable. To dump the index into a data frame named `index` and to get an overview of its content, run
+```{r}
+index = sidfex.load.index()
+str(index)
+```
+The first line of the output tells us how many forecast trajectories ("`obs.`", counting all members of ensemble forecasts individually) are available, and how many "`variables`" the index provides, which are listed underneath. For example, the `$TragetID` column provides the target each forecast corresponds to. We can list all targets by typing
+```{r}
+unique(index$TargetID)
+```
+
+To download observational data for all SIDFEx targets, you can use the function `sidfex.download.obs()`. The argument `TargetID` can be used to specify which observations shall be retrieved. However, often the easiest way is to provide the argument `index`, that is, the index of the forecast data for which observations shall be retrieved, directly:
+```{r, eval = FALSE}
+obs = sidfex.download.obs(index = index)
+```
+
+The above download functions rely on the availability of the respective servers and on finding the data in the expected locations and format. If the download fails, please let us know so we can investigate the cause.
+
+Now that we have all data locally, let's start by exploring and subselecting the index, then read some data, then inspect some raw data, and finally look at some more sophisticated examples.
+
+## Exploring and subselecting the index
+
+To be filled.
+
+## Reading forecast and observational data
+
+To be filled.
+
+## A look at some raw data
+
+To be filled.
+
+## Remapping data in time and space
+
+To be filled.

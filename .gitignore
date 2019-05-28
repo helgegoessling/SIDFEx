@@ -43,3 +43,4 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 >>>>>>> 65cf87f00d77a50bd69a5a5e8ac97838f43bb72c
+inst/doc
