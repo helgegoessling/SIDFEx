@@ -2,20 +2,23 @@
 \alias{sidfex.fcst.search.extractFromTable}
 \title{Extract specific row(s) of search index table}
 \usage{
-  sidfex.fcst.search.extractFromTable (indexTable.path = NULL, return.dataframe=FALSE, gid=NULL, mid=NULL, tid=NULL,
-           iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL,
-           del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL, fcstrange=NULL,
-           es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE)
+  sidfex.fcst.search.extractFromTable (index = NULL, indexTable.path = NULL, return.dataframe=TRUE,
+           gid=NULL, mid=NULL, tid=NULL, iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL,
+           pdoy=NULL, del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL,
+           fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE)
 }
 \description{
-  This function is more or less the core of the upcoming "Shiny App" for SIDFEx. It allows a user to quickly find the filename of forecast datasets based on a useful set of search parameters. These filenames can then be easily used to load the forecast of interest for further processing and/or analysis. Please note the note about date inputs.
+  This function allows one to make of subselection of the SIDFEx forecast index based on a useful set of search parameters. The resulting subindex can then be easily used to load the forecasts of interest for further processing and/or analysis. Please note the note about date inputs.
 }
 \arguments{
+  \item{index}{
+    \code{NULL} or a SIDFEx forecast index (data frame) as returned by \code{\link{sidfex.load.index}}. If \code{NULL} (default), it will be attempted to load the complete index from its default location (see argument \code{indexTable.path}).
+  }
   \item{indexTable.path}{
-    \code{NULL} or a character specifying the directory where to find or create the index file. If \code{NULL}, it is attempted to source a file named \code{.SIDFEx} in the home directory where a character variable \code{indexTable.path.in} needs to be defined.
+    \code{NULL} or a character specifying the directory where to find the index file. Used only if \code{index=NULL}. If \code{indexTable.path=NULL}, it is attempted to source a file named \code{.SIDFEx} in the home directory where a character variable \code{indexTable.path.in} needs to be defined.
   }
   \item{return.dataframe}{
-    a logical value specifying whether to return the whole data frame. If \code{FALSE} (default), only the file names will be returned.
+    a logical value specifying whether to return the whole data frame. If \code{FALSE}, only the file names will be returned. Default is \code{TRUE}.
   }
   \item{gid}{
     a character (or list/vector of characters) for the GroupID(s) of interest
@@ -48,10 +51,10 @@
     a numeric value (or list/vector of such) for the day of year that the respective file was processed
   }
   \item{del}{
-    a numeric value (or a length-2 list/vector) for the submitting delay (difference of submit time and initial time of forecast). If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. 
+    a numeric value (or a length-2 list/vector) for the submitting delay (difference of submit time and initial time of forecast). If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value.
   }
   \item{nt}{
-    a numeric value (or a length-2 list/vector) for the number of timesteps of the forecast. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. 
+    a numeric value (or a length-2 list/vector) for the number of timesteps of the forecast. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value.
   }
   \item{fy}{
     a numeric value (or list/vector of such) for the year of the first timestep
@@ -66,7 +69,7 @@
     a numeric value (or list/vector of such) for the day of year of the last timestep
   }
   \item{per}{
-    a numeric value (or a length-2 list/vector) for the forecast period in days, i.e. the time difference between first and last timestep. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. 
+    a numeric value (or a length-2 list/vector) for the forecast period in days, i.e. the time difference between first and last timestep. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value.
   }
   \item{fcstrange}{
     a vector of length 2, containing two date objects spanning a range. If a forecast has at least one timestep in that range, it will be selected.
@@ -85,7 +88,7 @@
   If \code{return.dataframe=FALSE}, returns a list of filenames (without extension) or NULL, if no files fit to search parameters. Otherwise, the whole corresponding data frame is returned.
 }
 \note{
-  As all search parameters are \code{NULL} by default, currently unimportant parameters can just be omitted, see example below.
+  As all search parameters are \code{NULL} by default, currently unimportant parameters can just be omitted, see examples below.
 
   If you want to use this function outside the Shiny App, it is advised to look at the code of this function to understand how it works with special respect to date inputs, as strange/unwanted behavior might occur without throwing error messages. As a rule of thumb: Use either point queries here (e.g. iy=2018, idoy=14, sdoy=20, ..) or vectors of length 2 (e.g. iy=c(2017, 2018)
   and idoy=c(300, 5)). In that specific case, the function returns all datasets that lie in between 2017, DOY 300 and 2018, DOY 5.
@@ -98,19 +101,17 @@ Simon Reifenberg, updated by Helge Goessling
 }
 
 \examples{
-# get file names of all avaiable data from the index table
-rTab_filenames = sidfex.fcst.search.extractFromTable()
+# extract a reduced index data frame for all forecasts with GroupID awi003,
+# initialized in 2017 and with ensemble member number 3:
+subindex1 = sidfex.fcst.search.extractFromTable(gid="awi003", iy=2017, emn = 3)
 
-# get whole index table as a data frame
-rTab = sidfex.fcst.search.extractFromTable(return.dataframe=TRUE)
-
-# extract the filenames of all forecasts with GroupID awi003, initialized in 2017 and ensemble member number 1
-rTab_selected_filenames = sidfex.fcst.search.extractFromTable(gid="awi003", iy=2017, emn = 1)
-
-# extract a reduced data frame for all forecasts with GroupID awi003, initialized in 2017 and ensemble member number 1
-rTab_selected = sidfex.fcst.search.extractFromTable(return.dataframe=TRUE, gid="awi003", iy=2017, emn = 1)
+# extract a reduced index data frame for all forecasts with GroupID nrl001, MethodID navyespc-subseasonal,
+# TargetID 300234063991680, initialized between March 1st 2018, 12:00 UTC and February 15th 2019, 00:00UTC;
+# return only the parent of each ensemble:
+subindex2 = sidfex.fcst.search.extractFromTable(gid="nrl001", mid="navyespc-subseasonal", tid="300234063991680",
+                                                iy=c(2018,2019), idoy=c(62.5,48.0), EnsParentOnly=TRUE)
 }
 
 \seealso{
-\code{\link{sidfex.fcst.search.createIndexTable}}, \code{\link{sidfex.fcst.search.addTableItem}}, \code{\link{sidfex.fcst.search.rda2csv}}
+\code{\link{sidfex.fcst.search.createIndexTable}}, \code{\link{sidfex.fcst.search.rda2csv}}
 }

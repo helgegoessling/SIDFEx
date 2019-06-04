@@ -1,37 +1,39 @@
 sidfex.fcst.search.extractFromTable <-
-  function(indexTable.path = NULL, return.dataframe=FALSE, gid=NULL, mid=NULL, tid=NULL,
+  function(index = NULL, indexTable.path = NULL, return.dataframe=TRUE, gid=NULL, mid=NULL, tid=NULL,
            iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL,
            del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL,
            fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE){
 
-    # check if specific directory for indexList is given, otherwise use default
-    if (is.null(indexTable.path)) {
-      no.indexTable.path=TRUE
-      if (file.exists(file.path("~",".SIDFEx"))) {
-        source(file.path("~",".SIDFEx"))
-        if (exists("indexTable.path.in")) {no.indexTable.path=FALSE}
+    if (is.null(index)) {
+      # check if specific directory for indexList is given, otherwise use default
+      if (is.null(indexTable.path)) {
+        no.indexTable.path=TRUE
+        if (file.exists(file.path("~",".SIDFEx"))) {
+          source(file.path("~",".SIDFEx"))
+          if (exists("indexTable.path.in")) {no.indexTable.path=FALSE}
+        }
+        if (no.indexTable.path) {
+          stop(paste0("With indexTable.path=NULL , indexTable.path.in must be specified in a file ~/.SIDFEx as a line like indexTable.path.in=..."))
+        }
+      } else {
+        indexTable.path.in = indexTable.path
       }
-      if (no.indexTable.path) {
-        stop(paste0("With indexTable.path=NULL , indexTable.path.in must be specified in a file ~/.SIDFEx as a line like indexTable.path.in=..."))
+      # open table
+      if(file.exists(file.path(indexTable.path.in, "indexTable.rda"))) {
+        load(file.path(indexTable.path.in, "indexTable.rda"))
       }
+      else {
+        print("No indexTable.rda at given location.")
+        return(NULL)
+      }
+      df = rTab
     } else {
-      indexTable.path.in = indexTable.path
+      df = index
     }
 
     if (length(per)>2) {per = NULL; warning("length(per) > 2, parameter 'per' will be ignored")}
     if (length(del)>2) {del = NULL; warning("length(del) > 2, parameter 'del' will be ignored")}
     if (length( nt)>2) {nt  = NULL; warning("length(nt) > 2, parameter 'nt' will be ignored")}
-
-    # open table
-    if(file.exists(file.path(indexTable.path.in, "indexTable.rda"))) {
-      load(file.path(indexTable.path.in, "indexTable.rda"))
-    }
-    else {
-      print("No indexTable.rda at given location.")
-      return(NULL)
-    }
-
-    df = rTab
 
     if (EnsParentOnly) {
       df = df[df$File==df$EnsParentFile,]
@@ -39,7 +41,6 @@ sidfex.fcst.search.extractFromTable <-
       parents = which(df$File==df$EnsParentFile & df$EnsSize>1)
       for (ip in parents) {
         children = which(df$EnsParentFile==df$File[ip] & df$File!=df$File[ip])
-        #df[children,c(2:6,8:ncol(df))] = rep(df[ip,c(2:6,8:ncol(df))],each=length(children))
         df[children,c(2:6,8:ncol(df))] = df[ip,c(2:6,8:ncol(df))]
       }
     }
@@ -60,9 +61,9 @@ sidfex.fcst.search.extractFromTable <-
     # initial time
     if(!is.null(iy)){
       if (length(iy)==1 | iy[1]==iy[2]){ # case 1: year and day are only a point query (only one year or iy[1]=iy[2])
-        df <- df[df$InitYear == iy,]
+        df <- df[df$InitYear == iy[1],]
         if (!is.null(idoy)){
-          df <- df[df$InitDayOfYear %in% seq(min(idoy), max(idoy)),]
+          df <- df[which((df$InitDayOfYear <= max(idoy)) & (df$InitDayOfYear >= min(idoy))),]
         }
       } else if (iy[1]!=iy[2]) { # case 2: year and days are range queries (idoy must have length 2!)
         df <- df[which((df$InitYear==iy[1] & df$InitDayOfYear >= idoy[1])        |
@@ -74,9 +75,9 @@ sidfex.fcst.search.extractFromTable <-
     # first date of forecast
     if(!is.null(fy)){
       if (length(fy)==1 | fy[1]==fy[2]){
-        df <- df[df$FirstTimeStepYear == fy,]
+        df <- df[df$FirstTimeStepYear == fy[1],]
         if (!is.null(fdoy)){
-          df <- df[df$FirstTimeStepDayOfYear %in% seq(min(fdoy), max(fdoy)),]
+          df <- df[which((df$FirstTimeStepDayOfYear <= max(fdoy)) & (df$FirstTimeStepDayOfYear >= min(fdoy))),]
         }
       } else if (fy[1]!=fy[2]) {
         df <- df[which((df$FirstTimeStepYear==fy[1] & df$FirstTimeStepDayOfYear >= fdoy[1])        |
@@ -88,9 +89,9 @@ sidfex.fcst.search.extractFromTable <-
     # last date of forecast
     if(!is.null(ly)){
       if (length(ly)==1 | ly[1]==ly[2]){
-        df <- df[df$LastTimeStepYear == ly,]
+        df <- df[df$LastTimeStepYear == ly[1],]
         if (!is.null(ldoy)){
-          df <- df[df$LastTimeStepDayOfYear %in% seq(min(ldoy), max(ldoy)),]
+          df <- df[which((df$LastTimeStepDayOfYear <= max(ldoy)) & (df$LastTimeStepDayOfYear >= min(ldoy))),]
         }
       } else if (ly[1]!=ly[2]) {
         df <- df[which((df$LastTimeStepYear==ly[1] & df$LastTimeStepDayOfYear >= ldoy[1])        |
@@ -102,9 +103,9 @@ sidfex.fcst.search.extractFromTable <-
     # year of file processing
     if(!is.null(py)){
       if (length(py)==1 | py[1]==py[2]){
-        df <- df[df$ProcessedYear == py,]
+        df <- df[df$ProcessedYear == py[1],]
         if (!is.null(pdoy)){
-          df <- df[df$ProcessedDayOfYear %in% seq(min(pdoy), max(pdoy)),]
+          df <- df[which((df$ProcessedDayOfYear <= max(pdoy)) & (df$ProcessedDayOfYear >= min(pdoy))),]
         }
       } else if (py[1]!=py[2]) {
         df <- df[which((df$ProcessedYear==sy[1] & df$ProcessedDayOfYear >= pdoy[1])        |
@@ -117,9 +118,9 @@ sidfex.fcst.search.extractFromTable <-
     # date of submission
     if(!is.null(sy)){
       if (length(sy)==1 | sy[1]==sy[2]){
-        df <- df[df$SubmitYear == sy,]
+        df <- df[df$SubmitYear == sy[1],]
         if (!is.null(sdoy)){
-          df <- df[df$SubmitDayOfYear %in% seq(min(sdoy), max(sdoy)),]
+          df <- df[which((df$SubmitDayOfYear <= max(sdoy)) & (df$SubmitDayOfYear >= min(sdoy))),]
         }
       } else if (sy[1]!=sy[2]) {
         df <- df[which((df$SubmitYear==sy[1] & df$SubmitDayOfYear >= sdoy[1])        |
