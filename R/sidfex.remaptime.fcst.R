@@ -55,11 +55,11 @@ sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.Fracti
       next
     }
 
-    nms = names(fcst$res.list[[irl]]$data)
+    nms = names(rl[[irl]]$data)
     LatCols = which(substr(nms, start = 1, stop = 3) == "Lat")
     LonCols = which(substr(nms, start = 1, stop = 3) == "Lon")
-    oldlat = fcst$res.list[[irl]]$data[,LatCols]
-    oldlon = fcst$res.list[[irl]]$data[,LonCols]
+    oldlat = rl[[irl]]$data[,LatCols]
+    oldlon = rl[[irl]]$data[,LonCols]
     oldtime = sidfex.ydoy2reltime(Year=rl[[irl]]$data$Year, DayOfYear = rl[[irl]]$data$DayOfYear,
                                   RefYear = rl[[irl]]$InitYear, RefDayOfYear = rl[[irl]]$InitDayOfYear)
 
