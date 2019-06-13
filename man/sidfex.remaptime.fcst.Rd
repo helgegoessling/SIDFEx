@@ -3,7 +3,7 @@
 \title{Remap SIDFEx Forecasts}
 \usage{
 sidfex.remaptime.fcst(fcst, newtime.DaysLeadTime = NULL, newtime.FractionOfDay = 0,
-newtime.YearDayOfYear = NULL, method = "linear", extrapolate = FALSE, return.remapinfo = FALSE)
+newtime.YearDayOfYear = NULL, method = "linear", extrapolate = FALSE, return.remapinfo = FALSE, verbose = TRUE)
 }
 \description{
 Remap SIDFEx forecast data temporally to specific lead times (or, not yet implemented, FractionOfDay,YearDayOfYear combinations).
@@ -29,6 +29,9 @@ an \code{Nx2} integer matrix specifying the years and full days of year of the n
 }
   \item{return.remapinfo}{
   a logical value specifying whether or not to return information on the remapping (nearest-neighbour-before indices and weights); if \code{TRUE}, the information will be added as extra columns to the trajectories contained in \code{res.list[[i]]$data}. Default is \code{FALSE}.
+}
+  \item{verbose}{
+a logical value specifying whether to produce warnings in \code{sl.trajectory.remaptime}, in particular when new time axes reach outside original time axes. Default is \code{TRUE}.
 }
 }
 \value{

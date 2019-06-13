@@ -1,4 +1,4 @@
-sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.FractionOfDay=NULL,newtime.YearDayOfYear=NULL,method="linear",extrapolate=FALSE,return.remapinfo=FALSE) {
+sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.FractionOfDay=NULL,newtime.YearDayOfYear=NULL,method="linear",extrapolate=FALSE,return.remapinfo=FALSE,verbose=TRUE) {
 
   require(spheRlab)
 
@@ -76,14 +76,14 @@ sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.Fracti
         oldlon = oldlon0
       } else {
         oldlat = c(rl[[irl]]$InitLat, oldlat)
-        oldlon = c(rl[[irl]]$InitLon, oldlat)
+        oldlon = c(rl[[irl]]$InitLon, oldlon)
       }
     }
 
     remap.res = sl.trajectory.remaptime(oldtime = oldtime, oldlat = oldlat,
                                         oldlon = oldlon, newtime = newtime,
                                         extrapolate = FALSE, method = "linear",
-                                        return.remapinfo = return.remapinfo)
+                                        return.remapinfo = return.remapinfo, verbose = verbose)
     newtime.ydoy = sidfex.reltime2ydoy(reltime = newtime, RefYear = rl[[irl]]$InitYear,
                                        RefDayOfYear = rl[[irl]]$InitDayOfYear)
 

@@ -1,4 +1,4 @@
-sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE) {
+sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE) {
 
   if (is.null(data.path)) {
     no.data.path.fcst=TRUE
@@ -223,10 +223,10 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
           }
           parent.rt = sidfex.ydoy2reltime(rl.merged[[i]]$data$Year,rl.merged[[i]]$data$DayOfYear,
                                           parent.init.Year,parent.init.DayOfYear)
-          remap.res = sl.trajectory.remaptime(child.rt,child.lat,child.lon,parent.rt)
+          remap.res = sl.trajectory.remaptime(child.rt,child.lat,child.lon,parent.rt,verbose=verbose)
           dat[,2*ie-1] = remap.res$Lat
           dat[,2*ie] = remap.res$Lon
-          remap.init.res = sl.trajectory.remaptime(child.rt,child.lat,child.lon,0)
+          remap.init.res = sl.trajectory.remaptime(child.rt,child.lat,child.lon,0,verbose=verbose)
           rl.merged[[i]]$MergedInitLat[ie+1] = remap.init.res$Lat
           rl.merged[[i]]$MergedInitLon[ie+1] = remap.init.res$Lon
         } else {

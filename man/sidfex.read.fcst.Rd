@@ -2,7 +2,7 @@
 \alias{sidfex.read.fcst}
 \title{Read SIDFEx Forecasts}
 \usage{
-sidfex.read.fcst(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE)
+sidfex.read.fcst(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE)
 }
 \description{
 Read SIDFEx forecast data and (optionally) merge ensembles.
@@ -19,6 +19,9 @@ a logical value specifying whether or not to merge ensemble members from individ
 }
   \item{checkfileformat}{
 a logical value specifying whether or not to check if the file format complies with the SIDFEx conventions, using \code{\link{sidfex.checkfileformat}}.
+}
+  \item{verbose}{
+a logical value specifying whether to produce warnings in \code{sl.trajectory.remaptime} (only used when lagged-initial-time ensembles are merged), in particular when new time axes reach outside original time axes. Default is \code{TRUE}.
 }
 }
 \value{

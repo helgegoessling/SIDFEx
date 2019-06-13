@@ -1,4 +1,4 @@
-sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate=FALSE,return.remapinfo=FALSE,data.path=NULL) {
+sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate=FALSE,return.remapinfo=FALSE,data.path=NULL,verbose=TRUE) {
 
   require(spheRlab)
 
@@ -69,35 +69,35 @@ sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate
 
     if (obs.DaysLeadTime[1] > 0) {
       if (obs.DaysLeadTime[1] > fcst.DaysLeadTime[fcst.N]) {
-        warning("Forecast time range completely out of observational time range.")
+        if (verbose) {warning("Forecast time range completely out of observational time range.")}
         if (extrapolate) {
-          warning("All forecast values will be extrapolated.")
+          if (verbose) {warning("All forecast values will be extrapolated.")}
         } else {
-          warning("All forecast values will be 'NA'.")
+          if (verbose) {warning("All forecast values will be 'NA'.")}
         }
       } else {
-        warning("Forecast initial time before first observation.")
+        if (verbose) {warning("Forecast initial time before first observation.")}
         if (extrapolate) {
-          warning("Forecast values ahead of the observational time range will be extrapolated.")
+          if (verbose) {warning("Forecast values ahead of the observational time range will be extrapolated.")}
         } else {
-          warning("Forecast values ahead of the observational time range will be 'NA'.")
+          if (verbose) {warning("Forecast values ahead of the observational time range will be 'NA'.")}
         }
       }
     }
     if (obs.DaysLeadTime[obs.N] < fcst.DaysLeadTime[fcst.N]) {
       if (obs.DaysLeadTime[obs.N] < 0) {
-        warning("Forecast time range completely out of observational time range.")
+        if (verbose) {warning("Forecast time range completely out of observational time range.")}
         if (extrapolate) {
-          warning("All forecast values will be extrapolated.")
+          if (verbose) {warning("All forecast values will be extrapolated.")}
         } else {
-          warning("All forecast values will be 'NA'.")
+          if (verbose) {warning("All forecast values will be 'NA'.")}
         }
       } else {
-        warning("Last forecast time after last observation.")
+        if (verbose) {warning("Last forecast time after last observation.")}
         if (extrapolate) {
-          warning("Forecast values after the observational time range will be extrapolated.")
+          if (verbose) {warning("Forecast values after the observational time range will be extrapolated.")}
         } else {
-          warning("Forecast values after the observational time range will be 'NA'.")
+          if (verbose) {warning("Forecast values after the observational time range will be 'NA'.")}
         }
       }
     }

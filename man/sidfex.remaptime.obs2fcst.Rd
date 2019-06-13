@@ -2,7 +2,7 @@
 \alias{sidfex.remaptime.obs2fcst}
 \title{Remap SIDFEx Observations to Forecasts in Time}
 \usage{
-sidfex.remaptime.obs2fcst(obs=NULL,fcst,method="linear",extrapolate=FALSE,return.remapinfo=FALSE,data.path=NULL)
+sidfex.remaptime.obs2fcst(obs=NULL,fcst,method="linear",extrapolate=FALSE,return.remapinfo=FALSE,data.path=NULL,verbose=TRUE)
 }
 \description{
 Remap SIDFEx observations temporally to forecast times, with linear or nearest-neighbour interpolation.
@@ -25,6 +25,9 @@ a logical value specifying whether or not to include information on the time rem
 }
   \item{data.path}{
 \code{NULL} or a character specifying the directory of the forecast data. If \code{NULL}, it is attempted to source a file named \code{.SIDFEx} in the home directory where a character variable \code{data.path.fcst} needs to be defined.
+}
+  \item{verbose}{
+a logical value specifying whether to produce warnings, in particular when new time axes reach outside original time axes. Default is \code{TRUE}.
 }
 }
 \value{
