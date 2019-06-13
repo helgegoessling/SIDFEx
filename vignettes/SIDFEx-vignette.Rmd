@@ -3,22 +3,31 @@ title: "SIDFEx R-package user guide"
 output:
   rmarkdown::html_vignette:
     toc: true
+    fig_width: 6
+    fig_height: 6
+  rmarkdown::pdf_document:
+    toc: true
+    fig_width: 6
+    fig_height: 6
 vignette: >
   %\VignetteIndexEntry{SIDFEx R-package user guide}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+date: '`r format(Sys.time(), "%Y-%m-%d")`'
+author: Helge Goessling
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  tidy = TRUE,
   comment = "#>"
 )
 ```
 
 ## What is SIDFEx?
 
-This package provides tools to analyse data of the Sea Ice Drift Forecast Experiment, which is *a community effort to collect and analyse Arctic sea-ice drift forecasts at lead times from days to a year. Forecasts are made with various methods for drifting sea-ice buoys and, ultimately, the trans-Arctic MOSAiC drift campaign*. General information about SIDFEx can be found at <https://www.polarprediction.net/yopp-activities/sidfex/>. This site also provides a *Background and guidelines* document which describes the plain-text format of the original forecasts submitted to SIDFEx in detail.
+This package provides tools to analyse data of the Sea Ice Drift Forecast Experiment, which is *a community effort to collect and analyse Arctic sea-ice drift forecasts at lead times from days to a year. Forecasts are made with various methods for drifting sea-ice buoys and, ultimately, the trans-Arctic MOSAiC drift campaign*. General information about SIDFEx, which is an activity of the WMO Year of Polar Prediction (YOPP), can be found at <https://www.polarprediction.net/yopp-activities/sidfex/>. This site also provides a *Background and guidelines* document which describes the plain-text format of the original forecasts submitted to SIDFEx in detail.
 
 SIDFEx comprises forecasts of how certain assets ("targets") drift with the Arctic sea ice. Many of the forecasts are available in (near-)real-time and, depending on the forecast system they stem from, forecasts consist of single trajectories or ensembles of trajectories. Forecasts also vary regarding their length (the forecast lead time), their time resolution, the set of available initial times and targets, and so forth. All this makes the analysis of the data a non-trivial task which is meant to be facilitated by this package.
 
@@ -55,12 +64,14 @@ Each SIDFEx forecast, once submitted by one of the contributing forecast centres
 ```{r, eval = FALSE}
 res = sidfex.download.fcst()
 ```
+
 After successful retrieval, you will find the plain-text forecast files in the specified data directory (see above) in subdirectories named by the `GroupID`s of the forecast centres.
 
 In fact, this function retrieves not only the forecast data, but also an index of the data (which you will now also find in the corresponding directory). The index facilitates exploring and working with the data considerably. Once a local copy of the data and a corresponding index exist, the index also allows one to compare the local data with the remote data to see what new data is available. To compare, run
 ```{r}
 res = sidfex.download.fcst(comparison.mode = TRUE, from.scratch = FALSE)
 ```
+
 If not too many new forecasts are available and if you want to save download volume, you can rerun the function with `comparison.mode = FALSE` and `from.scratch = FALSE` to retrieve only individual new files. However, `from.scratch = TRUE` will be faster most of the time.
 
 It can be convenient to have the index of the (local) forecast data available in a local variable. To dump the index into a data frame named `index` and to get an overview of its content, run
@@ -68,6 +79,7 @@ It can be convenient to have the index of the (local) forecast data available in
 index = sidfex.load.index()
 str(index)
 ```
+
 The first line of the output tells us how many forecast trajectories ("`obs.`", counting all members of ensemble forecasts individually) are available, and how many "`variables`" the index provides, which are listed underneath. For example, the `$TragetID` column provides the target each forecast corresponds to. We can list all targets by typing
 ```{r}
 unique(index$TargetID)
@@ -84,16 +96,294 @@ Now that we have all data locally, let's start by exploring and subselecting the
 
 ## Exploring and subselecting the index
 
-To be filled.
+Above we have already used `unique(index$TargetID)` as an example how you can use the index directly to get an overview on the available forecasts. In a similar way we can use any of the columns of the index (listed above) to explore the data. The following example shows which forecast systems (GroupID_MethodID combinations) are available, and for each of them (i) how many individual forecast trajectories are available, (ii) the (average) forecast length (lead time), (iii) the (average) ensemble size, and (iv) the (average) number of time steps per forecast:
+```{r}
+systms = paste(index$GroupID, index$MethodID, sep = "_")
+systms_unique = unique(systms)
+tbl = as.data.frame(matrix(nrow = length(systms_unique), ncol = 4))
+rownames(tbl) = systms_unique
+colnames(tbl) = c("nFcst", "leadtime-range", "enssize", "nTimeSteps")
+for (i in 1:length(systms_unique)) {
+  indices = (systms == systms_unique[i])
+  tbl[i,1] = sum(indices)
+  tbl[i,2] = mean(index$FcstTime[indices])
+  tbl[i,3] = mean(index$EnsSize[indices])
+  tbl[i,4] = mean(index$nTimeSteps[indices])
+}
+print(tbl)
+```
+
+The table reveals that all quantities considered vary considerably between the systems. We find for example that short-range (`leadtime-range<=10days`) forecasts tend to be deterministic (`enssize=1`) whereas long-range forecasts tend to be probabilistic (`enssize=1`).
+
+Similarly, in the following example we explore with how much delay relative to real-time the forecasts have been submitted to SIDFEx. Using the default parameters of the `quantile()` function, we get the 0%,25%,...,100% quantiles of the delay distributions, looping over the available forecast systems:
+```{r}
+delay_quantiles = NULL
+for (i in 1:length(systms_unique)) {
+  delay_quantiles = rbind(delay_quantiles, quantile(index$Delay[systms == systms_unique[i]]))
+}
+rownames(delay_quantiles) = systms_unique
+print(delay_quantiles)
+```
+
+The 0%-quantile gives the minimum delay (in days), the 100%-quantile the maximum delay. Note that also those contributors that submit forecasts in near-real-time (lower quantiles < few days) typically have also provided retrospective forecasts (higher quantiles > few days).
+
+When it comes to reading the actual forecast data for further analyses (see next sections), it is useful first to make a subselection of the complete SIDFEx forecast index by keeping only selected entries (forecasts). The index can be subselected manually, e.g., by a statement of the type `subindex=index[index$GroupID=="esrl001",]`. However, in particular date-range queries are facilitated using the function `sidfex.fcst.search.extractFromTable()`. We can get the subindex with all `metno001_RK2` forecasts for the target `300234063991680` initialised between 2018 February 1st 00:00 UTC and 2019 April 15th 12:00 UTC as follows:
+```{r}
+subindex1 = sidfex.fcst.search.extractFromTable(gid = "metno001", mid = "RK2", tid = "300234063991680", iy = c(2018,2019), idoy = c(32,105.5))
+nrow(subindex1)
+subindex2 = sidfex.fcst.search.extractFromTable(gid = "ecmwf001", mid = "SEAS5", tid = "300234063991680", iy = c(2018,2019), idoy = c(32,105.5))
+nrow(subindex2)
+```
+
+The output reveals how many forecasts have been selected by these two sets of criteria. Obviously we can explore a subindex as we explored the complete index in the examples above. More importantly, we can use a subindex to read and analyse the corresponding sets of forecasts as described in the following.
 
 ## Reading forecast and observational data
 
-To be filled.
+Reading all SIDFEx forecast data at once is in most cases not advisable because reading >50.000 ascii files is quite slow. Typically it is more useful to read a meaningful subset of the forecasts. It is possible to read forecasts with `sidfex.read.fcst()` by specifying one or more file names directly. However, the recommended way which also enables ensemble merging (see below) is to provide the function with a subindex (see above). In the following we specify `checkfileformat=FALSE` to save time as we know that any forecasts in the SIDFEx database have already passed an automatic format check. (Note that one can also use the function `sidfex.checkfileformat()` to check the format, which can be useful if one intends to submit forecasts to SIDFEx.)
+```{r}
+subindex3 = sidfex.fcst.search.extractFromTable(gid = "ecmwf001" , tid = "300234063991680", iy = 2019, idoy = c(32,91))
+fcst = sidfex.read.fcst(files = subindex3, checkfileformat = FALSE)
+names(fcst)
+length(fcst$res.list)
+str(fcst$res.list[[1]], list.len = 27)
+```
 
-## A look at some raw data
+The output reveals that the returned object, here `fcst`, is a list with three elements, the most important one being `res.list` which is the "results list" with one element for each forecast. By default (`ens.merge=TRUE`), forecast ensembles have been merged, meaning that all members of each ensemble have been merged into one element of `res.list`. If `ens.merge=FALSE` is specified, all individual forecast files would correspond to one element. Instead, here the trajectory data table has columns `Lat1`, `Lon1`, `Lat2`, `Lon2`, ... in addition to `Lat` and `Lon`. The latter are ensemble mean locations (barycentres of the respective points clouds), whereas the former are the locations of the individual ensemble members. Also the additional data outside the trajectory table has additional entries that are specific to merged ensembles. For details, see the `Value` section of the function documentation by typing `?sidfex.read.fcst`.
 
-To be filled.
+Behind the scenes, the ensemble merging is mostly a straight-forward task. However, because some SIDFEx contributions are lagged-initial-date ensembles and because some ensembles have inconsistent lengths of the individual trajectories (e.g., due to the use of some termination criterium, for example based on a sea-ice concetration threshold), subtle details may happen in the background. In particular, the resulting time axis is inherited from the "parent" of each ensemble as specified in the (sub)index, and if necessary the trajectories of the other ensemble members are interpolated (and possibly truncated) to that time axis using the `spheRlab` function `sl.trajectory.remaptime`.
 
-## Remapping data in time and space
+Before looking more closely at the data, we consider the reading of corresponding observational data. In the current example, we have read data only for one target, and we could simply use `sidfex.read.obs(TargetID="300234063991680")`. Again, however, the recommended way is to use the corresponding index; in this case the relevant targets are identified automatically.
+```{r}
+obs = sidfex.read.obs(index = subindex3)
+str(obs)
+```
 
-To be filled.
+The most relevant columns of the `data` element are those that define the trajectrories: `Year`, `POS_DOY`, `Lat`, and `Lon`. In this example we see that also co-located physical quantities are available (BP = barometric pressure, Ts = surface temperature), which depends on the considered target and will not be considered further here.
+
+## Plotting examples
+
+Now that we have read some forecasts and corresponding observations, let's have a look at them. For example, let's plot latitude versus time. Using the subindex from the previous section, the time axis can be defined easily based on the day of the year because all forecast data in the subindex are within 2019. Nevertheless, here we define a new time axis relative to the initial time of the first forecast which would also work for data spanning more than one year. To this end we use `sidfex.ydoy2reltime()`. The remainder of the following code uses just basic `R`:
+```{r}
+RefYear = fcst$res.list[[1]]$InitYear
+RefDayOfYear = fcst$res.list[[1]]$InitDayOfYear
+nFcst = length(fcst$res.list)
+last.time = sidfex.ydoy2reltime(Year = fcst$res.list[[nFcst]]$LastYear, DayOfYear = fcst$res.list[[nFcst]]$LastDayOfYear, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+obs.time = sidfex.ydoy2reltime(Year = obs$data$Year, DayOfYear = obs$data$POS_DOY, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+
+xlim = c(0, last.time)
+ylim = extendrange(obs$data$Lat[obs.time >= 0 & obs.time <= last.time], f = 0.2)
+plot(NA, xlim = xlim, ylim = ylim, xlab = paste0("days since ", RefYear, "-", RefDayOfYear), ylab = "latitude", main = "ecmwf001")
+for (i in 1:nFcst) {
+  fcst.time = sidfex.ydoy2reltime(Year = fcst$res.list[[i]]$data$Year, DayOfYear = fcst$res.list[[i]]$data$DayOfYear, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+  LatColumns = which(substr(names(fcst$res.list[[i]]$data), start = 1, stop = 3) == "Lat")
+  if (length(LatColumns) > 1) {
+    for (latcol in LatColumns[2:length(LatColumns)]) {
+      # plot the individual ensemble members
+      lines(fcst.time, fcst$res.list[[i]]$data[,latcol], col = i+2)
+    }
+  }
+  # plot the ensemble mean
+  lines(fcst.time, fcst$res.list[[i]]$data$Lat, col = "black", lwd = 2)
+}
+# plot the observations
+lines(obs.time, obs$data$Lat, col = "red", lwd = 2)
+```
+
+How do the forecasts from the system `esrl001_SeaIceVelocity` compare? If we rerun the same code for another subindex that differs from `subindex3` only in terms of the `GroupID` (both groups submit only one `MethodID`) used in the call to `sidfex.fcst.search.extractFromTable()` (keeping the reference time fixed), we obtain the following plot:
+```{r}
+subindex4 = sidfex.fcst.search.extractFromTable(gid = "esrl001" , tid = "300234063991680", iy = 2019, idoy = c(32,91))
+fcst = sidfex.read.fcst(files = subindex4, checkfileformat = FALSE)
+nFcst = length(fcst$res.list)
+last.time = sidfex.ydoy2reltime(Year = fcst$res.list[[nFcst]]$LastYear, DayOfYear = fcst$res.list[[nFcst]]$LastDayOfYear, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+
+xlim = c(0,last.time)
+ylim = extendrange(obs$data$Lat[obs.time >= 0 & obs.time <= last.time], f = 0.2)
+plot(NA, xlim = xlim, ylim = ylim, xlab = paste0("days since ", RefYear, "-", RefDayOfYear), ylab = "latitude", main = "esrl001")
+for (i in 1:nFcst) {
+  fcst.time = sidfex.ydoy2reltime(Year = fcst$res.list[[i]]$data$Year, DayOfYear = fcst$res.list[[i]]$data$DayOfYear, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+  LatColumns = which(substr(names(fcst$res.list[[i]]$data), start = 1, stop = 3) == "Lat")
+  if (length(LatColumns)>1) { # WILL NOT BE TRUE IN THIS CASE (ONLY SINGLE FORECASTS)
+    for (latcol in LatColumns[2:length(LatColumns)]) {
+      # plot the individual ensemble members
+      lines(fcst.time, fcst$res.list[[i]]$data[,latcol], col = i+2)
+    }
+  }
+  # plot the ensemble mean
+  lines(fcst.time, fcst$res.list[[i]]$data$Lat, col = "black", lwd = 2)
+}
+# plot the observations
+lines(obs.time, obs$data$Lat, col = "red", lwd = 2)
+```
+
+It is obvious that the `esrl001` forecasts are shorter (10-days range), but initialised more frequently (daily).
+
+Obviously we can do the same but plot longitudes instead of latitudes. Instead, we now plot the `esrl001` data onto a map using `spheRlab`:
+```{r}
+which.obs = which(obs.time >= 0 & obs.time <= last.time)
+plot.domain = sl.boundingcircle(lon = obs$data$Lon[which.obs], lat = obs$data$Lat[which.obs], verbose = FALSE)
+pir = sl.plot.init(projection = "polar", polar.lonlatrot = c(plot.domain$center_lon,plot.domain$center_lat,0), polar.latbound = 90-plot.domain$radius, do.init.device = FALSE)
+# use the following line to plot coastlines (if within the plot domain). Note that this would initiate a download of the corresponding data from naturalearthdata.com when called for the first time.
+# sl.plot.naturalearth(pir,what="coastline",resolution="medium")
+sl.plot.lonlatgrid(pir, labels = TRUE)
+# now plot the forecast trajectories
+for (i in 1:nFcst) {
+  LatColumns = which(substr(names(fcst$res.list[[i]]$data), start = 1, stop = 3) == "Lat")
+  if (length(LatColumns)>1) { # WILL NOT BE TRUE IN THIS CASE (ONLY SINGLE FORECASTS)
+    for (latcol in LatColumns[2:length(LatColumns)]) {
+      # plot the individual ensemble members
+      sl.plot.lines(pir, lon = fcst$res.list[[i]]$data[,latcol+1], lat = fcst$res.list[[i]]$data[,latcol], col = i+2)
+    }
+  }
+  # plot the ensemble mean
+  sl.plot.lines(pir, lon = fcst$res.list[[i]]$data$Lon, lat = fcst$res.list[[i]]$data$Lat, col = "black")
+}
+# now the observed trajectory (only the part relevant for the forecasts)
+sl.plot.lines(pir, lon = obs$data$Lon[which.obs], lat = obs$data$Lat[which.obs], col = "red")
+sl.plot.end(pir, do.close.device = FALSE)
+```
+
+## Remapping and adjusting data in time and space
+
+Remapping and adjusting SIDFEx data in time and space can be useful for example to (i) align observational data with the forecasts so that errors can be quantified, (ii) adjust initial locations of forecasts if those were inaccurate, (iii) harmonise time axes for multi-model or single-model ensembles, or (iv) adjust forecasts in real-time applications when more recent observations are available. In fact, the harmonisation mentioned in point (iii) is applied automatically in `sidfex.read.fcst()` when ensembles are merged that contain ensemble members with inhomogenous time axes (mostly because they are lagged-initial-date ensembles). Remapping and adjusting the data needs to account correctly for the geometry on the sphere, in particular when trajectories are close to the geographic (lon-lat) pole and/or the date line. For this purpose `spheRlab` is used, in particular the functions `sl.trajectory.remaptime()` and `sl.rot()`. In the following we consider points (ii), (iv), and (i) of the above list, in that order.
+
+Initial locations of SIDFEx forecasts can be slightly inaccurate, for example if Lagrangian tracers are initialised at nearest-neighbour grid-points instead of the exact locations. This is the case for example for the `ecmwf001` forecasts plotted above. In the following we zoom into the first 10 days of the first forecast ensemble shown above (latitude versus time). We first plot the data as is (colours as above) and then correct the initial location using `sidfex.rot.fcst()` and re-plot the forecast ensemble in blue. We then assume that the most recent position has been observed at YEAR=2019, DOY=34.5 (2.5 days after the initial time) and again adjust the forecast ensemble so that the trajectories (in brown/orange) pass the observed position at that time. Finally, we remap the observations to the time axis of the forecast ensemble (in grey). The code is somewhat simpler than above because the reduced subindex holds only one forecast ensemble:
+```{r}
+subindex3.1 = sidfex.fcst.search.extractFromTable(gid = "ecmwf001" , tid = "300234063991680", iy = 2019, idoy = c(32))
+fcst = sidfex.read.fcst(files = subindex3.1, checkfileformat = FALSE)
+obs.time = sidfex.ydoy2reltime(Year = obs$data$Year, DayOfYear = obs$data$POS_DOY, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+xlim = c(0,10)
+ylim = extendrange(obs$data$Lat[obs.time >= 0 & obs.time <= 10], f=0.2)
+plot(NA, xlim = xlim, ylim = ylim, xlab = paste0("days since ", RefYear, "-", RefDayOfYear), ylab = "latitude", main = "ecmwf001")
+fcst.time = sidfex.ydoy2reltime(Year = fcst$res.list[[1]]$data$Year, DayOfYear = fcst$res.list[[1]]$data$DayOfYear, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+LatColumns = which(substr(names(fcst$res.list[[1]]$data), start = 1, stop = 3) == "Lat")
+for (latcol in LatColumns[2:length(LatColumns)]) {
+  lines(fcst.time, fcst$res.list[[1]]$data[,latcol], col = 3)
+}
+lines(fcst.time, fcst$res.list[[1]]$data$Lat, col = "black", lwd = 2)
+
+# now with adjustment of the initial location (default of sidfex.rot.fcst())
+fcst.adj.init = sidfex.rot.fcst(obs = obs, fcst = fcst)
+for (latcol in LatColumns[2:length(LatColumns)]) {
+  lines(fcst.time, fcst.adj.init$res.list[[1]]$data[,latcol], col = "cyan")
+}
+lines(fcst.time, fcst.adj.init$res.list[[1]]$data$Lat, col = "blue", lwd = 2)
+
+# now with adjustment of the location at DOY=34.5
+fcst.adj.34.5 = sidfex.rot.fcst(obs = obs, fcst = fcst, obsref.Year = 2019, obsref.DayOfYear = 34.5)
+for (latcol in LatColumns[2:length(LatColumns)]) {
+  lines(fcst.time, fcst.adj.34.5$res.list[[1]]$data[,latcol], col = "orange")
+}
+lines(fcst.time, fcst.adj.34.5$res.list[[1]]$data$Lat, col = "brown", lwd = 2)
+
+# plot the observations
+lines(obs.time, obs$data$Lat, col = "red", lwd = 2)
+
+# now remap observations to fcst time axis and re-plot
+obs.remap = sidfex.remaptime.obs2fcst(obs = obs, fcst = fcst)
+obs.remap.time = sidfex.ydoy2reltime(Year = obs.remap$res.list[[1]]$data$Year, DayOfYear = obs.remap$res.list[[1]]$data$DayOfYear, RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+lines(obs.remap.time, obs.remap$res.list[[1]]$data$Lat, col = "grey", lwd = 2)
+```
+
+The return values of `sidfex.rot.fcst()` and `sidfex.remaptime.obs2fcst()` are structured like the forecast data that have been provided as input. The latter function produces one remapped observed trajectory for every forecast contained in the `res.list` of the forecast object provided as input. This is why the arguments of the two last calls to `lines()` in the above code are structurally different (`obs$data...` versus `obs.remap$res.list[[1]]$data...`).
+
+## Quantative forecast evaluation
+
+With `sidfex.remaptime.obs2fcst()` it is in principle straight-forward to compute forecast errors for concurrent values of the forecasts and the observations, that is, to *evaluate* or *verify* the forecasts. To facilitate the computation of errors (and ensemble spread), the function `sidfex.evaluate()` can be used. For example, an evaluation for one of the previous examples can be obtained as follows:
+```{r}
+errs = sidfex.evaluate(fcst = fcst.adj.init)
+str(errs$res.list[[1]])
+```
+
+Those quantities starting `ens.mean` relate to the ensemble-mean position or the single deterministic position of a non-ensemble forecast. Those starting `ens.individual` (provided only for ensembles) are either valid for individual ensemble members or, if they end `.mean` or `.meanabs`, they are mean (absolute) values across the corresponding statistic for individual ensemble members. Quantities starting `ens.spread` provide the ensemble spread (mean deviations of ensemble members from the ensemble-mean location). To see how these different diagnostics are defined exactly, please consult the function documentation by typing `?sidfex.evaluate`.
+
+A rather specific function of this package can be used to produce formatted plots of the relative drift speed and angle. (The function works currently only with ensemble-mean data, or with non-merged ensembles; aspect ratios are more optimised with `device="pdf"`, or can be adjusted with other arguments, see `?sidfex.plot.speedangle`.)
+```{r}
+colbar = sidfex.plot.speedangle(read.fcst.res = fcst.adj.init, points.type = "b", col.by = "DaysLeadTime", device = NULL)
+sl.plot.colbar(colbar, do.init.device = FALSE)
+```
+
+The quantity and unit defining the colourbar is *lead time (days)*. The cross in the upper middle marks the perfect-forecast point. The plot reveals for this particular case that during the first couple of days (red colours) the ensemble-mean forecast drift is considerably slower than the observed drift, but in a realistic direction (at least after the very first days). At longer lead times, the ensemble-mean drift is still slightly slower (approx. 75% relative drift speed) and about 45° to the left of the observed trajectory. Note that these realtive speed and angle errors, like those generated with `sidfex.evaluate()`, consider the *integrated* drift since the initial time and location, not the *current* drift.
+
+The following is an example that comes closer to a useful quantitative (and comparative) analysis than the mostly single-case-based examples considered above. We consider all forecasts for `TargetID="300234061872720"` initialised between December 1st 2018 and March 15th 2019 from all forecast methods that have provided at least weakly forecasts, tolerating gaps (missing forecast for certain initial times) where they exist. We then compare some forecast error statistics for the first ten days between the forecast methods, including an assessment of statistical confidence by adding two-standard-errors-margins to the plots. On the way, we recycle different code chunks from above to inspect the data.
+```{r}
+subind.allmethods = sidfex.fcst.search.extractFromTable(tid = "300234061872720", iy = c(2018,2019), idoy = c(335,74), InheritFromParent = TRUE)
+# setting 'InheritFromParent=TRUE' makes sure that lagged-initial-date ensembles are not split
+systms = paste(subind.allmethods$GroupID, subind.allmethods$MethodID, sep = "_")
+systms_unique = unique(systms)
+tbl = as.data.frame(matrix(nrow = length(systms_unique), ncol = 4))
+rownames(tbl) = systms_unique
+colnames(tbl) = c("nFcst", "leadtime-range", "enssize", "nTimeSteps")
+for (i in 1:length(systms_unique)) {
+  indices = (systms == systms_unique[i])
+  tbl[i,1] = sum(indices)
+  tbl[i,2] = mean(subind.allmethods$FcstTime[indices])
+  tbl[i,3] = mean(subind.allmethods$EnsSize[indices])
+  tbl[i,4] = mean(subind.allmethods$nTimeSteps[indices])
+}
+print(tbl)
+```
+
+The only ensemble forecast method we keep is `nrl001_navyespc-subseasonal` because it provides weekly ensembles and thus allows some meaningful statistics over the 3.5-months period considered. Note that `nFcst` here needs to be divided by the ensemble size to get the actual number of forecast *ensembles*. Since we want to derive forecast error statistics across different initial times for each of the selected forecast methods separately, and only then compare the results between the systems, we execute a loop where we define different subindices for each forecast method and apply the same analysis chain to all of them separately. We store only the respective final output of `sidfex.evaluate()` in a list with one element for each forecast method:
+```{r}
+systms_selected = systms_unique[(tbl$nFcst / tbl$enssize > 10)]
+Nmethods = length(systms_selected)
+remap.time = seq(0,10)
+eval.results = list()
+for (i in 1:Nmethods) {
+  # this time we subselect the index manually instead of using sidfex.fcst.search.extractFromTable()
+  subind = subind.allmethods[systms %in% systms_selected[i], ]
+  fcst.orig = sidfex.read.fcst(files = subind, checkfileformat = FALSE, verbose = FALSE)
+  # remap everything to identical relative time axes to enable compution of statistics
+  # across forecasts and clean comparison between methods
+  fcst.remap = sidfex.remaptime.fcst(fcst = fcst.orig, newtime.DaysLeadTime = remap.time, verbose = FALSE)
+  # make sure that initial offsets are corrected for (where they exist)
+  fcst.adjust = sidfex.rot.fcst(fcst = fcst.remap)
+  # keep only the multi-forecast statistics from the output of sidfex.evaluate()
+  eval.results[[i]] = sidfex.evaluate(fcst = fcst.adjust, verbose = FALSE)$multifcst.stats
+}
+# now plot mean great-circle distances of (ensemble-mean) positions for each method
+plot(NA, xlim = range(remap.time), ylim = c(0,40), main = "multi-forecast-mean error of (ensemble-mean) position", xlab = "lead time (days)", ylab = "great-circle distance (km)")
+for (i in 1:Nmethods) {
+  dat = eval.results[[i]]$ens.mean.gc.dist / 1000
+  # 95% confidence bands of the mean error based on standard-error*2
+  lines(remap.time, dat$mean + 2 * dat$st.err, col = i, lty = 2, lwd = 2)
+  lines(remap.time, pmin(dat$mean - 2 * dat$st.err), col = i, lty = 2, lwd = 2)
+  # now the mean error
+  lines(remap.time, dat$mean, col = i, lwd = 2)
+}
+legend("topleft", legend = c(systms_selected,"95% confidence"), lty = c(rep(1,Nmethods),2), bty = "n", col = c(1:Nmethods,8), lwd = 2)
+```
+
+Finally, we inspect the spread-error relationship for the only ensemble-based forecast method from the previous example, namely `nrl001_navyespc-subseasonal`:
+```{r}
+plot(NA, xlim = range(remap.time), ylim = c(0,40), main = "error versus spread (nrl001_navyespc-subseasonal)", xlab = "lead time (days)", ylab = "great-circle distance (km)")
+i = which(systms_selected == "nrl001_navyespc-subseasonal")
+dat = eval.results[[i]]$ens.mean.gc.dist / 1000
+lines(remap.time, dat$mean + 2 * dat$st.err, col = "cyan", lty = 2, lwd = 2)
+lines(remap.time, pmin(dat$mean - 2 * dat$st.err), col = "cyan", lty = 2, lwd = 2)
+lines(remap.time, dat$mean, col = "cyan", lwd = 2)
+# and now the same for the ensemble spread, in orange
+dat = eval.results[[i]]$ens.spread.gc.dist / 1000
+lines(remap.time, dat$mean + 2 * dat$st.err, col = "orange", lty = 2, lwd = 2)
+lines(remap.time, pmin(dat$mean - 2 * dat$st.err), col = "orange", lty = 2, lwd = 2)
+lines(remap.time, dat$mean, col = "orange", lwd = 2)
+legend("topleft", legend = c("mean error of ensemble-mean","mean ensemble spread","95% confidence"), col=c("cyan","orange","grey"), bty = "n", lty = c(1,1,2), lwd = 2)
+```
+
+In this case the mean spread is somewhat smaller than the mean error in the beginning, which generally may point to under-dispersive (that is, over-confident) ensembles. However, here (i) the 95% confidence bands overlap, meaning that the difference is statistically not significant, and (ii) a required correction factor has not been applied to the estimate of the ensemble spread (which is relative to the ensemble-mean position and thus low-biased).
+
+## Extracting real-time forecasts
+
+An example how to extract real-time forecasts will be added soon.
+
+## What else?
+
+There are more functions in the `SIDFEx` R-package than have been used in this user guide. To get an overview, type `help(package="SIDFEx")`. Most functions have an individual function documentation (accessible by typing `?` followed by the function name, without white space) that explains their purpose and usage. Note however that some of the functions are very specific and rather for internal usage, e.g., as part of the processing chain installed at the DKRZ.
+
+An R-Shiny App that builds on the `SIDFEx` R-package is planned to be released in July 2019. The App will allow anyone to use some of the essential functionality of this package in a browser-based online tool (without programming). The App will be hosted on a server of the Alfred Wegener Institute (Bremerhaven, Germany).
+
+Please provide any feedback on `SIDFEx`, the `SIDFEx` R-package, and/or this user guide to <helge.goessling@awi.de>.
+
+## Acknowledgement
+
+We are indepted to all groups that have contributed and/or continue contributing forecasts to `SIDFEx`, as well as to many others that have supported `SIDFEx` in one or the other way. We thank the German Climate Computing Centre (DKRZ) for hosting the `SIDFEx` data, including the real-time processing chain, and colleagues at the International Arctic Buoy Program (IABP) for their support. Moreover, we acknowledge the generous funding of the German Ministry for Education and Research (BMBF) for the Young Investigator Group Seamless Sea Ice Prediction (SSIP, grant 01LN1701A), which has enabled us to develop and maintain `SIDFEx`, including this R-package.
