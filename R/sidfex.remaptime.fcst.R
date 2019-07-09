@@ -62,6 +62,23 @@ sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.Fracti
     oldlon = rl[[irl]]$data[,LonCols]
     oldtime = sidfex.ydoy2reltime(Year=rl[[irl]]$data$Year, DayOfYear = rl[[irl]]$data$DayOfYear,
                                   RefYear = rl[[irl]]$InitYear, RefDayOfYear = rl[[irl]]$InitDayOfYear)
+    oldtime.diff = oldtime[2:length(oldtime)] - oldtime[1:(length(oldtime)-1)]
+    if (any(oldtime.diff <= 0)) {
+      if (any(oldtime.diff < 0)) {
+        stop('old time axis must increase monotonously')
+      } else {
+        warning('removing duplicate times in old time axis')
+        inds = c(TRUE, oldtime.diff > 0)
+        oldtime = oldtime[inds]
+        if (is.null(dim(oldlat))) {
+          oldlat = oldlat[inds]
+          oldlon = oldlon[inds]
+        } else {
+          oldlat = oldlat[inds,]
+          oldlon = oldlon[inds,]
+        }
+      }
+    }
 
     if (newtime[1] < oldtime[1]) {
       oldtime = c(0,oldtime)
