@@ -130,27 +130,22 @@ sidfex.fcst.search.extractFromTable <-
     }
 
     # range input (important for daterange input from shiny!)
-    if(!is.null(fcstrange)){
-      fact = 400
-      yearmin = as.integer(format(fcstrange[1], "%Y"))
-      yearmax = as.integer(format(fcstrange[2], "%Y"))
-      doymin =  as.integer(format(fcstrange[1], "%j"))
-      doymax =  as.integer(format(fcstrange[2], "%j"))
-
-      # brute force date comparison, baby, yeah
-      datemin.float = yearmin + doymin/fact
-      datemax.float = yearmax + doymax/fact
-
-      # either (the forecast starts AND/OR ends in the given range) OR (it starts before AND ends after given range)
-      df <- df[which(
-                      (df$FirstTimeStepYear + df$FirstTimeStepDayOfYear/fact <= datemax.float &
-                        df$FirstTimeStepYear + df$FirstTimeStepDayOfYear/fact >= datemin.float) | # case: fcst starts in range
-                      (df$LastTimeStepYear + df$LastTimeStepDayOfYear/fact <= datemax.float &
-                         df$LastTimeStepYear + df$LastTimeStepDayOfYear/fact >= datemin.float) |  # case: fcst stops in range
-                        (df$FirstTimeStepYear + df$FirstTimeStepDayOfYear/fact < datemin.float &
-                           df$LastTimeStepYear + df$LastTimeStepDayOfYear/fact > datemax.float)   # case: fcst starts before, stops afterwards
-                    )
-              ,]
+     if(!is.null(fcstrange)){
+       fcst_datemin = as.POSIXct(paste0(df$FirstTimeStepYear, "-",df$FirstTimeStepDayOfYear), format = "%Y-%j", tz = "GMT")
+       fcst_datemax = as.POSIXct(paste0(df$LastTimeStepYear, "-",df$LastTimeStepDayOfYear), format = "%Y-%j", tz = "GMT")
+       
+       # either (the forecast starts AND/OR ends in the given range) OR (it starts before AND ends after given range)
+       df <- df[which(
+         (fcst_datemin <= fcstrange[2] &
+            fcst_datemin >=  fcstrange[1]) | # case: fcst starts in range
+           
+           (fcst_datemax <= fcstrange[2] &
+              fcst_datemax >= fcstrange[1]) |  # case: fcst stops in range
+           
+           (fcst_datemin < fcstrange[1] &
+              fcst_datemax > fcstrange[2])   # case: fcst starts before, stops afterwards
+       )
+       ,]
     }
 
     # return list of files or corresponding data frame
