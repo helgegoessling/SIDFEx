@@ -46,6 +46,10 @@ sidfex.download.fcst <- function(comparison.mode=FALSE, from.scratch=TRUE, data.
 
   wd = getwd()
 
+  if (!dir.exists(indexTable.path.in)) {
+    print(paste0("Creating directory ",indexTable.path.in))
+    res = system(paste0("mkdir -p ",indexTable.path.in))
+  }
   setwd(indexTable.path.in)
   print("Index download ...")
   res = download.file(url=paste0(indexurl,"indexTable.rda"),destfile="indexTable_remote.rda")
