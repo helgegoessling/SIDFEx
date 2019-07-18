@@ -83,40 +83,46 @@ sidfex.download.fcst <- function(comparison.mode=FALSE, from.scratch=TRUE, data.
 
   if (!comparison.mode) {
 
-    setwd(data.path.fcst)
+    if (nrow(index.download) == 0) {
+      print("No data needs to be downloaded.")
+    } else {
 
-    print("Data download ...")
-    if (from.scratch) {
-      res = download.file(url=paste0(indexurl,"data.tar.gz"),destfile=file.path(data.path.fcst,"data.tar.gz"))
-      if (verbose)
+      setwd(data.path.fcst)
+
+      print("Data download ...")
+      if (from.scratch) {
+        res = download.file(url=paste0(indexurl,"data.tar.gz"),destfile=file.path(data.path.fcst,"data.tar.gz"))
+        if (verbose)
         {res = system(paste0("tar -zxvf ",file.path(data.path.fcst,"data.tar.gz")))} else
         {res = system(paste0("tar -zxf ",file.path(data.path.fcst,"data.tar.gz")))}
-      res = system(paste0("mv ",file.path(data.path.fcst,"data/*")," ",data.path.fcst))
-      res = system(paste0("rm -rf ",file.path(data.path.fcst,"data")))
-      res = system(paste0("rm -rf ",file.path(data.path.fcst,"data.tar.gz")))
-    } else {
-      for (fi in 1:nrow(index.download)) {
-        gid = index.download$GroupID[fi]
-        fl = index.download$File[fi]
-        if (!dir.exists(gid)) {dir.create(gid)}
-        res = download.file(url=paste0(dataurl,gid,"/",fl,".txt"),destfile=paste0(file.path(gid,fl),".txt"))
+        res = system(paste0("mv ",file.path(data.path.fcst,"data/*")," ",data.path.fcst))
+        res = system(paste0("rm -rf ",file.path(data.path.fcst,"data")))
+        res = system(paste0("rm -rf ",file.path(data.path.fcst,"data.tar.gz")))
+      } else {
+        for (fi in 1:nrow(index.download)) {
+          gid = index.download$GroupID[fi]
+          fl = index.download$File[fi]
+          if (!dir.exists(gid)) {dir.create(gid)}
+          res = download.file(url=paste0(dataurl,gid,"/",fl,".txt"),destfile=paste0(file.path(gid,fl),".txt"))
+        }
       }
-    }
-    print("Data download done.")
+      print("Data download done.")
 
-    if (!from.scratch && nrow(index.diff$only.1) > 0) {
-      print("Removing obsolete data present only locally ...")
-      for (fi in 1:nrow(index.diff$only.1)) {
-        gid = index.diff$only.1$GroupID[fi]
-        fl = index.diff$only.1$File[fi]
-        system(paste0("rm -f ",file.path(gid,fl),".txt"))
+      if (!from.scratch && nrow(index.diff$only.1) > 0) {
+        print("Removing obsolete data present only locally ...")
+        for (fi in 1:nrow(index.diff$only.1)) {
+          gid = index.diff$only.1$GroupID[fi]
+          fl = index.diff$only.1$File[fi]
+          system(paste0("rm -f ",file.path(gid,fl),".txt"))
+        }
+        print("Removing obsolete data done.")
       }
-      print("Removing obsolete data done.")
+
+      res = system(paste0("mv ",file.path(indexTable.path.in,"indexTable_remote.rda")," ",file.path(indexTable.path.in,"indexTable.rda")),intern=TRUE)
+
+      print("Returning index of files that have been downloaded, and (if not from.scratch) the more detailed result of sidfex.fcst.search.compareIndexTables")
+
     }
-
-    res = system(paste0("mv ",file.path(indexTable.path.in,"indexTable_remote.rda")," ",file.path(indexTable.path.in,"indexTable.rda")),intern=TRUE)
-
-    print("Returning index of files that have been downloaded, and (if not from.scratch) the more detailed result of sidfex.fcst.search.compareIndexTables")
 
   } else {
 
