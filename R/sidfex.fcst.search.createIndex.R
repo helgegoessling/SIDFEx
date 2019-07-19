@@ -1,8 +1,11 @@
 sidfex.fcst.search.createIndex <-
-  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE){
+  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE, add.LatLon=FALSE){
     indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
                    "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
                    "LastTimeStepDayOfYear", "FcstTime", "EnsParentFile", "EnsSize")
+    if (add.LatLon) {
+      indexNames = c(indexNames,"InitLat","InitLon","FirstTimeStepLat","FirstTimeStepLon","LastTimeStepLat","LastTimeStepLon")
+    }
     # check if specific directory for the fcst data is given, otherwise use a default
     if (is.null(data.path)) {
       no.data.path.fcst=TRUE
@@ -107,13 +110,28 @@ sidfex.fcst.search.createIndex <-
         # ensemble parent and size, to be added later by analysing the whole index
         epf = "NA"
         es = NA
+        if (add.LatLon) {
+          ila = dat$InitLat
+          ilo = dat$InitLon
+          fla = dat$FirstLat
+          flo = dat$FirstLon
+          lla = dat$LastLat
+          llo = dat$LastLon
+        }
 
         # add row to the dataframe
+        if (add.LatLon) {
+          add.row = list(fid, gid, mid, tid, iy, idoy, emn, sy, sdoy, py, pdoy, del, nt,
+                         fy, fdoy, ly, ldoy, per, epf, es, ila, ilo, fla, flo, lla, llo)
+        } else {
+          add.row = list(fid, gid, mid, tid, iy, idoy, emn, sy, sdoy, py, pdoy, del, nt,
+                         fy, fdoy, ly, ldoy, per, epf, es)
+        }
         if (update.row) {
-          rTab[match.ind,] = list(fid, gid, mid, tid, iy, idoy, emn, sy, sdoy, py, pdoy, del, nt, fy, fdoy, ly, ldoy, per, epf, es)
+          rTab[match.ind,] = add.row
         } else {
           nRows = nRows + 1
-          rTab[nRows,] = list(fid, gid, mid, tid, iy, idoy, emn, sy, sdoy, py, pdoy, del, nt, fy, fdoy, ly, ldoy, per, epf, es)
+          rTab[nRows,] = add.row
         }
 
       }

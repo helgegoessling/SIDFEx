@@ -2,7 +2,7 @@
 \alias{sidfex.fcst.search.createIndex}
 \title{Create or update SIDFEx forecast index}
 \usage{
-  sidfex.fcst.search.createIndex(indexTable.path = NULL, data.path = NULL, do.fromScratch = FALSE, do.checktime = TRUE, do.saveAddCSV = TRUE, do.print.less = TRUE, checkfileformat = TRUE, do.manipulate = TRUE)
+  sidfex.fcst.search.createIndex(indexTable.path = NULL, data.path = NULL, do.fromScratch = FALSE, do.checktime = TRUE, do.saveAddCSV = TRUE, do.print.less = TRUE, checkfileformat = TRUE, do.manipulate = TRUE, add.LatLon=FALSE)
 }
 \description{
   Loop through the downloaded SIDFEx forecasts and add some predefined key quantities and information to the (previously existing or not) index file "indexTable.rda". If the specified index file does not exist, a new one is created. The data will be stored in .rda-format.
@@ -34,6 +34,9 @@ a logical value specifying whether or not to check if the file format complies w
 }
   \item{do.manipulate}{
 a logical value specifying whether or not to manipulate the automatically derived ensemble information, using \code{sidfex.fcst.search.manipulateIndex} (an undocumented function); required for lagged-initial-time ensembles.
+}
+  \item{add.LatLon}{
+a logical value specifying whether or not to add latitude and longitude information (initial, first and last timesteps) to the index. Default is \code{FALSE}, for backwards compatibility. Note that setting this \code{FALSE} can cause trouble if afterwards new forecast data are downloaded with \code{from.scratch=FALSE}.
 }
 }
 \value{

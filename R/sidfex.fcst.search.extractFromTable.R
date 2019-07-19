@@ -2,7 +2,8 @@ sidfex.fcst.search.extractFromTable <-
   function(index = NULL, indexTable.path = NULL, return.dataframe=TRUE, gid=NULL, mid=NULL, tid=NULL,
            iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL, pdoy=NULL,
            del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL,
-           fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE){
+           fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE,
+           ila=NULL, ilo=NULL, fla=NULL, flo=NULL, lla=NULL, llo=NULL){
 
     if (is.null(index)) {
       # check if specific directory for indexList is given, otherwise use default
@@ -56,6 +57,19 @@ sidfex.fcst.search.extractFromTable <-
     if (!is.null(nt)) {df <- df[which((df$nTimeSteps <= max(nt)) & (df$nTimeSteps >= min(nt))),]}
     if (!is.null(del)) {df <- df[which((df$Delay <= max(del)) & (df$Delay >= min(del))),]}
     if (!is.null(es)) {df <- df[which((df$EnsSize <= max(es)) & (df$EnsSize >= min(es))),]}
+
+    if ("InitLat" %in% names(df)) {
+      if (!is.null(ila)) {df <- df[ which((df$InitLat <= max(ila)) & (df$InitLat >= min(ila))),]}
+      if (!is.null(ilo)) {df <- df[ which((df$InitLon <= max(ilo)) & (df$InitLon >= min(ilo))),]}
+      if (!is.null(fla)) {df <- df[ which((df$FirstTimeStepLat <= max(fla)) & (df$FirstTimeStepLat >= min(fla))),]}
+      if (!is.null(flo)) {df <- df[ which((df$FirstTimeStepLon <= max(flo)) & (df$FirstTimeStepLon >= min(flo))),]}
+      if (!is.null(lla)) {df <- df[ which((df$LastTimeStepLat <= max(lla)) & (df$LastTimeStepLat >= min(lla))),]}
+      if (!is.null(llo)) {df <- df[ which((df$LastTimeStepLon <= max(llo)) & (df$LastTimeStepLon >= min(llo))),]}
+    } else {
+      if (any(!is.null(ila),!is.null(ilo),!is.null(fla),!is.null(flo),!is.null(lla),!is.null(llo))) {
+        warning("index does not contain lon-lat columns. To use corresponding arguments, re-generate index with 'add.LatLon=TRUE'")
+      }
+    }
 
     # now the ugly stuff (taking care of range queries over different years)
     # initial time
@@ -133,15 +147,15 @@ sidfex.fcst.search.extractFromTable <-
      if(!is.null(fcstrange)){
        fcst_datemin = as.POSIXct(paste0(df$FirstTimeStepYear, "-",df$FirstTimeStepDayOfYear), format = "%Y-%j", tz = "GMT")
        fcst_datemax = as.POSIXct(paste0(df$LastTimeStepYear, "-",df$LastTimeStepDayOfYear), format = "%Y-%j", tz = "GMT")
-       
+
        # either (the forecast starts AND/OR ends in the given range) OR (it starts before AND ends after given range)
        df <- df[which(
          (fcst_datemin <= fcstrange[2] &
             fcst_datemin >=  fcstrange[1]) | # case: fcst starts in range
-           
+
            (fcst_datemax <= fcstrange[2] &
               fcst_datemax >= fcstrange[1]) |  # case: fcst stops in range
-           
+
            (fcst_datemin < fcstrange[1] &
               fcst_datemax > fcstrange[2])   # case: fcst starts before, stops afterwards
        )
