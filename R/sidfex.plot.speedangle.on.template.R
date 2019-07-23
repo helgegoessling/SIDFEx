@@ -2,7 +2,7 @@ sidfex.plot.speedangle.on.template <- function(index=NULL,read.fcst.res=NULL,rea
                                    col.by="DaysLeadTime",colbar=sl.colbar.redgreyblue_256,
                                    colbar.breaks=NULL,colbar.breaks.log=FALSE,points.type="p",out.device="pdf", in.device="png",
                                    file=paste0("~/sidfex.plot.speedangle.",out.device),width=NULL, outer.plot=F,
-                                   templatefile = NULL,...) {
+                                   templatefile = NULL, indexTable.path = NULL, ...) {
   require(jpeg)
   
   if (is.null(templatefile)){
@@ -33,8 +33,6 @@ sidfex.plot.speedangle.on.template <- function(index=NULL,read.fcst.res=NULL,rea
     plot(x = NULL, xlim = xlim, ylim = ylim, xlab = "", 
          ylab = "", main = "")
     }
-  
-
 
   if(in.device=="jpeg"){
     img = readJPEG(templatefile)
@@ -45,8 +43,6 @@ sidfex.plot.speedangle.on.template <- function(index=NULL,read.fcst.res=NULL,rea
   }
   
   ### end newstuff
-
-  
   if (is.null(read.fcst.res)) {
     if (is.null(index)) {stop("At least one of 'index' and 'read.fcst.res' must be specified.")}
     read.fcst.res = sidfex.read.fcst(index)
@@ -54,7 +50,9 @@ sidfex.plot.speedangle.on.template <- function(index=NULL,read.fcst.res=NULL,rea
   }
   else {
     if (is.null(index)) {
-      index = sidfex.load.index()
+      if (is.null(indexTable.path)) {index = sidfex.load.index(indexTable.path = indexTable.path.in)} else {
+        index = sidfex.load.index(indexTable.path = indexTable.path)
+      }
       flx = sapply(strsplit(sapply(strsplit(sapply(read.fcst.res$res.list,"[[","fl"),split="/"),tail,n=1),split=".txt",fixed=TRUE),head,n=1)
       index = index[index$File %in% flx,]
     } else if (nrow(index) != length(read.fcst.res$res.list)) {
