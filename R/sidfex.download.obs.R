@@ -1,4 +1,4 @@
-sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL) {
+sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl="http://iabp.apl.washington.edu/WebData/") {
 
   if (is.null(data.path)) {
     no.data.path.obs=TRUE
@@ -27,9 +27,11 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL) {
 
   wd = getwd()
   setwd(data.path.obs)
+  suf = ".txt"
+  if (baseurl == "http://iabp.apl.washington.edu/WebData/") {suf = ".dat"}
   print("Starting download ...")
   for (tid in TargetID) {
-    download.file(url=paste0("http://iabp.apl.washington.edu/WebData/",tid,".dat"),destfile=paste0(tid,".txt"))
+    download.file(url=paste0(baseurl,tid,suf),destfile=paste0(tid,".txt"))
   }
   print("Download done.")
   setwd(wd)

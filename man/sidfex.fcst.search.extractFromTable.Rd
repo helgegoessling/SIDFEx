@@ -5,7 +5,8 @@
   sidfex.fcst.search.extractFromTable (index = NULL, indexTable.path = NULL, return.dataframe=TRUE,
            gid=NULL, mid=NULL, tid=NULL, iy=NULL, idoy=NULL, emn=NULL, sy=NULL, sdoy=NULL, py=NULL,
            pdoy=NULL, del=NULL, nt=NULL, fy=NULL, fdoy=NULL, ly=NULL, ldoy=NULL, per=NULL,
-           fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE)
+           fcstrange=NULL, es=NULL, EnsParentOnly=FALSE, InheritFromParent=FALSE,
+           ila=NULL, ilo=NULL, fla=NULL, flo=NULL, lla=NULL, llo=NULL)
 }
 \description{
   This function allows one to make of subselection of the SIDFEx forecast index based on a useful set of search parameters. The resulting subindex can then be easily used to load the forecasts of interest for further processing and/or analysis. Please note the note about date inputs.
@@ -83,6 +84,24 @@
   \item{InheritFromParent}{
     a logical value specifying whether ensemble members inherit all properties except \code{File} and \code{EnsMemNum} from their parents (typically ensemble member 1) before the other criteria are applied. Default is \code{FALSE}
   }
+  \item{ila}{
+    a numeric value (or a length-2 list/vector) for the initial latitude. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. Used only if the index contains the corresponding (optional) column 'InitLat'.
+  }
+  \item{ilo}{
+    a numeric value (or a length-2 list/vector) for the initial longitude. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. Used only if the index contains the corresponding (optional) column 'InitLon'.
+  }
+  \item{fla}{
+    a numeric value (or a length-2 list/vector) for the first latitude of the trajectory data table. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. Used only if the index contains the corresponding (optional) column 'FirstTimeStepLat'.
+  }
+  \item{flo}{
+    a numeric value (or a length-2 list/vector) for the first longitude of the trajectory data table. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. Used only if the index contains the corresponding (optional) column 'FirstTimeStepLon'.
+  }
+  \item{lla}{
+    a numeric value (or a length-2 list/vector) for the last latitude of the trajectory data table. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. Used only if the index contains the corresponding (optional) column 'LastTimeStepLat'.
+  }
+  \item{llo}{
+    a numeric value (or a length-2 list/vector) for the last longitude of the trajectory data table. If a length-2 vector is provided, the values will be interpreted as upper and lower boundaries. If only a single number is given, the function will try to match the exact value. Used only if the index contains the corresponding (optional) column 'LastTimeStepLon'.
+  }
 }
 \value{
   If \code{return.dataframe=FALSE}, returns a list of filenames (without extension) or NULL, if no files fit to search parameters. Otherwise, the whole corresponding data frame is returned.
@@ -113,5 +132,5 @@ subindex2 = sidfex.fcst.search.extractFromTable(gid="nrl001", mid="navyespc-subs
 }
 
 \seealso{
-\code{\link{sidfex.fcst.search.createIndexTable}}, \code{\link{sidfex.fcst.search.rda2csv}}
+\code{\link{sidfex.fcst.search.createIndex}}
 }
