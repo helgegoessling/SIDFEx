@@ -19,7 +19,9 @@ sidfex.targettable.update <- function(targettable.manual=NULL, targettable.out=N
   if (download.obs) {sidfex.download.obs(TargetID = tt_in$TargetID, data.path = data.path)}
 
   for (i in 1:nrow(tt_in)) {
-    obs = sidfex.read.obs(TargetID = tt_in$TargetID[i], data.path = data.path)
+    tid = tt_in$TargetID[i]
+    if (substr(tid, start=1, stop=5) == "FIXED") {next}
+    obs = sidfex.read.obs(TargetID = tid, data.path = data.path)
     Nobs = nrow(obs$data)
     tt_out$Latest_Position_Year[i] = obs$data$Year[Nobs]
     tt_out$Latest_Position_DayOfYear[i] = obs$data$POS_DOY[Nobs]
