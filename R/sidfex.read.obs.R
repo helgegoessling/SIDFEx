@@ -28,7 +28,9 @@ sidfex.read.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,NA_values=-9
     ifile = file.path(data.path.obs,paste0(tid,".txt"))
 
     res = read.table(file=ifile,header=TRUE)
-    res = res[,2:ncol(res)]
+    if (names(res)[1] == "BuoyID") {
+      res = res[,2:ncol(res)]
+    }
 
     if (!is.null(NA_values)) {
       res = res[!(res$Year%in%NA_values | res$POS_DOY%in%NA_values |

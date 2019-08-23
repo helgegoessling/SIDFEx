@@ -52,10 +52,12 @@ sidfex.reduce.obs <- function(TargetID=NULL, obs.out.path=NULL, obs.old.freq.day
     }
     reltime.new.firstday = sidfex.ydoy2reltime(Year = obs$Year[1], DayOfYear = floor(obs$POS_DOY[1]),
                                             RefYear = RefYear, RefDayOfYear = RefDayOfYear)
-    reltime.new.days = seq(reltime.new.firstday,0,obs.old.freq.days)
+    reltime.new.lastday = sidfex.ydoy2reltime(Year = tail(obs$Year,1), DayOfYear = floor(tail(obs$POS_DOY,1)),
+                                               RefYear = RefYear, RefDayOfYear = RefDayOfYear)
+    reltime.new.days = seq(reltime.new.firstday,max(0,reltime.new.lastday),obs.old.freq.days)
     reltime.new = c(rep(reltime.new.days, each=length(obs.old.dayfracs)) + rep(obs.old.dayfracs, length(reltime.new.days)))
     reltime.new = reltime.new[reltime.new >= reltime.orig[1] & reltime.new <= -obs.fullfreq.days]
-    if (tail(reltime.orig,1) > tail(reltime.new,1)) {
+    if (length(reltime.new) == 0 || tail(reltime.orig,1) > tail(reltime.new,1)) {
       if (tail(reltime.orig,1) > -obs.fullfreq.days) {
         reltime.new = c(reltime.new,reltime.orig[reltime.orig > -obs.fullfreq.days])
       } else {
