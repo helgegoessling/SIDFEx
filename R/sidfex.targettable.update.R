@@ -16,11 +16,10 @@ sidfex.targettable.update <- function(targettable.manual=NULL, targettable.out=N
   tt_in = read.table(file = targettable.manual, skip = 19, colClasses = "character", header = TRUE)
   tt_out = tt_in
 
-  if (download.obs) {sidfex.download.obs(TargetID = tt_in$TargetID, data.path = data.path)}
-
   for (i in 1:nrow(tt_in)) {
     tid = tt_in$TargetID[i]
     if (substr(tid, start=1, stop=5) == "FIXED") {next}
+    if (download.obs) {res = sidfex.download.obs(TargetID = tid, data.path = data.path)}
     obs = sidfex.read.obs(TargetID = tid, data.path = data.path)
     Nobs = nrow(obs$data)
     tt_out$Latest_Position_Year[i] = obs$data$Year[Nobs]
