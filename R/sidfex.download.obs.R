@@ -1,4 +1,4 @@
-sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl="http://iabp.apl.washington.edu/WebData/") {
+sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL) {
 
   if (is.null(data.path)) {
     no.data.path.obs=TRUE
@@ -27,11 +27,24 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
 
   wd = getwd()
   setwd(data.path.obs)
-  suf = ".txt"
-  if (baseurl == "http://iabp.apl.washington.edu/WebData/") {suf = ".dat"}
   print("Starting download ...")
+  i = 0
   for (tid in TargetID) {
-    download.file(url=paste0(baseurl,tid,suf),destfile=paste0(tid,".txt"))
+    i = i + 1
+    if (is.null(baseurl)) {
+      if (substr(tid, start=1, stop=5) %in% c("FIXED","POLAR","DISTN")) {
+        baseurlx = "https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/SIDFEx_index/observations/"
+      } else {
+        baseurlx = "http://iabp.apl.washington.edu/WebData/"
+      }
+    } else if (length(baseurl) > 1) {
+      baseurlx = baseurl[i]
+    } else {
+      baseurlx = baseurl
+    }
+    suf = ".txt"
+    if (baseurlx == "http://iabp.apl.washington.edu/WebData/") {suf = ".dat"}
+    download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt"))
   }
   print("Download done.")
   setwd(wd)

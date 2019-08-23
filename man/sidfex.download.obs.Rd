@@ -2,7 +2,7 @@
 \alias{sidfex.download.obs}
 \title{Download SIDFEx Observations}
 \usage{
-sidfex.download.obs(index=NULL,TargetID=NULL,data.path=NULL)
+sidfex.download.obs(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL)
 }
 \description{
 Download observations corresponding to one or more SIDFEx target(s), or from other IABP buoys.
@@ -16,6 +16,9 @@ a character or character vector specifying which observations are to be download
 }
   \item{data.path}{
 \code{NULL} or a character specifying the directory where the observational data are to be stored. If \code{NULL}, it is attempted to source a file named \code{.SIDFEx} in the home directory where a character variable \code{data.path.obs} needs to be defined.
+}
+  \item{baseurl}{
+\code{NULL} or a character or character vector specifying the URL from where to fetch the data. If \code{NULL} (default), different default locations are used for different targets (IABP versus non-IABP).
 }
 }
 \value{
