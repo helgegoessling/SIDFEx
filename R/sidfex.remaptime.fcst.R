@@ -99,7 +99,7 @@ sidfex.remaptime.fcst <- function (fcst,newtime.DaysLeadTime=NULL,newtime.Fracti
 
     remap.res = sl.trajectory.remaptime(oldtime = oldtime, oldlat = oldlat,
                                         oldlon = oldlon, newtime = newtime,
-                                        extrapolate = FALSE, method = "linear",
+                                        extrapolate = extrapolate, method = "linear",
                                         return.remapinfo = return.remapinfo, verbose = verbose)
     newtime.ydoy = sidfex.reltime2ydoy(reltime = newtime, RefYear = rl[[irl]]$InitYear,
                                        RefDayOfYear = rl[[irl]]$InitDayOfYear)
