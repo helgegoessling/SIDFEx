@@ -10,7 +10,7 @@ Rotate SIDFEx forecasts, typically to correct their initial position or to adjus
 }
 \arguments{
   \item{obs}{
-a list with SIDFEx observations as returned by \code{\link{sidfex.read.obs}}, or \code{NULL} (default). Used to determine the rotation parameters based on observed positions only if \code{lonlat.orig} and \code{lonlat.new} are not provided. If \code{sidfex.read.obs=NULL}, \code{\link{sidfex.read.obs}} is used to read the required observations.
+a list with SIDFEx observations as returned by \code{\link{sidfex.read.obs}}, or \code{NULL} (default). Used to determine the rotation parameters based on observed positions only if \code{lonlat.orig} and \code{lonlat.new} are not provided. If \code{obs=NULL}, \code{\link{sidfex.read.obs}} is used to read the required observations.
 }
   \item{fcst}{
 a list with SIDFEx forecasts as returned by \code{\link{sidfex.read.fcst}} (or a single element from the \code{res.list} element of such a list).
