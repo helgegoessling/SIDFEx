@@ -123,7 +123,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     reltime.fcst.init.st.list[[N.st]] = reltime.fcst.init.st
     indx.st.list[[N.st]] = indx.st
     include.actual = c(include.actual, gm)
-    include.actual.age = c(include.actual.age, -reltime.init.st)
+    include.actual.age = c(include.actual.age, -reltime.fcst.init.st)
     include.actual.remainrange = c(include.actual.remainrange, indx.st$FcstTime + reltime.fcst.init.st)
   }
 
