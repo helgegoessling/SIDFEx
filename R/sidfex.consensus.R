@@ -19,11 +19,13 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
 
   ##########################################
 
+  now = unclass(as.POSIXlt(Sys.time(),tz="GMT"))
+  now.dayfrac = (now$hour + (now$min + now$sec/60)/60)/24
+  now.doy = now$yday + 1 + now.dayfrac
+  now.year = now$year + 1900
   if (is.null(init.ydoy)) {
-    now = unclass(as.POSIXlt(Sys.time(),tz="GMT"))
-    now.dayfrac = (now$hour + (now$min + now$sec/60)/60)/24
-    init.doy = now$yday + 1 + now.dayfrac
-    init.year = now$year + 1900
+    init.doy = now.doy
+    init.year = now.year
   } else {
     if (any(!(c("Year","DayOfYear") %in% names(init.ydoy)))) {
       stop("argument 'init.ydoy' must be a list with elements 'Year' and 'DayOfYear', or NULL")
@@ -87,6 +89,9 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   indx.st.list = NULL
   reltime.fcst.init.st.list = NULL
   N.st = 0
+  include.actual = NULL
+  include.actual.age = NULL
+  include.actual.remainrange = NULL
   for (i in 1:length(shortterm.include)) {
     gm = shortterm.include[i]
     indx.st.i = indx[indx_gidmid == gm, ]
@@ -117,6 +122,9 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     N.st = N.st + 1
     reltime.fcst.init.st.list[[N.st]] = reltime.fcst.init.st
     indx.st.list[[N.st]] = indx.st
+    include.actual = c(include.actual, gm)
+    include.actual.age = c(include.actual.age, -reltime.init.st)
+    include.actual.remainrange = c(include.actual.remainrange, indx.st$FcstTime + reltime.fcst.init.st)
   }
 
   if (N.st == 0) {
@@ -199,6 +207,22 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.cons$res.list[[1]]$MergedInitLat = rep(obs.init$res.list[[1]]$data$Lat[1], N.em+1)
   fcst.cons$res.list[[1]]$MergedInitLon = rep(obs.init$res.list[[1]]$data$Lon[1], N.em+1)
 
-  return(fcst.cons)
+  consensus.info = list()
+  consensus.info$Version = "20191009v0"
+  consensus.info$GeneratedYear = now.year
+  consensus.info$GeneratedDayOfYear = now.doy
+  consensus.info$arguments = list()
+  consensus.info$arguments$shortterm.include = shortterm.include
+  consensus.info$arguments$shortterm.age.max = shortterm.age.max
+  consensus.info$arguments$shortterm.remainrange.min = shortterm.remainrange.min
+  consensus.info$arguments$shortterm.replicate.max = shortterm.replicate.max
+  consensus.info$arguments$submitted.within = submitted.within
+  consensus.info$stats = list()
+  consensus.info$stats$include.actual = include.actual
+  consensus.info$stats$include.actual.age = include.actual.age
+  consensus.info$stats$include.actual.remainrange = include.actual.remainrange
+
+  return(list(ens.merge = fcst.cons$ens.merge, remaptime.fcst = fcst.cons$remaptime.fcst,
+         consensus.info = consensus.info, res.list = fcst.cons$res.list))
 
 }
