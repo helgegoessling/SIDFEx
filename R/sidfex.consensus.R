@@ -15,7 +15,10 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
                               #subseas.replicate.max = 6,
                               leadtimes = seq(0,124),
                               submitted.within = Inf,
-                              verbose=TRUE) {
+                              verbose=TRUE,
+                              data.path.obs = NULL,
+                              data.path.index = NULL,
+                              data.path.fcst = NULL) {
 
   ##########################################
 
@@ -34,7 +37,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     init.year = init.ydoy$Year
   }
 
-  obs = sidfex.read.obs(TargetID = TargetID)
+  obs = sidfex.read.obs(TargetID = TargetID, data.path = data.path.obs)
   Nobs = nrow(obs$data)
   obs.last.year = obs$data$Year[Nobs]
   obs.last.doy = obs$data$POS_DOY[Nobs]
@@ -49,7 +52,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     }
   }
 
-  indx = sidfex.load.index()
+  indx = sidfex.load.index(indexTable.path = data.path.index)
   indx = indx[indx$TargetID == TargetID, ]
   indx_gidmid = paste0(indx$GroupID,"_",indx$MethodID)
 
@@ -72,7 +75,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   }
   indx.seas = indx[indx$EnsParentFile == indx.po.seas$File, ]
   N.em = nrow(indx.seas)
-  fcst.seas = sidfex.read.fcst(files = indx.seas, ens.merge = TRUE)
+  fcst.seas = sidfex.read.fcst(files = indx.seas, ens.merge = TRUE, data.path = data.path.fcst)
   fcst.seas.em.template = fcst.seas
   fcst.seas.em.template$res.list[[1]]$data = fcst.seas.em.template$res.list[[1]]$data[,1:5]
   fcst.seas.rot = sidfex.rot.fcst(obs = obs, fcst = fcst.seas, obsref.Year = init.year, obsref.DayOfYear = init.doy)
@@ -138,7 +141,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
 
     for (i in 1:N.st) {
 
-      fcst.st = sidfex.read.fcst(files = indx.st.list[[i]], ens.merge = TRUE)
+      fcst.st = sidfex.read.fcst(files = indx.st.list[[i]], ens.merge = TRUE, data.path = data.path.fcst)
       fcst.st.rot = sidfex.rot.fcst(obs = obs, fcst = fcst.st, obsref.Year = init.year, obsref.DayOfYear = init.doy)
       fcst.st.remaptime = sidfex.remaptime.fcst(fcst = fcst.st.rot,
                                                   newtime.DaysLeadTime = leadtimes - reltime.fcst.init.st.list[[i]],
