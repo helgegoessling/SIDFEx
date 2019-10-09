@@ -129,6 +129,9 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     include.actual.age = c(include.actual.age, -reltime.fcst.init.st)
     include.actual.remainrange = c(include.actual.remainrange, indx.st$FcstTime + reltime.fcst.init.st)
   }
+  include.actual = c(include.actual, "ecmwf001_SEAS5")
+  include.actual.age = c(include.actual.age, -reltime.fcst.init.seas)
+  include.actual.remainrange = c(include.actual.remainrange, indx.seas$FcstTime[1] + reltime.fcst.init.seas[1])
 
   if (N.st == 0) {
     warning("no short-term forecasts matching the criteria found; consensus will be based only on longer-term (possibly non-NRT) forecasts")
