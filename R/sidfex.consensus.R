@@ -58,7 +58,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
 
   ##############################################
   # SELECT AND READ SEASONAL FORECAST
-  indx.po.seas = sidfex.fcst.search.extractFromTable(gid = "ecmwf001", mid = "SEAS5", tid = TargetID, EnsParentOnly = TRUE)
+  indx.po.seas = sidfex.fcst.search.extractFromTable(gid = "ecmwf001", mid = "SEAS5", tid = TargetID, EnsParentOnly = TRUE, indexTable.path = data.path.index)
   reltime.init.seas = sidfex.ydoy2reltime(indx.po.seas$InitYear, indx.po.seas$InitDayOfYear, init.year, init.doy)
   reltime.submit.seas = sidfex.ydoy2reltime(indx.po.seas$SubmitYear, indx.po.seas$SubmitDayOfYear, init.year, init.doy)
   if (any(reltime.init.seas > 0)) {
