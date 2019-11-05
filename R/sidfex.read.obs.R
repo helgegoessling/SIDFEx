@@ -27,6 +27,12 @@ sidfex.read.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,NA_values=-9
 
     ifile = file.path(data.path.obs,paste0(tid,".txt"))
 
+    if (!file.exists(ifile)) {
+      warning(paste0("file '",ifile,"' does not exist, returning empty data element"))
+      res.list[[i]] = list(filename=ifile,TargetID=tid,data=NULL)
+      next
+    }
+
     res = read.table(file=ifile,header=TRUE)
     if (names(res)[1] == "BuoyID") {
       res = res[,2:ncol(res)]
