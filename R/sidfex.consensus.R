@@ -59,6 +59,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   ##############################################
   # SELECT AND READ SEASONAL FORECAST
   indx.po.seas = sidfex.fcst.search.extractFromTable(gid = "ecmwf001", mid = "SEAS5", tid = TargetID, EnsParentOnly = TRUE, indexTable.path = data.path.index)
+  if (nrow(indx.po.seas) == 0) {return("no ecmwf001_SEAS5 forecast available for the specified target")}
   reltime.init.seas = sidfex.ydoy2reltime(indx.po.seas$InitYear, indx.po.seas$InitDayOfYear, init.year, init.doy)
   reltime.submit.seas = sidfex.ydoy2reltime(indx.po.seas$SubmitYear, indx.po.seas$SubmitDayOfYear, init.year, init.doy)
   if (any(reltime.init.seas > 0)) {
@@ -71,7 +72,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   reltime.fcst.init.seas = max(reltime.init.seas[reltime.init.seas <= 0 & reltime.submit.seas <= submitted.within])
   indx.po.seas = indx.po.seas[reltime.init.seas == reltime.fcst.init.seas, ]
   if (nrow(indx.po.seas) != 1) {
-    stop("something is wrong, not exactly one seasonal (ecmwf) forecast (ensemble) left in index ...")
+    return("something is wrong, not exactly one seasonal (ecmwf) forecast (ensemble) left in index ...")
   }
   indx.seas = indx[indx$EnsParentFile == indx.po.seas$File, ]
   N.em = nrow(indx.seas)
