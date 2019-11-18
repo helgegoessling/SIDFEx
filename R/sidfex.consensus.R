@@ -18,7 +18,8 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
                               verbose=TRUE,
                               data.path.obs = NULL,
                               data.path.index = NULL,
-                              data.path.fcst = NULL) {
+                              data.path.fcst = NULL,
+                              extrapolate.maxspeed = 10/6371) {
 
   ##########################################
 
@@ -82,7 +83,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.seas.rot = sidfex.rot.fcst(obs = obs, fcst = fcst.seas, obsref.Year = init.year, obsref.DayOfYear = init.doy)
   fcst.seas.remaptime = sidfex.remaptime.fcst(fcst = fcst.seas.rot,
                                               newtime.DaysLeadTime = leadtimes - reltime.fcst.init.seas,
-                                              extrapolate=TRUE)
+                                              extrapolate=TRUE, extrapolate.maxspeed = extrapolate.maxspeed)
 
   fcst.cons = fcst.seas.remaptime
   fcst.cons.data = fcst.seas.remaptime$res.list[[1]]$data
@@ -163,12 +164,12 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
           lonlat.new = c(tail(fcst.st.rot$res.list[[1]]$data$Lon,1), tail(fcst.st.rot$res.list[[1]]$data$Lat,1))
           lonlat.orig.fcst = sidfex.remaptime.fcst(fcst = fcst.seas.em,
                                                   newtime.DaysLeadTime = fcst.st.remainrange - reltime.fcst.init.seas,
-                                                  extrapolate=TRUE)
+                                                  extrapolate=TRUE, extrapolate.maxspeed = extrapolate.maxspeed)
           lonlat.orig = c(lonlat.orig.fcst$res.list[[1]]$data[1,4], lonlat.orig.fcst$res.list[[1]]$data[1,3])
           fcst.seas.em.rot = sidfex.rot.fcst(fcst = fcst.seas.em, lonlat.orig = lonlat.orig, lonlat.new = lonlat.new)
           fcst.seas.em.remaptime = sidfex.remaptime.fcst(fcst = fcst.seas.em.rot,
                                                     newtime.DaysLeadTime = leadtimes - reltime.fcst.init.seas,
-                                                    extrapolate=TRUE)
+                                                    extrapolate=TRUE, extrapolate.maxspeed = extrapolate.maxspeed)
           which.fill = which(leadtimes > fcst.st.remainrange)
           fcst.cons.data[which.fill, 2*em+c(4,5)] = fcst.seas.em.remaptime$res.list[[1]]$data[which.fill, c(3,4)]
         }
@@ -215,7 +216,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.cons$res.list[[1]]$MergedInitLon = rep(obs.init$res.list[[1]]$data$Lon[1], N.em+1)
 
   consensus.info = list()
-  consensus.info$Version = "20191009v0"
+  consensus.info$Version = "20191118v0"
   consensus.info$GeneratedYear = now.year
   consensus.info$GeneratedDayOfYear = now.doy
   consensus.info$arguments = list()
