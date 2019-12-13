@@ -20,7 +20,7 @@ Total_Last_DayOfYear: DayOfYear of last valid position. NaN if still active.
 TargetID Current_Target Latest_Position_Year Latest_Position_DayOfYear Latest_Position_Lat Latest_Position_Lon Total_First_Year Total_First_DayOfYea SIDFEx_First_Year SIDFEx_First_DayOfYear SIDFEx_Last_Year SIDFEx_Last_DayOfYear Total_Last_Year Total_Last_DayOfYear
 127317 FALSE <autofill> <autofill> <autofill> <autofill> 2015 198.542 2017 1.000 2017 227.625 2017 227.625
 300234060436000 FALSE <autofill> <autofill> <autofill> <autofill> 2015 320.750 2017 1.000 2017 331.250 2017 331.250
-300234063991680 TRUE <autofill> <autofill> <autofill> <autofill> 2016 249.854 2017 1.000 NaN NaN NaN NaN
+300234063991680 FALSE <autofill> <autofill> <autofill> <autofill> 2016 249.854 2017 1.000 2019 326.875 2019 326.875
 139939 FALSE <autofill> <autofill> <autofill> <autofill> 2016 194.792 2017 1.000 2018 219.542 2018 305.708
 300234063803010 FALSE <autofill> <autofill> <autofill> <autofill> 2017 169.000 2017 169.000 2019 169.833 2019 169.833
 300234060834110 FALSE <autofill> <autofill> <autofill> <autofill> 2016 300.792 2017 1.083 2018 173.539 NaN NaN
@@ -32,7 +32,7 @@ TargetID Current_Target Latest_Position_Year Latest_Position_DayOfYear Latest_Po
 300234065495020 TRUE <autofill> <autofill> <autofill> <autofill> 2018 153.958 2018 153.958 NaN NaN NaN NaN
 300234066036110 TRUE <autofill> <autofill> <autofill> <autofill> 2018 167.250 2018 167.250 NaN NaN NaN NaN
 300234066030330 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
-300234066030190 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
+300234066030190 FALSE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 2019 284.00 NaN NaN
 300234066031190 FALSE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 2019 213.000 NaN NaN
 300234066830700 FALSE <autofill> <autofill> <autofill> <autofill> 2018 112.167 2018 112.167 2019 196.000 NaN NaN
 300234062880820 TRUE <autofill> <autofill> <autofill> <autofill> 2018 317.875 2018 317.875 NaN NaN NaN NaN
@@ -52,3 +52,6 @@ POLARSTERN01 TRUE <autofill> <autofill> <autofill> <autofill> 2019 274.000 2019 
 300234066089220 TRUE <autofill> <autofill> <autofill> <autofill> 2019 272.0236 2019 295.000 NaN NaN NaN NaN
 300234066087220 TRUE <autofill> <autofill> <autofill> <autofill> 2019 284.000 2019 295.000 NaN NaN NaN NaN
 300234066084230 TRUE <autofill> <autofill> <autofill> <autofill> 2019 284.000 2019 295.000 NaN NaN NaN NaN
+300234065498190 TRUE <autofill> <autofill> <autofill> <autofill> 2019 191.000 2019 295.000 NaN NaN NaN NaN
+300234068312210 TRUE <autofill> <autofill> <autofill> <autofill> 2019 270.000 2019 295.000 NaN NaN NaN NaN
+300234065709990 TRUE <autofill> <autofill> <autofill> <autofill> 2019 182.000 2019 295.000 NaN NaN NaN NaN
