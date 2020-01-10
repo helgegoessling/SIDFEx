@@ -1,4 +1,4 @@
-sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL) {
+sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=10,try.timeout=30) {
 
   if (is.null(data.path)) {
     no.data.path.obs=TRUE
@@ -25,6 +25,23 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
     system(paste0("mkdir -p ",data.path.obs))
   }
 
+  try_with_timeout <- function(expr, cpu = Inf, elapsed = Inf) {
+    return(
+      tryCatch(
+        {
+          expr <- substitute(expr)
+          envir <- parent.frame()
+          setTimeLimit(cpu = cpu, elapsed = elapsed, transient = TRUE)
+          on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE))
+          eval(expr, envir = envir)
+        },
+        error=function(x){
+          return(NA)
+        }
+      )
+    )
+  }
+
   wd = getwd()
   setwd(data.path.obs)
   print("Starting download ...")
@@ -44,7 +61,13 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
     }
     suf = ".txt"
     if (baseurlx == "http://iabp.apl.washington.edu/WebData/") {suf = ".dat"}
-    download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt"))
+    try.i = 0
+    repeat {
+      res = try_with_timeout(download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt")),elapsed=try.timeout)
+      if (!is.na(res)) {break}
+      try.i = try.i + 1
+      if (try.i > try.N) {stop(paste0("Download of file ",baseurlx,tid,suf," failed."))}
+    }
   }
   print("Download done.")
   setwd(wd)

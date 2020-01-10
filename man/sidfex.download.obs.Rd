@@ -2,7 +2,7 @@
 \alias{sidfex.download.obs}
 \title{Download SIDFEx Observations}
 \usage{
-sidfex.download.obs(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL)
+sidfex.download.obs(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=10,try.timeout=30)
 }
 \description{
 Download observations corresponding to one or more SIDFEx target(s), or from other IABP buoys.
@@ -19,6 +19,12 @@ a character or character vector specifying which observations are to be download
 }
   \item{baseurl}{
 \code{NULL} or a character or character vector specifying the URL from where to fetch the data. If \code{NULL} (default), different default locations are used for different targets (IABP versus non-IABP).
+}
+  \item{try.N}{
+an integer that specifies how often the download of each individual file shall be tried. Default is \code{10}.
+}
+  \item{try.timeout}{
+a numeric value that specifies a time limit for each try of a file download in seconds. Default is \code{30}.
 }
 }
 \value{
