@@ -1,4 +1,4 @@
-sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=10,try.timeout=30) {
+sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=30,try.timeout=20) {
 
   if (is.null(data.path)) {
     no.data.path.obs=TRUE

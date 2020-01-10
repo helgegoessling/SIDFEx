@@ -2,7 +2,7 @@
 \alias{sidfex.download.obs}
 \title{Download SIDFEx Observations}
 \usage{
-sidfex.download.obs(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=10,try.timeout=30)
+sidfex.download.obs(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=30,try.timeout=20)
 }
 \description{
 Download observations corresponding to one or more SIDFEx target(s), or from other IABP buoys.
