@@ -1,7 +1,7 @@
 sidfex.fcst.search.manipulateIndex <-
   function(rTab) {
 
-    gids_mids = c("nrl001_flatearth24","nrl001_navyespc-subseasonal")
+    gids_mids = c("nrl001_flatearth24","nrl001_navyespc-subseasonal","nrl001_navyespc-seasonal")
 
     for (gimi in gids_mids) {
 
