@@ -1,4 +1,4 @@
-sidfex.targettable.update <- function(targettable.manual=NULL, targettable.out=NULL, download.obs=TRUE, data.path=NULL) {
+sidfex.targettable.update <- function(targettable.manual=NULL, targettable.out=NULL, download.obs=TRUE, data.path=NULL, download.obs.onlyactive=FALSE) {
 
   if (is.null(targettable.manual)) {
     targettable.manual = system.file("extdata","targettable_manual.txt",package="SIDFEx")
@@ -19,7 +19,9 @@ sidfex.targettable.update <- function(targettable.manual=NULL, targettable.out=N
   for (i in 1:nrow(tt_in)) {
     tid = tt_in$TargetID[i]
     if (substr(tid, start=1, stop=5) == "FIXED") {next}
-    if (download.obs) {res = sidfex.download.obs(TargetID = tid, data.path = data.path)}
+    if (download.obs && (!download.obs.onlyactive || tt_in$SIDFEx_Last_Year[i]=="NaN")) {
+      res = sidfex.download.obs(TargetID = tid, data.path = data.path)
+    }
     obs = sidfex.read.obs(TargetID = tid, data.path = data.path)
     if (is.null(obs$data)) {next}
     Nobs = nrow(obs$data)

@@ -2,7 +2,7 @@
 \alias{sidfex.targettable.update}
 \title{Update Position Information in SIDFEx Target Table}
 \usage{
-sidfex.targettable.update(targettable.manual=NULL, targettable.out=NULL, download.obs=TRUE, data.path=NULL)
+sidfex.targettable.update(targettable.manual=NULL, targettable.out=NULL, download.obs=TRUE, data.path=NULL, download.obs.onlyactive=FALSE)
 }
 \description{
 Update position information in SIDFEx target table, using either a manual version or the file where recent position data is missing or an earlier version including (possibly outdated) position data.
@@ -19,6 +19,9 @@ a logical value specifying whether or not to download the latest versions of the
 }
 \item{data.path}{
 \code{NULL} or a character specifying the local directory of the observational data. Usually, \code{NULL} (default) should be appropriate. For details, see the same argument in \code{\link{sidfex.download.obs}}.
+}
+\item{download.obs.onlyactive}{
+a logical value specifying whether or not to download (if \code{download.obs=TRUE}) only observations for targets that are still active . Default is \code{FALSE}.
 }
 }
 \value{
