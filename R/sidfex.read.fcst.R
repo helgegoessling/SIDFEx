@@ -1,4 +1,4 @@
-sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE) {
+sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE,speed.fix=TRUE,speed.fix.max=80) {
 
   if (is.null(data.path)) {
     no.data.path.fcst=TRUE
@@ -139,6 +139,14 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
     res$EnsMemNum = as.integer(row.flds[row.flds != ""][2])
 
     dat = read.table(fl,header=TRUE,skip=nrGroupID+8)
+    dat$DaysLeadTime = sidfex.ydoy2reltime(dat$Year,dat$DayOfYear,res$InitYear,res$InitDayOfYear)
+
+    if (speed.fix) {
+      lola = sidfex.trajectory.fix(reltime = dat$DaysLeadTime, lon = dat$Lon, lat = dat$Lat, speed.max = speed.fix.max)
+      dat$Lon = lola$lon
+      dat$Lat = lola$lat
+    }
+
     Nt = nrow(dat)
     res$Ntimesteps = Nt
     res$FirstYear = dat[1,1]
@@ -149,7 +157,6 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
     res$LastDayOfYear = dat[Nt,2]
     res$LastLat = dat[Nt,3]
     res$LastLon = dat[Nt,4]
-    dat$DaysLeadTime = sidfex.ydoy2reltime(dat$Year,dat$DayOfYear,res$InitYear,res$InitDayOfYear)
     res$DaysForecastLength = dat$DaysLeadTime[Nt]
     res$data = dat
 

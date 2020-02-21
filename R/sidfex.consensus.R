@@ -6,12 +6,12 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
                                                     "nrl001_gofs3.1-shortrange",
                                                     "eccc001_giops",
                                                     "esrl001_SeaIceVelocity",
-                                                    "metno001_RK2",
-                                                    "ncep001_freedrift-ensmean",
-                                                    "dmi001_Forecast5d"),
+                                                    "metno001_RK2"),
+                                                    #"ncep001_freedrift-ensmean",
+                                                    #"dmi001_Forecast5d"),
                               shortterm.age.max = 3,
                               shortterm.remainrange.min = 3,
-                              shortterm.replicate.max = 13,
+                              shortterm.replicate.max = 17,
                               #subseas.replicate.max = 6,
                               leadtimes = seq(0,124),
                               submitted.within = Inf,
@@ -84,7 +84,6 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.seas.remaptime = sidfex.remaptime.fcst(fcst = fcst.seas.rot,
                                               newtime.DaysLeadTime = leadtimes - reltime.fcst.init.seas,
                                               extrapolate=TRUE, extrapolate.maxspeed = extrapolate.maxspeed)
-
   fcst.cons = fcst.seas.remaptime
   fcst.cons.data = fcst.seas.remaptime$res.list[[1]]$data
   fcst.cons.data$DaysLeadTime = leadtimes
@@ -124,6 +123,11 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
       next
     }
     ### here one might read the forecast already once to check for NAs and, if NAs are included, omit the forecast...
+    fcst.st.test = sidfex.read.fcst(files = indx.st, ens.merge = TRUE, data.path = data.path.fcst)
+    if (anyNA(fcst.st.test$res.list[[1]]$data)) {
+      if (verbose) {print(paste0("latest ",gm," forecast contains NA value(s)"))}
+      next
+    }
     N.st = N.st + 1
     reltime.fcst.init.st.list[[N.st]] = reltime.fcst.init.st
     indx.st.list[[N.st]] = indx.st
@@ -216,7 +220,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.cons$res.list[[1]]$MergedInitLon = rep(obs.init$res.list[[1]]$data$Lon[1], N.em+1)
 
   consensus.info = list()
-  consensus.info$Version = "20191118v0"
+  consensus.info$Version = "20200221v0"
   consensus.info$GeneratedYear = now.year
   consensus.info$GeneratedDayOfYear = now.doy
   consensus.info$arguments = list()
