@@ -204,7 +204,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.cons$res.list[[1]]$InitYear = init.year
   fcst.cons$res.list[[1]]$InitDayOfYear = init.doy
   obs.init.fcst = sidfex.remaptime.fcst(fcst = fcst.seas.em.template, newtime.DaysLeadTime = -reltime.fcst.init.seas, extrapolate=FALSE)
-  obs.init = sidfex.remaptime.obs2fcst(fcst = obs.init.fcst, obs = obs)
+  obs.init = sidfex.remaptime.obs2fcst(fcst = obs.init.fcst, obs = obs, extrapolate = TRUE, method = "linear")
   fcst.cons$res.list[[1]]$InitLat = obs.init$res.list[[1]]$data$Lat[1]
   fcst.cons$res.list[[1]]$InitLon = obs.init$res.list[[1]]$data$Lon[1]
   fcst.cons$res.list[[1]]$Ntimesteps = nrow(fcst.cons$res.list[[1]]$data)

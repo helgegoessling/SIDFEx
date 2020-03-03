@@ -29,7 +29,12 @@ sidfex.rot.fcst <- function (obs=NULL,fcst,obsref.DaysLeadTime=0,obsref.Year=NUL
       ydoybased = FALSE
       fcst.ref = sidfex.remaptime.fcst(fcst, newtime.DaysLeadTime = obsref.DaysLeadTime)
     }
-    obs.ref = sidfex.remaptime.obs2fcst(obs=obs, fcst=fcst.ref)
+    obs.reltime = sidfex.ydoy2reltime(Year = obs$data$Year, DayOfYear = obs$data$POS_DOY,
+                                      RefYear = fcst.ref$res.list[[1]]$data$Year, RefDayOfYear = fcst.ref$res.list[[1]]$data$DayOfYear)
+    if (obs.reltime[1] > 0 || tail(obs.reltime,1) < 0) {
+      stop("reference time outside the observational time range")
+    }
+    obs.ref = sidfex.remaptime.obs2fcst(obs=obs, fcst=fcst.ref, extrapolate = TRUE, method = "linear")
   } else {
     timebased = FALSE
     # determine rotation parameters based on lonlat.orig and lonlat.new so that they lie on the equator of the rotation
