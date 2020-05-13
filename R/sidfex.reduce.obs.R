@@ -25,7 +25,11 @@ sidfex.reduce.obs <- function(TargetID=NULL, obs.out.path=NULL, obs.old.freq.day
   if (is.null(TargetID)) {
     tt = tt_in
   } else {
-    if (!any(tt_in$TargetID %in% TargetID)) {stop("'TargetID'(s) not found in the target table")}
+    if (!any(tt_in$TargetID %in% TargetID)) {
+      print(tt_in$TargetID)
+      print(TargetID)
+      stop("'TargetID'(s) not found in the target table")
+    }
     tt = tt_in[tt_in$TargetID %in% TargetID, ]
   }
   TargetID = tt$TargetID
