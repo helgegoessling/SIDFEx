@@ -45,9 +45,9 @@ FIXED84N140E FALSE NaN NaN 84.000 140.000 2019 210.000 2019 210.000 2019 309.000
 FIXED86N120E FALSE NaN NaN 86.000 120.000 2019 210.000 2019 210.000 2019 309.000 NaN NaN
 FIXED86N140E FALSE NaN NaN 86.000 140.000 2019 210.000 2019 210.000 2019 309.000 NaN NaN
 POLARSTERN01 TRUE <autofill> <autofill> <autofill> <autofill> 2019 274.000 2019 274.000 NaN NaN NaN NaN
-300234066417330 TRUE <autofill> <autofill> <autofill> <autofill> 2019 269.1875 2019 295.000 NaN NaN NaN NaN
-300234067509680 TRUE <autofill> <autofill> <autofill> <autofill> 2019 280.000 2019 295.000 NaN NaN NaN NaN
-300234067700680 TRUE <autofill> <autofill> <autofill> <autofill> 2019 280.000 2019 295.000 NaN NaN NaN NaN
+300234066417330 FALSE <autofill> <autofill> <autofill> <autofill> 2019 269.1875 2019 295.000 2020 113.7292 2020 113.7292
+300234067509680 FALSE <autofill> <autofill> <autofill> <autofill> 2019 280.000 2019 295.000 2020 66.8979 2020 66.8979
+300234067700680 FALSE <autofill> <autofill> <autofill> <autofill> 2019 280.000 2019 295.000 2020 106.6597 2020 106.6597
 300234067700760 TRUE <autofill> <autofill> <autofill> <autofill> 2019 280.000 2019 295.000 NaN NaN NaN NaN
 300234066089220 TRUE <autofill> <autofill> <autofill> <autofill> 2019 272.0236 2019 295.000 NaN NaN NaN NaN
 300234066087220 TRUE <autofill> <autofill> <autofill> <autofill> 2019 284.000 2019 295.000 NaN NaN NaN NaN
@@ -55,3 +55,5 @@ POLARSTERN01 TRUE <autofill> <autofill> <autofill> <autofill> 2019 274.000 2019 
 300234065498190 TRUE <autofill> <autofill> <autofill> <autofill> 2019 191.000 2019 295.000 NaN NaN NaN NaN
 300234068312210 TRUE <autofill> <autofill> <autofill> <autofill> 2019 270.000 2019 295.000 NaN NaN NaN NaN
 300234065709990 TRUE <autofill> <autofill> <autofill> <autofill> 2019 182.000 2019 295.000 NaN NaN NaN NaN
+CENTRFLOE01 TRUE <autofill> <autofill> <autofill> <autofill> 2020 97.560 2020 120.000 NaN NaN NaN NaN
+300234065497190 TRUE <autofill> <autofill> <autofill> <autofill> 2019 295.000 2019 295.000 NaN NaN NaN NaN

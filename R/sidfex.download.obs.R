@@ -49,7 +49,7 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
   for (tid in TargetID) {
     i = i + 1
     if (is.null(baseurl)) {
-      if (substr(tid, start=1, stop=5) %in% c("FIXED","POLAR","DISTN")) {
+      if (substr(tid, start=1, stop=5) %in% c("FIXED","POLAR","DISTN","CENTR")) {
         baseurlx = "https://swift.dkrz.de/v1/dkrz_0262ea1f00e34439850f3f1d71817205/SIDFEx_index/observations/"
       } else {
         baseurlx = "http://iabp.apl.washington.edu/WebData/"
