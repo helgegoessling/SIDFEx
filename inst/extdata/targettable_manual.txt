@@ -55,5 +55,4 @@ POLARSTERN01 TRUE <autofill> <autofill> <autofill> <autofill> 2019 274.000 2019 
 300234065498190 TRUE <autofill> <autofill> <autofill> <autofill> 2019 191.000 2019 295.000 NaN NaN NaN NaN
 300234068312210 TRUE <autofill> <autofill> <autofill> <autofill> 2019 270.000 2019 295.000 NaN NaN NaN NaN
 300234065709990 TRUE <autofill> <autofill> <autofill> <autofill> 2019 182.000 2019 295.000 NaN NaN NaN NaN
-CENTRFLOE01 TRUE <autofill> <autofill> <autofill> <autofill> 2020 97.560 2020 120.000 NaN NaN NaN NaN
 300234065497190 TRUE <autofill> <autofill> <autofill> <autofill> 2019 295.000 2019 295.000 NaN NaN NaN NaN
