@@ -78,9 +78,35 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   indx.seas = indx[indx$EnsParentFile == indx.po.seas$File, ]
   N.em = nrow(indx.seas)
   fcst.seas = sidfex.read.fcst(files = indx.seas, ens.merge = TRUE, data.path = data.path.fcst)
+
+  for (i in 1:N.em) {
+    lon.col = 5 + 2*i
+    lat.col = lon.col - 1
+    lat.dat = fcst.seas$res.list[[1]]$data[,lat.col]
+    lon.dat = fcst.seas$res.list[[1]]$data[,lon.col]
+    if (anyNA(lat.dat) | anyNA(lon.dat)) {
+      warning(paste0("NAs contained in ensemble member ",i," of the ecmwf_SEAS5 forecast, repeating last valid position"))
+      first.na = min(which(is.na(lat.dat) | is.na(lon.dat)))
+      Nstp = length(lat.dat)
+      if (first.na == 1) {
+        if (is.na(fcst.seas$res.list[[1]]$InitLat) || is.na(fcst.seas$res.list[[1]]$InitLon)) {
+          stop("no valid initial location found to fill NA-only ensemble members")
+        }
+        lat.dat = rep(fcst.seas$res.list[[1]]$InitLat,Nstp)
+        lon.dat = rep(fcst.seas$res.list[[1]]$InitLon,Nstp)
+      } else {
+        lat.dat[first.na:Nstp] = lat.dat[first.na-1]
+        lon.dat[first.na:Nstp] = lon.dat[first.na-1]
+      }
+      fcst.seas$res.list[[1]]$data[,lat.col] = lat.dat
+      fcst.seas$res.list[[1]]$data[,lon.col] = lon.dat
+    }
+  }
+
   fcst.seas.em.template = fcst.seas
   fcst.seas.em.template$res.list[[1]]$data = fcst.seas.em.template$res.list[[1]]$data[,1:5]
   fcst.seas.rot = sidfex.rot.fcst(obs = obs, fcst = fcst.seas, obsref.Year = init.year, obsref.DayOfYear = init.doy)
+  browser()
   fcst.seas.remaptime = sidfex.remaptime.fcst(fcst = fcst.seas.rot,
                                               newtime.DaysLeadTime = leadtimes - reltime.fcst.init.seas,
                                               extrapolate=TRUE, extrapolate.maxspeed = extrapolate.maxspeed)
