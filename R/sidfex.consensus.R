@@ -106,7 +106,6 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.seas.em.template = fcst.seas
   fcst.seas.em.template$res.list[[1]]$data = fcst.seas.em.template$res.list[[1]]$data[,1:5]
   fcst.seas.rot = sidfex.rot.fcst(obs = obs, fcst = fcst.seas, obsref.Year = init.year, obsref.DayOfYear = init.doy)
-  browser()
   fcst.seas.remaptime = sidfex.remaptime.fcst(fcst = fcst.seas.rot,
                                               newtime.DaysLeadTime = leadtimes - reltime.fcst.init.seas,
                                               extrapolate=TRUE, extrapolate.maxspeed = extrapolate.maxspeed)
