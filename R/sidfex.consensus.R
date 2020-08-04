@@ -84,8 +84,10 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     lat.col = lon.col - 1
     lat.dat = fcst.seas$res.list[[1]]$data[,lat.col]
     lon.dat = fcst.seas$res.list[[1]]$data[,lon.col]
+    update.ensmean.dummy = FALSE
     if (anyNA(lat.dat) | anyNA(lon.dat)) {
       warning(paste0("NAs contained in ensemble member ",i," of the ecmwf_SEAS5 forecast, repeating last valid position"))
+      update.ensmean.dummy = TRUE
       first.na = min(which(is.na(lat.dat) | is.na(lon.dat)))
       Nstp = length(lat.dat)
       if (first.na == 1) {
@@ -101,6 +103,17 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
       fcst.seas$res.list[[1]]$data[,lat.col] = lat.dat
       fcst.seas$res.list[[1]]$data[,lon.col] = lon.dat
     }
+  }
+  if (update.ensmean.dummy) {
+    for (nldt in 1:length(leadtimes)) {
+      baryc = sl.barycenter(lon = as.numeric(fcst.seas$res.list[[1]]$data[nldt,2*(1:N.em)+5]),
+                            lat = as.numeric(fcst.seas$res.list[[1]]$data[nldt,2*(1:N.em)+4]),
+                            rm.na = TRUE)
+      fcst.seas$res.list[[1]]$data[nldt, 3] = baryc$lat
+      fcst.seas$res.list[[1]]$data[nldt, 4] = baryc$lon
+    }
+    fcst.seas$res.list[[1]]$LastYear = tail(fcst.seas$res.list[[1]]$data$Year,1)
+    fcst.seas$res.list[[1]]$LastDayOfYear = tail(fcst.seas$res.list[[1]]$data$DayOfYear,1)
   }
 
   fcst.seas.em.template = fcst.seas
