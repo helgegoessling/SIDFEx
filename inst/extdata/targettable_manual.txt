@@ -60,3 +60,4 @@ POLARSTERN01 TRUE <autofill> <autofill> <autofill> <autofill> 2019 274.000 2019 
 300234010084660 TRUE <autofill> <autofill> <autofill> <autofill> 2020 90.000 2020 90.000 NaN NaN NaN NaN
 300234010307830 TRUE <autofill> <autofill> <autofill> <autofill> 2020 90.000 2020 90.000 NaN NaN NaN NaN
 300234068164710 TRUE <autofill> <autofill> <autofill> <autofill> 2020 90.000 2020 90.000 NaN NaN NaN NaN
+POLARSTERN02 TRUE <autofill> <autofill> <autofill> <autofill> 2020 236.000 2020 236.000 NaN NaN NaN NaN
