@@ -60,24 +60,75 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   ##############################################
   # SELECT AND READ SEASONAL FORECAST
   indx.po.seas = sidfex.fcst.search.extractFromTable(gid = "ecmwf001", mid = "SEAS5", tid = TargetID, EnsParentOnly = TRUE, indexTable.path = data.path.index)
-  if (nrow(indx.po.seas) == 0) {return("no ecmwf001_SEAS5 forecast available for the specified target")}
-  reltime.init.seas = sidfex.ydoy2reltime(indx.po.seas$InitYear, indx.po.seas$InitDayOfYear, init.year, init.doy)
-  reltime.submit.seas = sidfex.ydoy2reltime(indx.po.seas$SubmitYear, indx.po.seas$SubmitDayOfYear, init.year, init.doy)
-  if (any(reltime.init.seas > 0)) {
-    if (verbose) {print("ignoring seasonal forecast(s) with initial time later than requested initial time")}
+  seas.missing = FALSE
+  if (nrow(indx.po.seas) == 0) {
+    seas.missing = TRUE
+    warning("no ecmwf001_SEAS5 forecast available for the specified target")
+  } else {
+    reltime.init.seas = sidfex.ydoy2reltime(indx.po.seas$InitYear, indx.po.seas$InitDayOfYear, init.year, init.doy)
+    reltime.submit.seas = sidfex.ydoy2reltime(indx.po.seas$SubmitYear, indx.po.seas$SubmitDayOfYear, init.year, init.doy)
+    if (any(reltime.init.seas > 0)) {
+      if (verbose) {print("ignoring seasonal forecast(s) with initial time later than requested initial time")}
+    }
+    if (!any(reltime.init.seas <= 0 & reltime.submit.seas <= submitted.within)) {
+      seas.missing = TRUE
+      warning("no seasonal (ecmwf_SEAS5) forecasts with initial time before requested initial time and submitted in time available")
+    }
   }
-  include.seas = TRUE
-  if (!any(reltime.init.seas <= 0 & reltime.submit.seas <= submitted.within)) {
-    warning("no seasonal (ecmwf_SEAS5) forecasts with initial time before requested initial time and submitted in time available")
+
+  if (!seas.missing) {
+    reltime.fcst.init.seas = max(reltime.init.seas[reltime.init.seas <= 0 & reltime.submit.seas <= submitted.within])
+    indx.po.seas = indx.po.seas[reltime.init.seas == reltime.fcst.init.seas, ]
+    if (nrow(indx.po.seas) != 1) {
+      return("something is wrong, not exactly one seasonal (ecmwf) forecast (ensemble) left in index ...")
+    }
+    indx.seas = indx[indx$EnsParentFile == indx.po.seas$File, ]
+    N.em = nrow(indx.seas)
+    fcst.seas = sidfex.read.fcst(files = indx.seas, ens.merge = TRUE, data.path = data.path.fcst)
+  } else {
+    warning("using dummy seasonal forecast")
+    reltime.fcst.init.seas = 0
+    N.em = 51
+    fcst.seas = list()
+    fcst.seas$ens.merge = TRUE
+    fcst.seas$res.list = list()
+    fcst.seas$res.list[[1]] = list()
+    fcst.seas$res.list[[1]]$fl = "no file available, this is a dummy forecast"
+    fcst.seas$res.list[[1]]$checkfileformat = "no file format checked, this is a dummy forecast"
+    fcst.seas$res.list[[1]]$SubmitYear = NA
+    fcst.seas$res.list[[1]]$SubmitDayOfYear = NA
+    fcst.seas$res.list[[1]]$ProcessedYear = NA
+    fcst.seas$res.list[[1]]$ProcessedDayOfYear = NA
+    fcst.seas$res.list[[1]]$GroupID = NA
+    fcst.seas$res.list[[1]]$MethodID = NA
+    fcst.seas$res.list[[1]]$TargetID = TargetID
+    fcst.seas$res.list[[1]]$InitYear = init.year
+    fcst.seas$res.list[[1]]$InitDayOfYear = init.doy
+    fcst.seas$res.list[[1]]$InitLat = 0
+    fcst.seas$res.list[[1]]$InitLon = 0
+    fcst.seas$res.list[[1]]$EnsMemNum = 1:51
+    fcst.seas$res.list[[1]]$Ntimesteps = 125
+    fcst.seas$res.list[[1]]$FirstYear = init.year
+    fcst.seas$res.list[[1]]$FirstDayOfYear = init.doy
+    fcst.seas$res.list[[1]]$FirstLat = 0
+    fcst.seas$res.list[[1]]$FirstLon = 0
+    seas.last.ydoy = sidfex.reltime2ydoy(reltime=124,RefYear=init.year,RefDayOfYear=init.doy)
+    fcst.seas$res.list[[1]]$LastYear = seas.last.ydoy$Year
+    fcst.seas$res.list[[1]]$LastDayOfYear = seas.last.ydoy$DayOfYear
+    fcst.seas$res.list[[1]]$LastLat = 0
+    fcst.seas$res.list[[1]]$LastLon = 0
+    fcst.seas$res.list[[1]]$DaysForecastLength = 124
+    seas.data = as.data.frame(matrix(rep(0,(5+2*51)*125),nrow=125))
+    names(seas.data) = c("Year","DayOfYear","Lat","Lon","DaysLeadTime",paste0(rep(c("Lat","Lon"),51),rep(1:51,each=2)))
+    seas.data.ydoy = sidfex.reltime2ydoy(reltime=0:124,RefYear=init.year,RefDayOfYear=init.doy)
+    seas.data$Year = seas.data.ydoy$Year
+    seas.data$DayOfYear = seas.data.ydoy$DayOfYear
+    seas.data$DaysLeadTime = 0:124
+    fcst.seas$res.list[[1]]$data = seas.data
+    fcst.seas$res.list[[1]]$MergedInitLat = rep(0,52)
+    fcst.seas$res.list[[1]]$MergedInitLon = rep(0,52)
+    fcst.seas$index = "no index available, this is a dummy forecast"
   }
-  reltime.fcst.init.seas = max(reltime.init.seas[reltime.init.seas <= 0 & reltime.submit.seas <= submitted.within])
-  indx.po.seas = indx.po.seas[reltime.init.seas == reltime.fcst.init.seas, ]
-  if (nrow(indx.po.seas) != 1) {
-    return("something is wrong, not exactly one seasonal (ecmwf) forecast (ensemble) left in index ...")
-  }
-  indx.seas = indx[indx$EnsParentFile == indx.po.seas$File, ]
-  N.em = nrow(indx.seas)
-  fcst.seas = sidfex.read.fcst(files = indx.seas, ens.merge = TRUE, data.path = data.path.fcst)
 
   for (i in 1:N.em) {
     lon.col = 5 + 2*i
@@ -175,7 +226,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   }
   include.actual = c(include.actual, "ecmwf001_SEAS5")
   include.actual.age = c(include.actual.age, -reltime.fcst.init.seas)
-  include.actual.remainrange = c(include.actual.remainrange, indx.seas$FcstTime[1] + reltime.fcst.init.seas[1])
+  include.actual.remainrange = c(include.actual.remainrange, fcst.seas$res.list[[1]]$DaysForecastLength + reltime.fcst.init.seas[1])
 
   if (N.st == 0) {
     warning("no short-term forecasts matching the criteria found; consensus will be based only on longer-term (possibly non-NRT) forecasts")
@@ -258,7 +309,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
   fcst.cons$res.list[[1]]$MergedInitLon = rep(obs.init$res.list[[1]]$data$Lon[1], N.em+1)
 
   consensus.info = list()
-  consensus.info$Version = "20200221v0"
+  consensus.info$Version = "20200221v1"
   consensus.info$GeneratedYear = now.year
   consensus.info$GeneratedDayOfYear = now.doy
   consensus.info$arguments = list()
