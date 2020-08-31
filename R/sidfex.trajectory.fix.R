@@ -21,7 +21,7 @@ sidfex.trajectory.fix <- function (reltime, lon, lat, speed.max = 80, fill=TRUE,
       if (length(na.start) > 0 && length(na.end) > 0) {
         if (na.start[1] < tail(na.end,1)) {
           # there is at least one segment of NAs that can be filled
-          if (na.end[1] < na.start[1]) {na.end = na.end[2:length(na.end)]}
+          if (na.end[1] <= na.start[1]) {na.end = na.end[2:length(na.end)]}
           na.start = na.start[1:length(na.end)]
           for (i in 1:length(na.end)) {
             i1 = na.start[i]
