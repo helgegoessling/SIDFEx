@@ -2,7 +2,7 @@
 \alias{sidfex.fcst.search.createIndex}
 \title{Create or update SIDFEx forecast index}
 \usage{
-  sidfex.fcst.search.createIndex(indexTable.path = NULL, data.path = NULL, do.fromScratch = FALSE, do.checktime = TRUE, do.saveAddCSV = TRUE, do.print.less = TRUE, checkfileformat = TRUE, do.manipulate = TRUE, add.LatLon=FALSE)
+  sidfex.fcst.search.createIndex(indexTable.path = NULL, data.path = NULL, do.fromScratch = FALSE, do.checktime = TRUE, do.saveAddCSV = TRUE, do.print.less = TRUE, checkfileformat = TRUE, do.manipulate = TRUE, add.LatLon=FALSE, not.save.but.return.index=FALSE)
 }
 \description{
   Loop through the downloaded SIDFEx forecasts and add some predefined key quantities and information to the (previously existing or not) index file "indexTable.rda". If the specified index file does not exist, a new one is created. The data will be stored in .rda-format.
@@ -38,9 +38,12 @@ a logical value specifying whether or not to manipulate the automatically derive
   \item{add.LatLon}{
 a logical value specifying whether or not to add latitude and longitude information (initial, first and last timesteps) to the index. Default is \code{FALSE}, for backwards compatibility. Note that setting this \code{FALSE} can cause trouble if afterwards new forecast data are downloaded with \code{from.scratch=FALSE}.
 }
+  \item{not.save.but.return.index}{
+a logical value specifying whether to return the index instead of saving as an R data file (and possibly also as CSV). Default is \code{FALSE}.
+}
 }
 \value{
-  This function returns \code{1} if it ran successfully.
+  This function returns \code{1} if it ran successfully, except if \code{not.save.but.return.index=FALSE} in which case the new index is returned.
 }
 \note{
   The optionally produced CSV file is mainly generated for users not familiar with R. As it is only a copy of the .rda file and won't be altered or affected by changes in the .rda file in general, it is recommended to work with the .rda file whenever possible.

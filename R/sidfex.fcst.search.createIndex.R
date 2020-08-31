@@ -1,5 +1,5 @@
 sidfex.fcst.search.createIndex <-
-  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE, add.LatLon=FALSE){
+  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE, add.LatLon=FALSE, not.save.but.return.index=FALSE){
     indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
                    "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
                    "LastTimeStepDayOfYear", "FcstTime", "EnsParentFile", "EnsSize")
@@ -170,16 +170,28 @@ sidfex.fcst.search.createIndex <-
       headerlines[2] = paste0("Last update on: ", Sys.time())
     }
 
-    save(rTab, headerlines, file=file.path(indexTable.path.in, "indexTable.rda"))
+    if (not.save.but.return.index) {
 
-    if (do.saveAddCSV) {sidfex.fcst.search.rda2csv(rTab.in = rTab, headerlines = headerlines, indexTable.path = indexTable.path.in)}
+      if (do.fromScratch) {
+        print(paste0("The index now contains entries for ", nRows, " submitted forecasts."))
+      } else {
+        print(paste0("The index now contains entries for ", nRows, " submitted forecasts. Compared to the previous index, ",nAdded,
+                     " item(s) have been added, ",nModified," item(s) have been modified, and ",nRemoved," item(s) have been removed."))
+      }
+      return(rTab)
 
-    if (do.fromScratch) {
-      print(paste0("The file now contains entries for ", nRows, " submitted forecasts."))
     } else {
-      print(paste0("The file now contains entries for ", nRows, " submitted forecasts. Compared to the previous index, ",nAdded,
-                   " item(s) have been added, ",nModified," item(s) have been modified, and ",nRemoved," item(s) have been removed."))
+
+      save(rTab, headerlines, file=file.path(indexTable.path.in, "indexTable.rda"))
+      if (do.saveAddCSV) {sidfex.fcst.search.rda2csv(rTab.in = rTab, headerlines = headerlines, indexTable.path = indexTable.path.in)}
+      if (do.fromScratch) {
+        print(paste0("The file now contains entries for ", nRows, " submitted forecasts."))
+      } else {
+        print(paste0("The file now contains entries for ", nRows, " submitted forecasts. Compared to the previous index, ",nAdded,
+                     " item(s) have been added, ",nModified," item(s) have been modified, and ",nRemoved," item(s) have been removed."))
+      }
+      return(1)
+
     }
 
-    return(1)
   }
