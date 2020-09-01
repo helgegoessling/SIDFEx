@@ -156,7 +156,7 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     }
   }
   if (update.ensmean.dummy) {
-    for (nldt in 1:length(leadtimes)) {
+    for (nldt in 1:nrow(fcst.seas$res.list[[1]]$data)) {
       baryc = sl.barycenter(lon = as.numeric(fcst.seas$res.list[[1]]$data[nldt,2*(1:N.em)+5]),
                             lat = as.numeric(fcst.seas$res.list[[1]]$data[nldt,2*(1:N.em)+4]),
                             rm.na = TRUE)
