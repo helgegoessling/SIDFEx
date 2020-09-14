@@ -63,7 +63,12 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
     if (baseurlx == "http://iabp.apl.washington.edu/WebData/") {suf = ".dat"}
     try.i = 0
     repeat {
-      res = try_with_timeout(download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt")),elapsed=try.timeout)
+      if (baseurlx == "http://iabp.apl.washington.edu/WebData/") {
+        res = try_with_timeout(download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt"),quiet=TRUE,
+                                             method="wget",extra="--no-check-certificate"),elapsed=try.timeout)
+      } else {
+        res = try_with_timeout(download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt"),quiet=TRUE),elapsed=try.timeout)
+      }
       if (!is.na(res)) {break}
       try.i = try.i + 1
       if (try.i > try.N) {stop(paste0("Download of file ",baseurlx,tid,suf," failed."))}
