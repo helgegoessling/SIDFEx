@@ -1,4 +1,4 @@
-sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE,speed.fix=TRUE,speed.fix.max=80) {
+sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE,speed.fix=TRUE,speed.fix.max=80,timedupli.fix=TRUE) {
 
   if (is.null(data.path)) {
     no.data.path.fcst=TRUE
@@ -140,6 +140,14 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
 
     dat = read.table(fl,header=TRUE,skip=nrGroupID+8)
     dat$DaysLeadTime = sidfex.ydoy2reltime(dat$Year,dat$DayOfYear,res$InitYear,res$InitDayOfYear)
+
+    if (timedupli.fix) {
+      time.dupli = duplicated(dat$DaysLeadTime)
+      if (any(time.dupli)) {
+        warning(paste0("There are ",sum(time.dupli)," time duplicates in ",fl," , removing duplicates without checking coordinates!"))
+        dat = dat[which(!time.dupli),]
+      }
+    }
 
     if (speed.fix) {
       lola = sidfex.trajectory.fix(reltime = dat$DaysLeadTime, lon = dat$Lon, lat = dat$Lat, speed.max = speed.fix.max)
