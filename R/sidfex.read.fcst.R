@@ -149,13 +149,14 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
       }
     }
 
-    if (speed.fix) {
+    Nt = nrow(dat)
+
+    if (speed.fix && Nt > 1) {
       lola = sidfex.trajectory.fix(reltime = dat$DaysLeadTime, lon = dat$Lon, lat = dat$Lat, speed.max = speed.fix.max)
       dat$Lon = lola$lon
       dat$Lat = lola$lat
     }
 
-    Nt = nrow(dat)
     res$Ntimesteps = Nt
     res$FirstYear = dat[1,1]
     res$FirstDayOfYear = dat[1,2]

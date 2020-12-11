@@ -3,6 +3,10 @@ sidfex.trajectory.fix <- function (reltime, lon, lat, speed.max = 80, fill=TRUE,
   require(spheRlab)
 
   N = length(reltime)
+  if (N < 2) {
+    warning("'reltime' (and 'lon' and 'lat') must contain at least 2 elements each. Returning lon and lat unchanged.")
+    return(list(lon=lon, lat=lat))
+  }
 
   dst = sl.gc.dist(lon, lat, Rsphere = 6371)
   spd = dst / (reltime[2:N] - reltime[1:(N-1)])
