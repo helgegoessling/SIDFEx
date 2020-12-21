@@ -38,6 +38,12 @@ sidfex.read.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,NA_values=-9
       res = res[,2:ncol(res)]
     }
 
+    if (!("POS_DOY" %in% names(res))) {
+      if (!("DOY" %in% names(res))) {stop(paste0("Neither 'POS_DOY' nor 'DOY' column contained in ",ifile))}
+      warning(paste0("No 'POS_DOY' column contained in ",ifile,", copying 'DOY' column to 'POS_DOY' column"))
+      res$POS_DOY = res$DOY
+    }
+
     if (!is.null(NA_values)) {
       res = res[!(res$Year%in%NA_values | res$POS_DOY%in%NA_values |
                   res$Lon%in%NA_values | res$Lat%in%NA_values), ]
