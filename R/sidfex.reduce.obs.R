@@ -68,13 +68,22 @@ sidfex.reduce.obs <- function(TargetID=NULL, obs.out.path=NULL, obs.old.freq.day
         reltime.new = c(reltime.new,tail(reltime.orig,1))
       }
     }
+    if (length(reltime.new) == 0) {
+      warning("New time axis has zero length. Using original time axis instead (before possible truncation).")
+      reltime.new = reltime.orig
+    }
     if (truncate.with.targettable) {
       tt.first = sidfex.ydoy2reltime(tt$SIDFEx_First_Year[i], tt$SIDFEx_First_DayOfYear[i], RefYear, RefDayOfYear)
+      reltime.new.pretrunc = reltime.new
       if (is.na(as.numeric(tt$SIDFEx_Last_DayOfYear[i]))) {
         reltime.new = reltime.new[reltime.new >= tt.first]
       } else {
         tt.last = sidfex.ydoy2reltime(tt$SIDFEx_Last_Year[i], tt$SIDFEx_Last_DayOfYear[i], RefYear, RefDayOfYear)
         reltime.new = reltime.new[reltime.new >= tt.first & reltime.new <= tt.last]
+      }
+      if (length(reltime.new) == 0) {
+        warning("Truncation of time axis in sidfex.reduce.obs() not possible, no observations remaining. Returning without truncation.")
+        reltime.new = reltime.new.pretrunc
       }
     }
     obs.out.remap = sl.trajectory.remaptime(reltime.orig, obs$Lat, obs$Lon, reltime.new, return.remapinfo = TRUE)
