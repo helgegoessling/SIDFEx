@@ -98,7 +98,8 @@ sidfex.read.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,NA_values=-9
       return(res.list)
     }
   } else {
-    return(list(filename=res.list[[1]]$filename,TargetID=res.list[[1]]$TargetID,data=res.list[[1]]$data))
+    #return(list(filename=res.list[[1]]$filename,TargetID=res.list[[1]]$TargetID,data=res.list[[1]]$data))
+    return(res.list[[1]])
   }
 
 }

@@ -17,7 +17,7 @@ SIDFEx_Last_DayOfYear: DayOfYear of last time when considered as SIDFEx target. 
 Total_Last_Year: Year of last valid position. NaN if still active.
 Total_Last_DayOfYear: DayOfYear of last valid position. NaN if still active.
 ########## Table Data
-TargetID Current_Target Latest_Position_Year Latest_Position_DayOfYear Latest_Position_Lat Latest_Position_Lon Total_First_Year Total_First_DayOfYea SIDFEx_First_Year SIDFEx_First_DayOfYear SIDFEx_Last_Year SIDFEx_Last_DayOfYear Total_Last_Year Total_Last_DayOfYear
+TargetID Current_Target Latest_Position_Year Latest_Position_DayOfYear Latest_Position_Lat Latest_Position_Lon Total_First_Year Total_First_DayOfYear SIDFEx_First_Year SIDFEx_First_DayOfYear SIDFEx_Last_Year SIDFEx_Last_DayOfYear Total_Last_Year Total_Last_DayOfYear
 127317 FALSE <autofill> <autofill> <autofill> <autofill> 2015 198.542 2017 1.000 2017 227.625 2017 227.625
 300234060436000 FALSE <autofill> <autofill> <autofill> <autofill> 2015 320.750 2017 1.000 2017 331.250 2017 331.250
 300234063991680 FALSE <autofill> <autofill> <autofill> <autofill> 2016 249.854 2017 1.000 2019 326.875 2019 326.875

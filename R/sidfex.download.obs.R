@@ -13,11 +13,18 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
     data.path.obs = data.path
   }
 
-  from.index = FALSE
   if (is.null(TargetID)) {
-    if (is.null(index)) {stop("Either 'index' or 'TargetID' must be specified")}
-    from.index = TRUE
-    TargetID = unique(index$TargetID)
+    tt = sidfex.targettable.update(download.obs = FALSE, data.path = data.path)
+    if (is.null(index)) {
+      TargetID = tt$TargetID
+    } else {
+      TargetID = unique(index$TargetID)
+      if (any(!(TargetID %in% tt$TargetID))) {
+        warning("'index' contains TargetIDs not contained in the SIDFEx target table. Consider updating the target table.")
+        print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
+        TargetID = TargetID[TargetID %in% tt$TargetID]
+      }
+    }
   }
 
   if (!dir.exists(data.path.obs)) {

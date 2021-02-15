@@ -238,11 +238,11 @@ sidfex.checkfileformat = function (filepathnames) {
 				DayOfYear.nonnum = TRUE
 			}
 			Lat = row.flds[3]
-			if (Lat != "NaN" && is.na(as.numeric(Lat))) {
+			if (Lat != "NaN" && Lat != "nan" && is.na(as.numeric(Lat))) {
 				Lat.nonnum = TRUE
 			}
 			Lon = row.flds[4]
-			if (Lon != "NaN" && is.na(as.numeric(Lon))) {
+			if (Lon != "NaN" && Lon != "nan" && is.na(as.numeric(Lon))) {
 				Lon.nonnum = TRUE
 			}
 		}

@@ -1,5 +1,5 @@
 sidfex.fcst.search.createIndex <-
-  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE, add.LatLon=FALSE, not.save.but.return.index=FALSE){
+  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE, add.LatLon=FALSE, not.save.but.return.index=FALSE, allow.unprocessed=FALSE){
     indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
                    "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
                    "LastTimeStepDayOfYear", "FcstTime", "EnsParentFile", "EnsSize")
@@ -105,8 +105,20 @@ sidfex.fcst.search.createIndex <-
         ly  = dat$LastYear
         ldoy= dat$LastDayOfYear
         per = dat$DaysForecastLength
-        del = as.double(as.Date(sdoy-1, origin = paste0(as.character(sy),"-01-01")) -
+        if (is.null(sy)) {
+          if (allow.unprocessed) {
+            sy  = NA
+            sdoy= NA
+            py  = NA
+            pdoy= NA
+            del = NA
+          } else {
+            stop(paste0("file ",fid," has not been processed; consider running sidfex.fcst.search.createIndex() with allow.unprocessed=TRUE"))
+          }
+        } else {
+          del = as.double(as.Date(sdoy-1, origin = paste0(as.character(sy),"-01-01")) -
                           as.Date(idoy-1, origin = paste0(as.character(iy),"-01-01")))     # calculating the delay (difference submit time <-> initial time) in days
+        }
         # ensemble parent and size, to be added later by analysing the whole index
         epf = "NA"
         es = NA
