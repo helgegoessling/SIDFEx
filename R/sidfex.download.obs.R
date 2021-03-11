@@ -13,8 +13,8 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
     data.path.obs = data.path
   }
 
+  tt = sidfex.targettable.update(download.obs = FALSE, data.path = data.path)
   if (is.null(TargetID)) {
-    tt = sidfex.targettable.update(download.obs = FALSE, data.path = data.path)
     if (is.null(index)) {
       TargetID = tt$TargetID
     } else {
@@ -24,6 +24,12 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
         print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
         TargetID = TargetID[TargetID %in% tt$TargetID]
       }
+    }
+  } else {
+    if (any(!(TargetID %in% tt$TargetID))) {
+      warning("one or more entries of TargetID not contained in the SIDFEx target table. Consider updating the target table.")
+      print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
+      TargetID = TargetID[TargetID %in% tt$TargetID]
     }
   }
 
