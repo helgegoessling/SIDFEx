@@ -1,4 +1,4 @@
-sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=30,try.timeout=300) {
+sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=NULL,try.N=30,try.timeout=300,check.tt=TRUE,GoogleDrive=FALSE) {
 
   if (is.null(data.path)) {
     no.data.path.obs=TRUE
@@ -13,23 +13,26 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
     data.path.obs = data.path
   }
 
-  tt = sidfex.targettable.update(download.obs = FALSE, data.path = data.path)
-  if (is.null(TargetID)) {
-    if (is.null(index)) {
-      TargetID = tt$TargetID
+  if (is.null(TargetID) && is.null(index)) {check.tt = TRUE}
+  if (check.tt) {
+    tt = sidfex.targettable.update(download.obs = FALSE, data.path = data.path)
+    if (is.null(TargetID)) {
+      if (is.null(index)) {
+        TargetID = tt$TargetID
+      } else {
+        TargetID = unique(index$TargetID)
+        if (any(!(TargetID %in% tt$TargetID))) {
+          warning("'index' contains TargetIDs not contained in the SIDFEx target table. Consider updating the target table.")
+          print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
+          TargetID = TargetID[TargetID %in% tt$TargetID]
+        }
+      }
     } else {
-      TargetID = unique(index$TargetID)
       if (any(!(TargetID %in% tt$TargetID))) {
-        warning("'index' contains TargetIDs not contained in the SIDFEx target table. Consider updating the target table.")
+        warning("one or more entries of TargetID not contained in the SIDFEx target table. Consider updating the target table.")
         print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
         TargetID = TargetID[TargetID %in% tt$TargetID]
       }
-    }
-  } else {
-    if (any(!(TargetID %in% tt$TargetID))) {
-      warning("one or more entries of TargetID not contained in the SIDFEx target table. Consider updating the target table.")
-      print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
-      TargetID = TargetID[TargetID %in% tt$TargetID]
     }
   }
 
@@ -77,8 +80,28 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
     try.i = 0
     repeat {
       if (baseurlx == "http://iabp.apl.washington.edu/WebData/") {
-        res = try_with_timeout(download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt"),quiet=TRUE,
+        if (GoogleDrive) {
+          tids.GD = c("300234065495020","300234065498190",
+                      "300234066030330","300234067527540",
+                      "300234067527560","300234067939910",
+                      "300234068312210","900120",
+                      "900121")
+          if (!(tid %in% tids.GD)) {stop(paste0("Target ID ",tid," not registered for download from Google Drive"))}
+          GD.pref = "https://docs.google.com/uc?export=download&id="
+          tids.GD.IDs = c("17abXYh52BfMMO34KNY1jNqfuVynxL2c6","188edR_0bhSsRQld4RgCBXn2bq3pDT3bw",
+                          "19BMKpyw1puUHFoDl5m0wgPz3RGBaxgub","16yuoBxFbjzvZqjZU8w6Kt2yGW9Ll6K0a",
+                          "191NZFgWPDyUv_llRZ0_nAIQGe3sLq8EM","17mEqBe_mTfSGCbq0NwAuapXhe6CBFk4W",
+                          "17RUOMhfwbSFN_jygqZHvwPCJiv3k5vTb","18dfeTFi27FOeawTlF3Fb-7GDBWYYILC5",
+                          "18iTzMJYEgAtBhSuAGFZDoqXsmo916JK3")
+          destfile = paste0(tid,".txt")
+          res = try_with_timeout(download.file(url=paste0(GD.pref,tids.GD.IDs[tids.GD==tid]),destfile=paste0(tid,".txt"),quiet=TRUE,
+                                               method="wget",extra="--no-check-certificate"),elapsed=try.timeout)
+          fl.raw = readLines(destfile)
+          cat(gsub(";","     ",fl.raw[fl.raw!=""],fixed=TRUE),file=destfile,sep="\n",append=FALSE)
+        } else {
+          res = try_with_timeout(download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt"),quiet=TRUE,
                                              method="wget",extra="--no-check-certificate"),elapsed=try.timeout)
+        }
       } else {
         res = try_with_timeout(download.file(url=paste0(baseurlx,tid,suf),destfile=paste0(tid,".txt"),quiet=TRUE),elapsed=try.timeout)
       }
