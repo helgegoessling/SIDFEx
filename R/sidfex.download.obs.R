@@ -88,9 +88,9 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
                       "900121")
           if (!(tid %in% tids.GD)) {stop(paste0("Target ID ",tid," not registered for download from Google Drive"))}
           GD.pref = "https://docs.google.com/uc?export=download&id="
-          tids.GD.IDs = c("17abXYh52BfMMO34KNY1jNqfuVynxL2c6","188edR_0bhSsRQld4RgCBXn2bq3pDT3bw",
-                          "19BMKpyw1puUHFoDl5m0wgPz3RGBaxgub","16yuoBxFbjzvZqjZU8w6Kt2yGW9Ll6K0a",
-                          "191NZFgWPDyUv_llRZ0_nAIQGe3sLq8EM","17mEqBe_mTfSGCbq0NwAuapXhe6CBFk4W",
+          tids.GD.IDs = c("18gIY_7bxrnp98NhhaCJvXUkbHZUorWF1","17mEqBe_mTfSGCbq0NwAuapXhe6CBFk4W",
+                          "188bNxVU9z6YMBdJo5KvX_EbDCXZt6N2j","16yuoBxFbjzvZqjZU8w6Kt2yGW9Ll6K0a",
+                          "191NZFgWPDyUv_llRZ0_nAIQGe3sLq8EM","188edR_0bhSsRQld4RgCBXn2bq3pDT3bw",
                           "17RUOMhfwbSFN_jygqZHvwPCJiv3k5vTb","18dfeTFi27FOeawTlF3Fb-7GDBWYYILC5",
                           "18iTzMJYEgAtBhSuAGFZDoqXsmo916JK3")
           destfile = paste0(tid,".txt")
