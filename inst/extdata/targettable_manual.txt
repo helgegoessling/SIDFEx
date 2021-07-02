@@ -1,5 +1,5 @@
 SIDFEx TargetID Table
-Last Manual Update (Year-DayOfYear): 2020-356
+Last Manual Update (Year-DayOfYear): 2021-183
 Last Automatic Update (Year-DayOfYear): <autofill>
 ########## Table Column Description
 TargetID: SIDFEx TargetID.
@@ -31,7 +31,7 @@ TargetID Current_Target Latest_Position_Year Latest_Position_DayOfYear Latest_Po
 300234066713470 FALSE <autofill> <autofill> <autofill> <autofill> 2018 89.793 2018 89.793 2018 227.272 2018 227.272
 300234065495020 TRUE <autofill> <autofill> <autofill> <autofill> 2018 153.958 2018 153.958 NaN NaN NaN NaN
 300234066036110 FALSE <autofill> <autofill> <autofill> <autofill> 2018 167.250 2018 167.250 2020 275.625 2020 275.625
-300234066030330 TRUE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 NaN NaN NaN NaN
+300234066030330 FALSE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 2021 32.25 2021 32.25
 300234066030190 FALSE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 2019 284.00 NaN NaN
 300234066031190 FALSE <autofill> <autofill> <autofill> <autofill> 2018 166.625 2018 166.625 2019 213.000 NaN NaN
 300234066830700 FALSE <autofill> <autofill> <autofill> <autofill> 2018 112.167 2018 112.167 2019 196.000 NaN NaN
@@ -53,16 +53,22 @@ POLARSTERN01 FALSE <autofill> <autofill> <autofill> <autofill> 2019 274.000 2019
 300234066087220 FALSE <autofill> <autofill> <autofill> <autofill> 2019 284.000 2019 295.000 2020 356.000 NaN NaN
 300234066084230 FALSE <autofill> <autofill> <autofill> <autofill> 2019 284.000 2019 295.000 2019 364.625 2019 364.625
 300234065498190 TRUE <autofill> <autofill> <autofill> <autofill> 2019 191.000 2019 295.000 NaN NaN NaN NaN
-300234068312210 TRUE <autofill> <autofill> <autofill> <autofill> 2019 270.000 2019 295.000 NaN NaN NaN NaN
+300234068312210 FALSE <autofill> <autofill> <autofill> <autofill> 2019 270.000 2019 295.000 2021 26.500 2021 26.500
 300234065709990 FALSE <autofill> <autofill> <autofill> <autofill> 2019 182.000 2019 295.000 2020 134.250 NaN NaN
 300234065497190 FALSE <autofill> <autofill> <autofill> <autofill> 2019 295.000 2019 295.000 2020 356.000 NaN NaN
 300234011097770 FALSE <autofill> <autofill> <autofill> <autofill> 2020 90.000 2020 90.000 2020 356.000 NaN NaN
 300234010084660 FALSE <autofill> <autofill> <autofill> <autofill> 2020 90.000 2020 90.000 2020 275.625 2020 275.625
 300234010307830 FALSE <autofill> <autofill> <autofill> <autofill> 2020 90.000 2020 90.000 2020 290.83 2020 290.83
 300234068164710 FALSE <autofill> <autofill> <autofill> <autofill> 2020 90.000 2020 90.000 2020 216.5903 2020 216.5903
-POLARSTERN02 TRUE <autofill> <autofill> <autofill> <autofill> 2020 236.000 2020 236.000 NaN NaN NaN NaN
-300234067527560 TRUE <autofill> <autofill> <autofill> <autofill> 2019 115.7083 2020 356.000 NaN NaN NaN NaN
+POLARSTERN02 FALSE <autofill> <autofill> <autofill> <autofill> 2020 236.000 2020 236.000 2021 182.000 2021 182.000
+300234067527560 FALSE <autofill> <autofill> <autofill> <autofill> 2019 115.7083 2020 356.000 2021 118.5833 2021 118.5833
 300234067527540 TRUE <autofill> <autofill> <autofill> <autofill> 2019 115.7083 2020 356.000 NaN NaN NaN NaN
 900120 TRUE <autofill> <autofill> <autofill> <autofill> 2020 275.0210 2020 356.000 NaN NaN NaN NaN
 900121 TRUE <autofill> <autofill> <autofill> <autofill> 2020 275.0210 2020 356.000 NaN NaN NaN NaN
-300234067939910 TRUE <autofill> <autofill> <autofill> <autofill> 2020 80.000 2020 356.000 NaN NaN NaN NaN
+300234067939910 FALSE <autofill> <autofill> <autofill> <autofill> 2020 80.000 2020 356.000 2021 28.875 2021 28.875
+300234066890280 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN
+300234067428260 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN
+300234067529520 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN
+300234062881810 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN
+204762 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN
+145951 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN

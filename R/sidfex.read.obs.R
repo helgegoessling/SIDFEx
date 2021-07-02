@@ -67,14 +67,11 @@ sidfex.read.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,NA_values=-9
         doy_cont = sidfex.ydoy2reltime(res$Year,res$POS_DOY,RelTimeDay_Ref[1],RelTimeDay_Ref[2])
       }
       Nobs = length(doy_cont)
-      tim_unique = c(1, 1+which(doy_cont[2:Nobs] - doy_cont[1:(Nobs-1)] > 0))
-      while (length(tim_unique) < Nobs) {
-        print(Nobs)
-        Nobs = length(tim_unique)
-        doy_cont = doy_cont[tim_unique]
-        res = res[tim_unique,]
-        tim_unique = c(1, 1+which(doy_cont[2:Nobs] - doy_cont[1:(Nobs-1)] > 0))
-      }
+      keep.unique = which(!duplicated(doy_cont,fromLast = TRUE))
+      keep.unique.ordered = keep.unique[order(doy_cont[keep.unique])]
+      if (length(keep.unique.ordered) != Nobs) {warning("duplicates removed; using only respective last values")}
+      if (any(diff(keep.unique.ordered)<0)) {warning("data time stamps not always ascending; reordered")}
+      res = res[keep.unique.ordered,]
     }
 
     if (!is.null(add_RelTimeDay_Ref)) {
