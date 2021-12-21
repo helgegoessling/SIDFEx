@@ -113,7 +113,7 @@ sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate
       }
       weights.left.ind[i.fcst] = i.obs
       weights.left[i.fcst] = (obs.DaysLeadTime[i.obs+1] - fcst.DaysLeadTime.x[i.fcst]) / (obs.DaysLeadTime[i.obs+1] - obs.DaysLeadTime[i.obs])
-      if (weights.left[i.fcst] > 1) {return()}
+      if (weights.left[i.fcst] > 1) {next}
     }
     if (!extrapolate) {
       weights.left[weights.left < 0 | weights.left > 1] = NA
@@ -163,6 +163,7 @@ sidfex.remaptime.obs2fcst <- function (obs=NULL,fcst,method="linear",extrapolate
     }
   }
 
+  if (length(rl) == 0) {warning("No successful obs2fcst remapping, returning NULL"); return()}
   if (single.element) {
     return(rl[[1]])
   } else {

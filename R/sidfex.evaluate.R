@@ -37,7 +37,7 @@ sidfex.evaluate <- function (obs=NULL,fcst,do.speedangle=TRUE,ens.stats.na.rm=TR
     nTimeSteps = length(obs.lat)
     if (nTimeSteps != nrow(rl.orig[[irl]]$data) || any(obs.rl[[irl]]$data$Year != rl.orig[[irl]]$data$Year |
                                                   obs.rl[[irl]]$data$DayOfYear != rl.orig[[irl]]$data$DayOfYear)) {
-      stop("time axis mismatch between 'obs2fcst' an 'fcst', consider setting 'obs2fcst=NULL'")
+      stop("time axis mismatch between 'obs2fcst' and 'fcst', consider setting 'obs2fcst=NULL'")
     }
 
     rl[[irl]]$ens.mean.gc.dist = as.numeric(rep(NA,nTimeSteps))
@@ -165,41 +165,46 @@ sidfex.evaluate <- function (obs=NULL,fcst,do.speedangle=TRUE,ens.stats.na.rm=TR
   multifcst.stats = NULL
   if (!single.element && do.multifcst.stats && length(rl)>1) {
 
-    multifcst.stats = rl[[1]]
-    notindiv = rep(TRUE,length(rl[[1]]))
-    for (i in 1:length(rl[[1]])) {
-      if (is.matrix(rl[[1]][[i]])) {notindiv[i] = FALSE}
+    multifcst.stats.names = c("ens.mean.gc.dist","ens.mean.lat.err","ens.mean.lon.err","ens.individual.gc.dist.mean",
+                              "ens.individual.lat.err.mean","ens.individual.lat.err.meanabs",
+                              "ens.individual.lon.err.mean","ens.individual.lon.err.meanabs",
+                              "ens.spread.gc.dist","ens.spread.lat","ens.spread.lon","ens.mean.relspeed","ens.mean.angle",
+                              "ens.individual.relspeed.mean","ens.individual.angle.mean","ens.individual.angle.meanabs")
+    multifcst.stats.names.present = NULL
+    for (i in 1:length(rl)) {
+      multifcst.stats.names.present = c(multifcst.stats.names.present,names(rl[[i]]))
     }
-    which.notindiv = which(notindiv)
-    #multifcst.stats = rl[[1]][which.notindiv]
-    multifcst.stats.mats = rl[[1]][which.notindiv]
-    nTimeSteps = length(multifcst.stats.mats[[1]])
+    multifcst.stats.names.present = unique(multifcst.stats.names.present)
+    multifcst.stats.names = multifcst.stats.names[multifcst.stats.names %in% multifcst.stats.names.present]
+    nTimeSteps = length(rl[[1]]$ens.mean.gc.dist)
+    multifcst.stats.mats = list()
 
-    for (irl in 2:length(rl)) {
-      if (length(rl[[irl]][[which.notindiv[1]]]) != nTimeSteps ||
+    for (irl in 1:length(rl)) {
+      if (length(rl[[irl]]$ens.mean.gc.dist) != nTimeSteps ||
           any(rl.orig[[irl]]$data$DaysLeadTime != rl.orig[[1]]$data$DaysLeadTime)) {
         warning(paste("Multi-forecast statistics not possible, forecasts have inconsistent relative time axes.",
                       "Consider using sidfex.remaptime.fcst() first."))
-
         break
       }
-      for (ierr in 1:sum(notindiv)) {
-        multifcst.stats.mats[[ierr]] = cbind(multifcst.stats.mats[[ierr]], rl[[irl]][[which.notindiv[ierr]]])
-        #multifcst.stats[[ierr]] = multifcst.stats[[ierr]] + rl[[irl]][[which.notindiv[ierr]]]
+      for (err.name in multifcst.stats.names) {
+        add.vec = rl[[irl]][[err.name]]
+        if (is.null(add.vec)) {
+          multifcst.stats.mats[[err.name]] = cbind(multifcst.stats.mats[[err.name]], rep(NA,nTimeSteps))
+        } else {
+          multifcst.stats.mats[[err.name]] = cbind(multifcst.stats.mats[[err.name]], add.vec)
+        }
       }
     }
 
     multifcst.stats = list()
-    for (ierr in 1:sum(notindiv)) {
-      #multifcst.stats[[ierr]] = multifcst.stats[[ierr]] / length(rl)
-      multifcst.stats[[ierr]] = data.frame(
-        mean = apply(multifcst.stats.mats[[ierr]], 1, function (x) {mean(x, na.rm=multifcst.stats.na.rm)}),
-        st.dev = apply(multifcst.stats.mats[[ierr]], 1, function (x) {sd(x, na.rm=multifcst.stats.na.rm)}),
-        st.err = apply(multifcst.stats.mats[[ierr]], 1, function (x) {sd(x, na.rm=multifcst.stats.na.rm)/sqrt(sum(!is.na(x)))}),
-        median = apply(multifcst.stats.mats[[ierr]], 1, function (x) {median(x, na.rm=multifcst.stats.na.rm)})
+    for (err.name in multifcst.stats.names) {
+      multifcst.stats[[err.name]] = data.frame(
+        mean = apply(multifcst.stats.mats[[err.name]], 1, function (x) {mean(x, na.rm=multifcst.stats.na.rm)}),
+        st.dev = apply(multifcst.stats.mats[[err.name]], 1, function (x) {sd(x, na.rm=multifcst.stats.na.rm)}),
+        st.err = apply(multifcst.stats.mats[[err.name]], 1, function (x) {sd(x, na.rm=multifcst.stats.na.rm)/sqrt(sum(!is.na(x)))}),
+        median = apply(multifcst.stats.mats[[err.name]], 1, function (x) {median(x, na.rm=multifcst.stats.na.rm)})
       )
     }
-    names(multifcst.stats) = names(multifcst.stats.mats)
 
   }
 
