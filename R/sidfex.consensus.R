@@ -19,7 +19,8 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
                               data.path.obs = NULL,
                               data.path.index = NULL,
                               data.path.fcst = NULL,
-                              extrapolate.maxspeed = 10/6371) {
+                              extrapolate.maxspeed = 10/6371,
+                              read.obs.res = NULL) {
 
   ##########################################
 
@@ -38,7 +39,11 @@ sidfex.consensus <- function (TargetID = "POLARSTERN01",
     init.year = init.ydoy$Year
   }
 
-  obs = sidfex.read.obs(TargetID = TargetID, data.path = data.path.obs)
+  if (is.null(read.obs.res)) {
+    obs = sidfex.read.obs(TargetID = TargetID, data.path = data.path.obs)
+  } else {
+    obs = read.obs.res
+  }
   Nobs = nrow(obs$data)
   obs.last.year = obs$data$Year[Nobs]
   obs.last.doy = obs$data$POS_DOY[Nobs]
