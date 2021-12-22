@@ -1,4 +1,4 @@
-sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE,speed.fix=TRUE,speed.fix.max=80,timedupli.fix=TRUE) {
+sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE,speed.fix=TRUE,speed.fix.max=80,timedupli.fix=TRUE,nrl001_xxx.ini.fix=TRUE) {
 
   if (is.null(data.path)) {
     no.data.path.fcst=TRUE
@@ -139,6 +139,10 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
     res$EnsMemNum = as.integer(row.flds[row.flds != ""][2])
 
     dat = read.table(fl,header=TRUE,skip=nrGroupID+8)
+    if (nrl001_xxx.ini.fix && res$GroupID == "nrl001" && res$MethodID %in% c("flatearth24","gofs3.1-shortrange","navyespc-subseasonal")) {
+      res$InitYear = dat$Year[1]
+      res$InitDayOfYear = dat$DayOfYear[1]
+    }
     dat$DaysLeadTime = sidfex.ydoy2reltime(dat$Year,dat$DayOfYear,res$InitYear,res$InitDayOfYear)
 
     if (timedupli.fix) {

@@ -2,7 +2,7 @@
 \alias{sidfex.read.fcst}
 \title{Read SIDFEx Forecasts}
 \usage{
-sidfex.read.fcst(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE,speed.fix=TRUE,speed.fix.max=80,timedupli.fix=TRUE)
+sidfex.read.fcst(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NULL,TargetID=NULL,InitYear=NULL,InitDayOfYear=NULL,EnsMemNum=NULL,ens.merge=TRUE,checkfileformat=TRUE,verbose=TRUE,speed.fix=TRUE,speed.fix.max=80,timedupli.fix=TRUE,nrl001_xxx.ini.fix=TRUE)
 }
 \description{
 Read SIDFEx forecast data and (optionally) merge ensembles.
@@ -31,6 +31,9 @@ a numerical value specifying the speed threshold used to 'fix' trajectory segmen
 }
   \item{timedupli.fix}{
 a logical value specifying whether to remove trajectory data entries with identical times. The respective first values are kept. Note that the consistency or inconsistency of the associated coordinates are not considered. Default is \code{TRUE}.
+}
+  \item{nrl001_xxx.ini.fix}{
+a logical value specifying whether to fix the InitYear and InitDayOfYear of some of the nrl001 MethodIDs where the true initial times correspond to the first time entry in the data table rather than the values in the file name and header. Default is \code{TRUE}. As sidfex.fcst.search.createIndex() uses sidfex.fcst.read(), this fix is also reflected in the SIDFEx index.
 }
 }
 \value{
