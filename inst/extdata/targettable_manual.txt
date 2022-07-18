@@ -1,5 +1,5 @@
 SIDFEx TargetID Table
-Last Manual Update (Year-DayOfYear): 2022-196
+Last Manual Update (Year-DayOfYear): 2022-199
 Last Automatic Update (Year-DayOfYear): <autofill>
 ########## Table Column Description
 TargetID: SIDFEx TargetID.
@@ -92,3 +92,4 @@ FIXEDATW81p5N15E TRUE NaN NaN 81.500 15.000 2022 175.000 2022 175.000 NaN NaN Na
 FIXEDATW82p9N6p3W TRUE NaN NaN 82.8972 -6.2553 2022 175.000 2022 175.000 NaN NaN NaN NaN
 300534062174040 TRUE <autofill> <autofill> <autofill> <autofill> 2022 196.000 2022 196.000 NaN NaN NaN NaN
 300534062171030 TRUE <autofill> <autofill> <autofill> <autofill> 2022 196.000 2022 196.000 NaN NaN NaN NaN
+300534062175050 TRUE <autofill> <autofill> <autofill> <autofill> 2022 199.000 2022 199.000 NaN NaN NaN NaN
