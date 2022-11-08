@@ -143,9 +143,9 @@ index = sidfex.load.index()
 head(index)
 
 # Make an index subset for one specific forecast ensemble
-subind = sidfex.fcst.search.extractFromTable(gid = "awi001" , tid = "300234063991680", iy = 2018, idoy = 30, return.dataframe = TRUE, ens.merge = FALSE)
+subind = sidfex.fcst.search.extractFromTable(gid = "awi001" , tid = "300234063991680", iy = 2018, idoy = 30, return.dataframe = TRUE)
 # Read the forecasts
-fcst = sidfex.read.fcst(index=subind)
+fcst = sidfex.read.fcst(files=subind, ens.merge=FALSE)
 # Now plot latitude against forecast lead time for the whole ensemble
 plot(fcst$res.list[[1]]$data$DaysLeadTime,fcst$res.list[[1]]$data$Lat,type="l",ylim=c(74,80),xlim=c(0,600))
 for (i in 2:length(fcst$res.list)) {lines(fcst$res.list[[i]]$data$DaysLeadTime,fcst$res.list[[i]]$data$Lat)}
