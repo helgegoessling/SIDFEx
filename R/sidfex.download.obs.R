@@ -24,6 +24,7 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
         if (any(!(TargetID %in% tt$TargetID))) {
           warning("'index' contains TargetIDs not contained in the SIDFEx target table. Consider updating the target table.")
           print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
+          print(paste0("To download TargetIDs not contained in the SIDFEx target table, set 'check.tt=FALSE'."))
           TargetID = TargetID[TargetID %in% tt$TargetID]
         }
       }
@@ -31,6 +32,7 @@ sidfex.download.obs <- function(index=NULL,TargetID=NULL,data.path=NULL,baseurl=
       if (any(!(TargetID %in% tt$TargetID))) {
         warning("one or more entries of TargetID not contained in the SIDFEx target table. Consider updating the target table.")
         print(paste0("The following TargetIDs are not downloaded:",TargetID[!(TargetID %in% tt$TargetID)]))
+        print(paste0("To download TargetIDs not contained in the SIDFEx target table, set 'check.tt=FALSE'."))
         TargetID = TargetID[TargetID %in% tt$TargetID]
       }
     }
