@@ -1,5 +1,5 @@
 SIDFEx TargetID Table
-Last Manual Update (Year-DayOfYear): 2022-285
+Last Manual Update (Year-DayOfYear): 2023-79
 Last Automatic Update (Year-DayOfYear): <autofill>
 ########## Table Column Description
 TargetID: SIDFEx TargetID.
@@ -67,8 +67,8 @@ POLARSTERN02 FALSE <autofill> <autofill> <autofill> <autofill> 2020 236.000 2020
 900121 TRUE <autofill> <autofill> <autofill> <autofill> 2020 275.0210 2020 356.000 NaN NaN NaN NaN
 300234067939910 FALSE <autofill> <autofill> <autofill> <autofill> 2020 80.000 2020 356.000 2021 28.875 2021 28.875
 300234066890280 FALSE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 2022 215.25 2022 215.25
-300234067428260 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN
-300234067529520 TRUE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 NaN NaN NaN NaN
+300234067428260 FALSE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 2022 335.5 2022 335.5
+300234067529520 FALSE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 2022 312.625 2022 312.625
 300234062881810 FALSE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 2021 202.625 2021 202.625
 204762 FALSE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 2021 285.6285 2021 285.6285
 145951 FALSE <autofill> <autofill> <autofill> <autofill> 2021 136.000 2021 136.000 2021 246.75 2021 246.75
@@ -77,13 +77,13 @@ FIXEDEND69S52W FALSE NaN NaN -69.0031 -52.5583 2021 1.000 2021 1.000 2022 69.000
 FIXEDEND68S53W FALSE NaN NaN -68.6667 -53.6416 2021 1.000 2021 1.000 2022 69.000 2022 69.000
 FIXEDEND68S51W FALSE NaN NaN -68.6667 -51.4750 2021 1.000 2021 1.000 2022 69.000 2022 69.000
 FIXEDENDCENTER FALSE NaN NaN -68.6667 -52.5583 2021 1.000 2021 1.000 2022 69.000 2022 69.000
-300534061254970 TRUE <autofill> <autofill> <autofill> <autofill> 2021 50.4583 2021 50.4583 NaN NaN NaN NaN
+300534061254970 FALSE <autofill> <autofill> <autofill> <autofill> 2021 50.4583 2021 50.4583 2022 286.1715 2022 286.1715
 210166 FALSE <autofill> <autofill> <autofill> <autofill> 2021 233.2708 2021 233.2708 2022 190.334 2022 190.334
-300234068487020 TRUE <autofill> <autofill> <autofill> <autofill> 2021 283.65 2021 283.65 NaN NaN NaN NaN
-300234068764770 TRUE <autofill> <autofill> <autofill> <autofill> 2021 229.0729 2021 229.0729 NaN NaN NaN NaN
-300534062029520 TRUE <autofill> <autofill> <autofill> <autofill> 2022 51.0003 2022 51.0003 NaN NaN NaN NaN
-300534060617370 TRUE <autofill> <autofill> <autofill> <autofill> 2021 267.4583 2021 267.4583 NaN NaN NaN NaN
-300534060710530 TRUE <autofill> <autofill> <autofill> <autofill> 2021 272.4458 2021 272.4458 NaN NaN NaN NaN
+300234068487020 FALSE <autofill> <autofill> <autofill> <autofill> 2021 283.65 2021 283.65 2023 10.4583 2023 10.4583
+300234068764770 FALSE <autofill> <autofill> <autofill> <autofill> 2021 229.0729 2021 229.0729 2023 39.9035 2023 39.9035
+300534062029520 FALSE <autofill> <autofill> <autofill> <autofill> 2022 51.0003 2022 51.0003 2023 50.959 2023 50.959
+300534060617370 FALSE <autofill> <autofill> <autofill> <autofill> 2021 267.4583 2021 267.4583 2023 5.25 2023 5.25
+300534060710530 FALSE <autofill> <autofill> <autofill> <autofill> 2021 272.4458 2021 272.4458 2023 16.67 2023 16.67
 900126 TRUE <autofill> <autofill> <autofill> <autofill> 2021 246.959 2021 246.959 NaN NaN NaN NaN
 900128 TRUE <autofill> <autofill> <autofill> <autofill> 2021 273.9171 2021 273.9171 NaN NaN NaN NaN
 300534061512040 FALSE <autofill> <autofill> <autofill> <autofill> 2021 161.1667 2021 161.1667 2022 227.7921 2022 227.7921
@@ -95,5 +95,12 @@ FIXEDATW82p9N6p3W FALSE NaN NaN 82.8972 -6.2553 2022 175.000 2022 175.000 2022 2
 300534062175050 FALSE <autofill> <autofill> <autofill> <autofill> 2022 199.000 2022 199.000 2022 212.000 2022 212.000
 300534062177020 FALSE <autofill> <autofill> <autofill> <autofill> 2022 195.500 2022 195.500 2022 212.500 2022 212.500
 300234066896220 TRUE <autofill> <autofill> <autofill> <autofill> 2022 227.4167 2022 227.4167 NaN NaN NaN NaN
-300234066890230 TRUE <autofill> <autofill> <autofill> <autofill> 2022 227.4167 2022 227.4167 NaN NaN NaN NaN
+300234066890230 FALSE <autofill> <autofill> <autofill> <autofill> 2022 227.4167 2022 227.4167 2023 24.875 2023 24.875
 300234066893240 TRUE <autofill> <autofill> <autofill> <autofill> 2022 224.5250 2022 224.5250 NaN NaN NaN NaN
+900127 TRUE <autofill> <autofill> <autofill> <autofill> 2021 245.7503 2022 245.7503 NaN NaN NaN NaN
+300234061162580 TRUE <autofill> <autofill> <autofill> <autofill> 2022 275.7083 2022 275.7083 NaN NaN NaN NaN
+300534063809090 TRUE <autofill> <autofill> <autofill> <autofill> 2022 130.6669 2022 283.000 NaN NaN NaN NaN
+300534063807110 TRUE <autofill> <autofill> <autofill> <autofill> 2022 167.8333 2022 255.000 NaN NaN NaN NaN
+300534062895730 TRUE <autofill> <autofill> <autofill> <autofill> 2022 216.8271 2022 285.000 NaN NaN NaN NaN
+300534062025510 TRUE <autofill> <autofill> <autofill> <autofill> 2022 284.8337 2022 285.000 NaN NaN NaN NaN
+300534061986510 TRUE <autofill> <autofill> <autofill> <autofill> 2022 284.7917 2022 285.000 NaN NaN NaN NaN
