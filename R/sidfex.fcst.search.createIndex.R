@@ -1,5 +1,5 @@
 sidfex.fcst.search.createIndex <-
-  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE, add.LatLon=FALSE, not.save.but.return.index=FALSE, allow.unprocessed=FALSE){
+  function(indexTable.path = NULL, data.path=NULL, do.fromScratch=FALSE, do.checktime=TRUE, do.saveAddCSV=TRUE,do.print.less=T, checkfileformat=TRUE, do.manipulate=TRUE, add.LatLon=TRUE, not.save.but.return.index=FALSE, allow.unprocessed=FALSE){
     indexNames = c("File", "GroupID", "MethodID", "TargetID", "InitYear", "InitDayOfYear", "EnsMemNum", "SubmitYear", "SubmitDayOfYear",
                    "ProcessedYear", "ProcessedDayOfYear", "Delay", "nTimeSteps", "FirstTimeStepYear", "FirstTimeStepDayOfYear", "LastTimeStepYear",
                    "LastTimeStepDayOfYear", "FcstTime", "EnsParentFile", "EnsSize")
