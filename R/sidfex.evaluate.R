@@ -5,7 +5,17 @@ sidfex.evaluate <- function (obs=NULL,fcst,do.speedangle=TRUE,ens.stats.na.rm=TR
   if (is.null(obs)) {
     obs = sidfex.read.obs(TargetID = unique(sapply(fcst$res.list,"[[","TargetID")),data.path=data.path)
   }
-  obs2fcst = sidfex.remaptime.obs2fcst(obs,fcst,data.path=data.path,verbose=verbose)
+  if ("remaptime.obs2fcst" %in% names(obs)) {
+    if (length(obs$res.list) != length(fcst$res.list)) {
+      stop("'obs' is seemingly an output from 'sidfex.remaptime.obs2fcst()', but number of 'fcst' and 'obs' objects is inconsistent")
+    }
+    if (verbose) {warning("'obs' is seemingly an output from 'sidfex.remaptime.obs2fcst()'; assuming that it is completely consistent with 'fcst'")}
+    do.obs2fcst = FALSE
+    obs2fcst = obs
+  } else {
+    do.obs2fcst = TRUE
+    obs2fcst = sidfex.remaptime.obs2fcst(obs,fcst,data.path=data.path,verbose=verbose)
+  }
 
   # check whether fcst is a complete list of forecasts as returned from sidfex.read.fcst, or just
   # one element from such a list; in the latter case; then, define rl from fcst consistently
@@ -117,7 +127,12 @@ sidfex.evaluate <- function (obs=NULL,fcst,do.speedangle=TRUE,ens.stats.na.rm=TR
       }
 
       fcst.init = sidfex.remaptime.fcst(fcst=rl.orig[[irl]],newtime.DaysLeadTime=0,verbose=verbose)
-      obs.init = sidfex.remaptime.obs2fcst(obs = obs, fcst = fcst.init, verbose = verbose)
+      if (do.obs2fcst) {
+        obs.init = sidfex.remaptime.obs2fcst(obs = obs, fcst = fcst.init, verbose = verbose)
+      } else {
+        #obs.init = sidfex.remaptime.fcst(fcst = obs2fcst, newtime.DaysLeadTime = 0)
+        obs.init = sidfex.remaptime.fcst(fcst = obs.rl[[irl]], newtime.DaysLeadTime = 0)
+      }
 
       abg = sl.lonlatrot2abg(lonlatrot=c(obs.init$data$Lon,obs.init$data$Lat,0))
       obs.rot = sl.rot(lon=obs.lon,lat=obs.lat,alpha=abg[1],beta=abg[2],gamma=abg[3])
