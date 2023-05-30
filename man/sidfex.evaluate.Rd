@@ -107,12 +107,14 @@ If \code{do.speedangle}, additionally the following types are included:
 }
 \note{
 Based on several \code{\link{spheRlab}} and \code{\link{SIDFEx}} functions.
+
+To recompute multi-forecast statistics for a subset of the forecasts already evaluated with \code{\link{sidfex.evaluate}} (this function), use \code{\link{sidfex.evaluate.subset}} afterwards.
 }
 \author{
 Helge Goessling
 }
 \seealso{
-\code{\link{sidfex.read.fcst}}, \code{\link{sidfex.read.obs}}
+\code{\link{sidfex.read.fcst}}, \code{\link{sidfex.read.obs}}, \code{\link{sidfex.evaluate.subset}}
 }
 \examples{
 # Load the forecast data index
@@ -132,4 +134,10 @@ errs = sidfex.evaluate(fcst = fcst.remapped)
 
 # Show structure of errs
 str(errs)
+
+# Recompute multi-forecast statistics for small subset of forecasts
+errs.sub = sidfex.evaluate.subset(eval.res = errs, keep = c(1,3))
+
+# Show structure of errs.sub
+str(errs.sub)
 }

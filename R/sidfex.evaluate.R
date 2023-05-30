@@ -45,9 +45,9 @@ sidfex.evaluate <- function (obs=NULL,fcst,do.speedangle=TRUE,ens.stats.na.rm=TR
     obs.lon = obs.rl[[irl]]$data$Lon
 
     nTimeSteps = length(obs.lat)
-    if (nTimeSteps != nrow(rl.orig[[irl]]$data) || any(obs.rl[[irl]]$data$Year != rl.orig[[irl]]$data$Year |
-                                                  obs.rl[[irl]]$data$DayOfYear != rl.orig[[irl]]$data$DayOfYear)) {
-      stop("time axis mismatch between 'obs2fcst' and 'fcst', consider setting 'obs2fcst=NULL'")
+    if (nTimeSteps != nrow(rl.orig[[irl]]$data) || any(sidfex.ydoy2reltime(obs.rl[[irl]]$data$Year, obs.rl[[irl]]$data$DayOfYear) !=
+                                                       sidfex.ydoy2reltime(rl.orig[[irl]]$data$Year, rl.orig[[irl]]$data$DayOfYear))) {
+      stop("time axis mismatch between 'obs2fcst' and 'fcst', consider not providing 'obs' (so that the corresponding obs. are recomputed using 'sidfex.remaptime.obs2fcst()')")
     }
 
     rl[[irl]]$ens.mean.gc.dist = as.numeric(rep(NA,nTimeSteps))
