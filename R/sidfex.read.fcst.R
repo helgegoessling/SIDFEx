@@ -139,6 +139,10 @@ sidfex.read.fcst <- function(files=NULL,data.path=NULL,GroupID=NULL,MethodID=NUL
     res$EnsMemNum = as.integer(row.flds[row.flds != ""][2])
 
     dat = read.table(fl,header=TRUE,skip=nrGroupID+8)
+    if (ncol(dat) > 4) {
+      warning("Extra data columns not yet implemented and hence ignored.")
+      dat = dat[,1:4]
+    }
     if (nrl001_xxx.ini.fix && res$GroupID == "nrl001" && res$MethodID %in% c("flatearth24","gofs3.1-shortrange","navyespc-subseasonal")) {
       res$InitYear = dat$Year[1]
       res$InitDayOfYear = dat$DayOfYear[1]

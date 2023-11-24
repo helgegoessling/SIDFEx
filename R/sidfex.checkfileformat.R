@@ -207,24 +207,27 @@ sidfex.checkfileformat = function (filepathnames) {
 
 		tab.names = unlist(strsplit(unlist(strsplit(filecont[nr+1],split="\t",fixed=TRUE)),split=" ",fixed=TRUE))
 		tab.names = tab.names[tab.names != ""]
-		if (length(tab.names) != 4) {
-			res = c(res,paste0("Forecast table must have four column names (space or tab delimited), but has ",length(tab.names),". Not checking further."))
+		Ncol = length(tab.names)
+		if (Ncol < 4) {
+			res = c(res,paste0("Forecast table must have at least four column names (space or tab delimited), but has ",Ncol,". Not checking further."))
 			res.list[[filepathname]] = res
 			next
 		}
 		tab.names.x = c("Year","DayOfYear","Lat","Lon")
-		if (any(tab.names != tab.names.x)) {
-			res = c(res,paste0("Forecast table column names must be 'Year DayOfYear Lat Lon'."))
+		if (any(tab.names[1:4] != tab.names.x)) {
+			res = c(res,paste0("First four forecast table column names must be 'Year DayOfYear Lat Lon'."))
 		}
 		Year.nonint = FALSE
 		DayOfYear.nonnum = FALSE
 		Lat.nonnum = FALSE
 		Lon.nonnum = FALSE
+		if (Ncol > 4) {extracol.nonnum = FALSE}
 		for (k in (nr+2):Nr) {
 			row.flds = unlist(strsplit(unlist(strsplit(filecont[k],split="\t",fixed=TRUE)),split=" ",fixed=TRUE))
 			row.flds = row.flds[row.flds!=""]
-			if (length(row.flds) != 4) {
-				res = c(res,paste0("At least one of the forecast table rows (total file row number ",k,") does not have four column entries (space or tab delimited). Not checking further."))
+			if (length(row.flds) != Ncol) {
+				res = c(res,paste0("At least one of the forecast table rows (total file row number ",k,
+				                   ") does not have the same number of column entries (space or tab delimited) as there are column names (",Ncol,"). Not checking further."))
 				res.list[[filepathname]] = res
 				break
 			}
@@ -245,6 +248,14 @@ sidfex.checkfileformat = function (filepathnames) {
 			if (Lon != "NaN" && Lon != "nan" && is.na(as.numeric(Lon))) {
 				Lon.nonnum = TRUE
 			}
+			if (Ncol > 4) {
+			  for (icol in 5:Ncol) {
+			    val = row.flds[icol]
+			    if (Lon != "NaN" && Lon != "nan" && is.na(as.numeric(Lon))) {
+			      extracol.nonnum = TRUE
+			    }
+			  }
+			}
 		}
 		if (Year.nonint) {
 			res = c(res,paste0("Year column contains at least one non-integer value."))
@@ -257,6 +268,11 @@ sidfex.checkfileformat = function (filepathnames) {
 		}
 		if (Lon.nonnum) {
 			res = c(res,paste0("Lon column contains at least one non-numeric value that is not 'NaN'."))
+		}
+		if (Ncol > 4) {
+		  if (extracol.nonnum) {
+		    res = c(res,paste0("At least one of the extra columns contains at least one non-numeric value that is not 'NaN'."))
+		  }
 		}
 
 		###
