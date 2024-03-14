@@ -29,12 +29,7 @@ sidfex.rot.fcst <- function (obs=NULL,fcst,obsref.DaysLeadTime=0,obsref.Year=NUL
       ydoybased = FALSE
       fcst.ref = sidfex.remaptime.fcst(fcst, newtime.DaysLeadTime = obsref.DaysLeadTime)
     }
-    obs.reltime = sidfex.ydoy2reltime(Year = obs$data$Year, DayOfYear = obs$data$POS_DOY,
-                                      RefYear = fcst.ref$res.list[[1]]$data$Year, RefDayOfYear = fcst.ref$res.list[[1]]$data$DayOfYear)
-    if (obs.reltime[1] > 0 || tail(obs.reltime,1) < 0) {
-      stop("reference time outside the observational time range")
-    }
-    obs.ref = sidfex.remaptime.obs2fcst(obs=obs, fcst=fcst.ref, extrapolate = TRUE, method = "linear")
+    obs.ref = sidfex.remaptime.obs2fcst(obs=obs, fcst=fcst.ref, extrapolate = FALSE, method = "linear")
   } else {
     timebased = FALSE
     # determine rotation parameters based on lonlat.orig and lonlat.new so that they lie on the equator of the rotation
@@ -53,13 +48,19 @@ sidfex.rot.fcst <- function (obs=NULL,fcst,obsref.DaysLeadTime=0,obsref.Year=NUL
     Nens = length(LatCols)
 
     if (timebased) {
+      if (is.na(obs.ref$res.list[[irl]]$data$Lon[1])) {warning("reference time outside the observational time range")}
       lonlat.orig = c(fcst.ref$res.list[[irl]]$data$Lon[1], fcst.ref$res.list[[irl]]$data$Lat[1])
       lonlat.new = c(obs.ref$res.list[[irl]]$data$Lon[1], obs.ref$res.list[[irl]]$data$Lat[1])
-      # determine rotation parameters based on lonlat.orig and lonlat.new so that they lie on the equator of the rotation
-      xyz.orig = sl.lonlat2xyz(lonlat.orig)
-      xyz.new = sl.lonlat2xyz(lonlat.new)
-      dist.angle = sl.gc.dist(lon=c(lonlat.orig[1], lonlat.new[1]), lat=c(lonlat.orig[2], lonlat.new[2]))*360/2/pi
-      pole.lonlat = sl.xyz2lonlat(sl.crossvec(xyz.orig,xyz.new))
+      if (identical(lonlat.orig,lonlat.new)) {
+        dist.angle = 0
+        pole.lonlat = c(0,90)
+      } else {
+        # determine rotation parameters based on lonlat.orig and lonlat.new so that they lie on the equator of the rotation
+        xyz.orig = sl.lonlat2xyz(lonlat.orig)
+        xyz.new = sl.lonlat2xyz(lonlat.new)
+        dist.angle = sl.gc.dist(lon=c(lonlat.orig[1], lonlat.new[1]), lat=c(lonlat.orig[2], lonlat.new[2]))*360/2/pi
+        pole.lonlat = sl.xyz2lonlat(sl.crossvec(xyz.orig,xyz.new))
+      }
       abg.1 = sl.lonlatrot2abg(lonlatrot = c(pole.lonlat,-dist.angle))
       abg.2 = sl.lonlatrot2abg(lonlatrot = c(pole.lonlat,0))
     }
@@ -75,11 +76,16 @@ sidfex.rot.fcst <- function (obs=NULL,fcst,obsref.DaysLeadTime=0,obsref.Year=NUL
 
       if (timebased && iens > 1 && !ensmean.based) {
         lonlat.orig = c(fcst.ref$res.list[[irl]]$data[,LonCols[iens]][1], fcst.ref$res.list[[irl]]$data[,LatCols[iens]][1])
-        # determine rotation parameters based on lonlat.orig and lonlat.new so that they lie on the equator of the rotation
-        xyz.orig = sl.lonlat2xyz(lonlat.orig)
-        xyz.new = sl.lonlat2xyz(lonlat.new)
-        dist.angle = sl.gc.dist(lon=c(lonlat.orig[1], lonlat.new[1]), lat=c(lonlat.orig[2], lonlat.new[2]))*360/2/pi
-        pole.lonlat = sl.xyz2lonlat(sl.crossvec(xyz.orig,xyz.new))
+        if (identical(lonlat.orig,lonlat.new)) {
+          dist.angle = 0
+          pole.lonlat = c(0,90)
+        } else {
+          # determine rotation parameters based on lonlat.orig and lonlat.new so that they lie on the equator of the rotation
+          xyz.orig = sl.lonlat2xyz(lonlat.orig)
+          xyz.new = sl.lonlat2xyz(lonlat.new)
+          dist.angle = sl.gc.dist(lon=c(lonlat.orig[1], lonlat.new[1]), lat=c(lonlat.orig[2], lonlat.new[2]))*360/2/pi
+          pole.lonlat = sl.xyz2lonlat(sl.crossvec(xyz.orig,xyz.new))
+        }
         abg.1 = sl.lonlatrot2abg(lonlatrot = c(pole.lonlat,-dist.angle))
         abg.2 = sl.lonlatrot2abg(lonlatrot = c(pole.lonlat,0))
       }
