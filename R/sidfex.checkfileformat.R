@@ -275,6 +275,10 @@ sidfex.checkfileformat = function (filepathnames) {
 		  }
 		}
 
+		if ((InitYear == 2025 && InitDayOfYear >= 335) || InitYear > 2025) {
+		  res = c(res,"Initial time later than final allowed SIDFEx initial time (end of November 2025).")
+		}
+
 		###
 
 		if (length(res) == 0) {
